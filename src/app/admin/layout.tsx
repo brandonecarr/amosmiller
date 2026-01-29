@@ -51,7 +51,7 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[var(--color-slate-100)]">
+    <div className="min-h-screen bg-slate-100">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -63,20 +63,20 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-[var(--color-charcoal)] transform transition-transform duration-200 ease-in-out lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 bg-charcoal transform transition-transform duration-200 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--color-slate-700)]">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-700">
           <Link href="/admin" className="flex items-center gap-2">
-            <Store className="w-6 h-6 text-[var(--color-primary-400)]" />
+            <Store className="w-6 h-6 text-primary-400" />
             <span className="font-semibold text-white">Admin</span>
           </Link>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-[var(--color-slate-400)] hover:text-white"
+            className="lg:hidden text-slate-400 hover:text-white"
             aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
@@ -98,8 +98,8 @@ export default function AdminLayout({
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-[var(--color-primary-500)] text-white"
-                    : "text-white hover:bg-[var(--color-slate-800)]"
+                    ? "bg-primary-500 text-white"
+                    : "text-white hover:bg-slate-800"
                 )}
               >
                 <item.icon className="w-5 h-5" />
@@ -110,10 +110,10 @@ export default function AdminLayout({
         </nav>
 
         {/* Bottom section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--color-slate-700)]">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
           <Link
             href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-[var(--color-slate-800)] transition-colors"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-800 transition-colors"
           >
             <LogOut className="w-5 h-5" />
             Back to Store
@@ -124,11 +124,11 @@ export default function AdminLayout({
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 h-16 bg-white border-b border-[var(--color-border)] flex items-center px-4 lg:px-6">
+        <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 -ml-2 text-[var(--color-charcoal)] hover:text-[var(--color-primary-500)]"
+            className="lg:hidden p-2 -ml-2 text-charcoal hover:text-primary-500"
             aria-label="Open sidebar"
           >
             <Menu className="w-6 h-6" />
@@ -138,7 +138,7 @@ export default function AdminLayout({
 
           {/* User menu placeholder */}
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 rounded-full bg-[var(--color-primary-500)] flex items-center justify-center text-white text-sm font-medium">
+            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
               A
             </div>
           </div>
