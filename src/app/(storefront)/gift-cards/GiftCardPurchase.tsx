@@ -68,23 +68,23 @@ export function GiftCardPurchase() {
 
   if (success && giftCardCode) {
     return (
-      <div className="max-w-lg mx-auto bg-white rounded-xl border border-[var(--color-border)] p-8 text-center">
+      <div className="max-w-lg mx-auto bg-white rounded-2xl border border-slate-200 p-8 text-center">
         <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
           <Check className="w-8 h-8 text-green-600" />
         </div>
-        <h2 className="text-2xl font-bold text-[var(--color-charcoal)] mb-2">
+        <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">
           Gift Card Sent!
         </h2>
-        <p className="text-[var(--color-muted)] mb-6">
+        <p className="text-slate-500 mb-6">
           A {formatCurrency(amount)} gift card has been sent to {recipientEmail}
         </p>
-        <div className="bg-[var(--color-slate-50)] rounded-lg p-4 mb-6">
-          <p className="text-sm text-[var(--color-muted)] mb-1">Gift Card Code</p>
-          <p className="text-2xl font-mono font-bold text-[var(--color-primary-600)]">
+        <div className="bg-slate-50 rounded-lg p-4 mb-6">
+          <p className="text-sm text-slate-500 mb-1">Gift Card Code</p>
+          <p className="text-2xl font-mono font-bold text-orange-500">
             {giftCardCode}
           </p>
         </div>
-        <Button onClick={() => {
+        <Button className="rounded-full" onClick={() => {
           setSuccess(false);
           setGiftCardCode(null);
           setRecipientName("");
@@ -98,15 +98,15 @@ export function GiftCardPurchase() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Preview */}
-        <div className="bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-700)] p-8 text-white">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white">
           <div className="max-w-sm mx-auto">
-            <div className="bg-white/10 backdrop-blur rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Gift className="w-8 h-8" />
-                <span className="font-semibold text-lg">Amos Miller Farm</span>
+                <span className="font-heading font-semibold text-lg">Amos Miller Farm</span>
               </div>
               <p className="text-4xl font-bold mb-2">{formatCurrency(amount)}</p>
               <p className="text-sm opacity-75">Digital Gift Card</p>
@@ -134,7 +134,7 @@ export function GiftCardPurchase() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Amount Selection */}
             <div>
-              <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-3">
+              <label className="block text-sm font-medium text-slate-900 mb-3">
                 Select Amount
               </label>
               <div className="grid grid-cols-3 gap-2 mb-3">
@@ -143,10 +143,10 @@ export function GiftCardPurchase() {
                     key={value}
                     type="button"
                     onClick={() => handleAmountSelect(value)}
-                    className={`py-3 px-4 rounded-lg border font-medium transition-colors ${
+                    className={`py-3 px-4 rounded-full border font-medium transition-colors ${
                       amount === value && !isCustom
-                        ? "bg-[var(--color-primary-500)] text-white border-[var(--color-primary-500)]"
-                        : "bg-white text-[var(--color-charcoal)] border-[var(--color-border)] hover:border-[var(--color-primary-500)]"
+                        ? "bg-slate-900 text-white border-slate-900"
+                        : "bg-white text-slate-900 border-slate-200 hover:border-orange-500"
                     }`}
                   >
                     ${value}
@@ -154,7 +154,7 @@ export function GiftCardPurchase() {
                 ))}
               </div>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                   $
                 </span>
                 <input
@@ -164,10 +164,10 @@ export function GiftCardPurchase() {
                   onChange={(e) => handleCustomAmount(e.target.value)}
                   min={10}
                   max={500}
-                  className={`w-full pl-7 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] ${
+                  className={`w-full pl-7 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                     isCustom
-                      ? "border-[var(--color-primary-500)]"
-                      : "border-[var(--color-border)]"
+                      ? "border-orange-500"
+                      : "border-slate-200"
                   }`}
                 />
               </div>
@@ -176,7 +176,7 @@ export function GiftCardPurchase() {
             {/* Recipient Info */}
             <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-muted)]" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
                   label="Recipient Name"
                   placeholder="Who is this gift for?"
@@ -187,7 +187,7 @@ export function GiftCardPurchase() {
                 />
               </div>
               <div className="relative">
-                <Mail className="absolute left-3 top-[38px] w-4 h-4 text-[var(--color-muted)]" />
+                <Mail className="absolute left-3 top-[38px] w-4 h-4 text-slate-500" />
                 <Input
                   label="Recipient Email"
                   type="email"
@@ -211,21 +211,21 @@ export function GiftCardPurchase() {
 
             {/* Personal Message */}
             <div>
-              <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-1.5">
+              <label className="block text-sm font-medium text-slate-900 mb-1.5">
                 Personal Message (optional)
               </label>
               <div className="relative">
-                <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-[var(--color-muted)]" />
+                <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
                 <textarea
                   placeholder="Add a personal note..."
                   value={personalMessage}
                   onChange={(e) => setPersonalMessage(e.target.value)}
                   rows={3}
                   maxLength={200}
-                  className="w-full pl-10 pr-4 py-2.5 border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] resize-none"
+                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                 />
               </div>
-              <p className="text-xs text-[var(--color-muted)] mt-1 text-right">
+              <p className="text-xs text-slate-500 mt-1 text-right">
                 {personalMessage.length}/200
               </p>
             </div>
@@ -238,7 +238,7 @@ export function GiftCardPurchase() {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full rounded-full"
               size="lg"
               isLoading={loading}
               disabled={amount < 10 || amount > 500}

@@ -56,7 +56,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const displayPrice = isOnSale ? product.sale_price! : product.base_price;
 
-  // Calculate price range for weight-based products
   const getPriceDisplay = () => {
     if (product.pricing_type === "weight") {
       const unit = product.weight_unit || "lb";
@@ -66,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
         return (
           <span>
             {formatCurrency(minPrice)} - {formatCurrency(maxPrice)}
-            <span className="text-[var(--color-muted)] text-sm font-normal">
+            <span className="text-slate-400 text-sm font-normal">
               {" "}
               (~{product.estimated_weight || product.min_weight} {unit})
             </span>
@@ -79,10 +78,10 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
       {/* Image */}
-      <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
-        <div className="absolute inset-0 bg-[var(--color-cream-100)] flex items-center justify-center">
+      <Link href={`/shop/${product.slug}`} className="block relative aspect-[4/3] overflow-hidden">
+        <div className="absolute inset-0 bg-slate-50 flex items-center justify-center">
           {product.featured_image_url ? (
             <Image
               src={product.featured_image_url}
@@ -92,31 +91,31 @@ export function ProductCard({ product }: ProductCardProps) {
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            <span className="text-[var(--color-muted)] text-sm">No image</span>
+            <span className="text-slate-300 text-sm">No image</span>
           )}
         </div>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.category && (
-            <Badge variant="default" className="bg-[var(--color-primary-500)] text-white">
+            <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-medium rounded-full">
               {product.category}
-            </Badge>
+            </span>
           )}
           {isOnSale && (
-            <Badge variant="error">Sale</Badge>
+            <Badge variant="error" size="sm">Sale</Badge>
           )}
           {product.is_featured && (
-            <Badge variant="info">Featured</Badge>
+            <Badge variant="accent" size="sm">Featured</Badge>
           )}
         </div>
 
         {/* Out of Stock Overlay */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-            <Badge variant="outline" className="text-base px-4 py-2">
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+            <span className="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-full">
               Out of Stock
-            </Badge>
+            </span>
           </div>
         )}
       </Link>
@@ -124,29 +123,31 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Content */}
       <div className="p-4">
         <Link href={`/shop/${product.slug}`}>
-          <h3 className="font-medium text-[var(--color-charcoal)] mb-1 group-hover:text-[var(--color-primary-500)] transition-colors line-clamp-2">
+          <h3 className="font-medium text-slate-900 text-sm mb-1.5 group-hover:text-orange-500 transition-colors line-clamp-2 font-heading">
             {product.name}
           </h3>
         </Link>
 
         {/* Price */}
         <div className="mb-3">
-          <p className="text-[var(--color-primary-500)] font-semibold">
+          <p className="text-slate-900 font-semibold">
             {getPriceDisplay()}
           </p>
           {isOnSale && (
-            <p className="text-[var(--color-muted)] text-sm line-through">
+            <p className="text-slate-400 text-sm line-through">
               {product.pricing_type === "weight"
                 ? formatWeightPrice(product.base_price, product.weight_unit || "lb")
                 : formatCurrency(product.base_price)}
             </p>
           )}
         </div>
+      </div>
 
-        {/* Add to Cart Button */}
+      {/* Add to Cart */}
+      <div className="px-4 pb-4 pt-0 border-t border-slate-50 bg-slate-50/50">
         <Button
           variant="secondary"
-          className="w-full"
+          className="w-full mt-3"
           size="sm"
           disabled={isOutOfStock || justAdded}
           onClick={handleAddToCart}

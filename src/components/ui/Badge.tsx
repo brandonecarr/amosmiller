@@ -2,20 +2,27 @@ import { type HTMLAttributes, forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "success" | "warning" | "error" | "info" | "outline";
+  variant?:
+    | "default"
+    | "success"
+    | "warning"
+    | "error"
+    | "info"
+    | "outline"
+    | "accent";
   size?: "sm" | "md";
 }
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = "default", size = "md", ...props }, ref) => {
     const variants = {
-      default: "bg-[var(--color-slate-100)] text-[var(--color-slate-700)]",
-      success: "bg-[var(--color-success-light)] text-green-800",
-      warning: "bg-[var(--color-warning-light)] text-yellow-800",
-      error: "bg-[var(--color-error-light)] text-red-800",
-      info: "bg-[var(--color-info-light)] text-blue-800",
-      outline:
-        "bg-transparent border border-[var(--color-border)] text-[var(--color-muted-foreground)]",
+      default: "bg-slate-100 text-slate-700",
+      success: "bg-emerald-50 text-emerald-700",
+      warning: "bg-amber-50 text-amber-700",
+      error: "bg-red-50 text-red-700",
+      info: "bg-blue-50 text-blue-700",
+      outline: "bg-transparent border border-slate-200 text-slate-600",
+      accent: "bg-orange-100 text-orange-700",
     };
 
     const sizes = {

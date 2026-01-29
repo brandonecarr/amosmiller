@@ -34,10 +34,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     <div>
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-[var(--color-charcoal)] mb-3">
+        <h1 className="font-heading text-4xl font-bold text-slate-900 mb-3">
           Farm Blog
         </h1>
-        <p className="text-lg text-[var(--color-muted)]">
+        <p className="text-lg text-slate-500">
           News, recipes, and updates from our farm
         </p>
       </div>
@@ -49,8 +49,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             href="/blog"
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               !activeTag
-                ? "bg-[var(--color-primary-500)] text-white"
-                : "bg-[var(--color-slate-100)] text-[var(--color-charcoal)] hover:bg-[var(--color-slate-200)]"
+                ? "bg-orange-100 text-orange-700"
+                : "bg-slate-50 text-slate-600 hover:bg-slate-200"
             }`}
           >
             All
@@ -61,8 +61,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               href={`/blog?tag=${encodeURIComponent(tag)}`}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 activeTag === tag
-                  ? "bg-[var(--color-primary-500)] text-white"
-                  : "bg-[var(--color-slate-100)] text-[var(--color-charcoal)] hover:bg-[var(--color-slate-200)]"
+                  ? "bg-orange-100 text-orange-700"
+                  : "bg-slate-50 text-slate-600 hover:bg-slate-200"
               }`}
             >
               {tag}
@@ -74,7 +74,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       {/* Posts Grid */}
       {posts.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-lg text-[var(--color-muted)]">
+          <p className="text-lg text-slate-500">
             {activeTag
               ? `No posts found with tag "${activeTag}".`
               : "No blog posts yet. Check back soon!"}
@@ -82,7 +82,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           {activeTag && (
             <Link
               href="/blog"
-              className="inline-block mt-4 text-[var(--color-primary-500)] hover:underline"
+              className="inline-block mt-4 text-orange-500 hover:text-orange-600"
             >
               View all posts
             </Link>
@@ -106,9 +106,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 href={`/blog/${post.slug}`}
                 className="group"
               >
-                <article className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
+                <article className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
                   {/* Featured Image */}
-                  <div className="aspect-[16/10] bg-[var(--color-cream-100)] overflow-hidden relative">
+                  <div className="aspect-[16/10] bg-slate-50 overflow-hidden relative">
                     {post.featured_image_url ? (
                       <Image
                         src={post.featured_image_url}
@@ -119,7 +119,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-4xl text-[var(--color-muted)]">
+                        <span className="text-4xl text-slate-500">
                           ✍
                         </span>
                       </div>
@@ -128,18 +128,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
                   {/* Content */}
                   <div className="p-5 flex-1 flex flex-col">
-                    <h2 className="text-lg font-semibold text-[var(--color-charcoal)] group-hover:text-[var(--color-primary-500)] transition-colors mb-2">
+                    <h2 className="font-heading text-lg font-semibold text-slate-900 group-hover:text-orange-500 transition-colors mb-2">
                       {post.title}
                     </h2>
 
                     {post.excerpt && (
-                      <p className="text-sm text-[var(--color-muted)] mb-4 flex-1 line-clamp-3">
+                      <p className="text-sm text-slate-500 mb-4 flex-1 line-clamp-3">
                         {post.excerpt}
                       </p>
                     )}
 
                     {/* Meta */}
-                    <div className="flex items-center gap-4 text-xs text-[var(--color-muted)] mt-auto pt-3 border-t border-[var(--color-border)]">
+                    <div className="flex items-center gap-4 text-xs text-slate-500 mt-auto pt-3 border-t border-slate-200">
                       {post.author?.full_name && (
                         <span className="flex items-center gap-1">
                           <User className="w-3 h-3" />

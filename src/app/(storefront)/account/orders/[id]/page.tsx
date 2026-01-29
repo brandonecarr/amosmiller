@@ -44,7 +44,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     processing: "bg-blue-100 text-blue-800 border-blue-200",
     packed: "bg-purple-100 text-purple-800 border-purple-200",
     shipped: "bg-indigo-100 text-indigo-800 border-indigo-200",
-    delivered: "bg-green-100 text-green-800 border-green-200",
+    delivered: "bg-emerald-100 text-emerald-800 border-emerald-200",
     cancelled: "bg-red-100 text-red-800 border-red-200",
   };
 
@@ -64,15 +64,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         <div>
           <Link
             href="/account/orders"
-            className="inline-flex items-center text-sm text-[var(--color-muted)] hover:text-[var(--color-primary-500)] mb-2"
+            className="inline-flex items-center text-sm text-slate-500 hover:text-orange-500 mb-2"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Orders
           </Link>
-          <h2 className="text-2xl font-bold text-[var(--color-charcoal)]">
+          <h2 className="text-2xl font-bold font-heading text-slate-900">
             Order #{order.order_number}
           </h2>
-          <p className="text-[var(--color-muted)]">
+          <p className="text-slate-500">
             Placed on {format(new Date(order.created_at), "MMMM d, yyyy 'at' h:mm a")}
           </p>
         </div>
@@ -83,8 +83,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
       {/* Status Timeline */}
       {order.status !== "cancelled" && (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-          <h3 className="font-bold text-[var(--color-charcoal)] mb-4">Order Status</h3>
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-bold text-slate-900 mb-4">Order Status</h3>
           <div className="flex items-center justify-between">
             {statusTimeline.map((status, index) => {
               const isActive = index <= currentStatusIndex;
@@ -99,15 +99,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
                         isActive
-                          ? "bg-[var(--color-primary-500)] text-white"
-                          : "bg-[var(--color-slate-100)] text-[var(--color-muted)]"
-                      } ${isCurrent ? "ring-4 ring-[var(--color-primary-100)]" : ""}`}
+                          ? "bg-orange-500 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      } ${isCurrent ? "ring-4 ring-orange-100" : ""}`}
                     >
                       {index + 1}
                     </div>
                     <span
                       className={`text-xs mt-2 capitalize ${
-                        isActive ? "text-[var(--color-charcoal)]" : "text-[var(--color-muted)]"
+                        isActive ? "text-slate-900" : "text-slate-500"
                       }`}
                     >
                       {status}
@@ -117,8 +117,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                     <div
                       className={`flex-1 h-1 mx-2 rounded ${
                         index < currentStatusIndex
-                          ? "bg-[var(--color-primary-500)]"
-                          : "bg-[var(--color-slate-100)]"
+                          ? "bg-orange-500"
+                          : "bg-slate-100"
                       }`}
                     />
                   )}
@@ -131,7 +131,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
       {/* Cancelled Status */}
       {order.status === "cancelled" && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
           <h3 className="font-bold text-red-800 mb-2">Order Cancelled</h3>
           <p className="text-red-600 text-sm">
             This order has been cancelled. If you have any questions, please contact us.
@@ -141,14 +141,14 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Order Items */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[var(--color-border)]">
-            <h3 className="font-bold text-[var(--color-charcoal)] flex items-center gap-2">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2">
               <Package className="w-5 h-5" />
               Order Items ({order.order_items?.length || 0})
             </h3>
           </div>
-          <div className="divide-y divide-[var(--color-border)]">
+          <div className="divide-y divide-slate-200">
             {order.order_items?.map((item: {
               id: string;
               name: string;
@@ -165,17 +165,17 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               return (
                 <div key={item.id} className="px-6 py-4 flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-[var(--color-charcoal)]">{item.name}</p>
-                    <p className="text-sm text-[var(--color-muted)]">
+                    <p className="font-medium text-slate-900">{item.name}</p>
+                    <p className="text-sm text-slate-500">
                       Qty: {item.quantity}
                       {item.pricing_type === "weight" && weight && (
                         <span>
-                          {" "}× {item.actual_weight ? `${weight} lbs` : `~${weight} lbs (est.)`}
+                          {" "}&times; {item.actual_weight ? `${weight} lbs` : `~${weight} lbs (est.)`}
                         </span>
                       )}
                     </p>
                   </div>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="font-medium text-slate-900">
                     {formatCurrency(price)}
                   </p>
                 </div>
@@ -187,8 +187,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
         {/* Order Summary Sidebar */}
         <div className="space-y-4">
           {/* Fulfillment Info */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-            <h3 className="font-bold text-[var(--color-charcoal)] mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
               {order.fulfillment_type === "shipping" ? (
                 <Truck className="w-5 h-5" />
               ) : (
@@ -199,10 +199,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
             {order.scheduled_date && (
               <div className="flex items-start gap-3 mb-4">
-                <Calendar className="w-4 h-4 text-[var(--color-muted)] mt-0.5" />
+                <Calendar className="w-4 h-4 text-slate-500 mt-0.5" />
                 <div>
-                  <p className="text-sm text-[var(--color-muted)]">Scheduled Date</p>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="text-sm text-slate-500">Scheduled Date</p>
+                  <p className="font-medium text-slate-900">
                     {format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
@@ -211,8 +211,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
             {order.shipping_address && (
               <div>
-                <p className="text-sm text-[var(--color-muted)]">Address</p>
-                <p className="text-[var(--color-charcoal)]">
+                <p className="text-sm text-slate-500">Address</p>
+                <p className="text-slate-900">
                   {order.shipping_address.line1}
                   {order.shipping_address.line2 && <br />}
                   {order.shipping_address.line2}
@@ -224,28 +224,28 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             )}
 
             {order.tracking_number && (
-              <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
-                <p className="text-sm text-[var(--color-muted)]">Tracking Number</p>
-                <p className="font-mono text-[var(--color-charcoal)]">{order.tracking_number}</p>
+              <div className="mt-4 pt-4 border-t border-slate-200">
+                <p className="text-sm text-slate-500">Tracking Number</p>
+                <p className="font-mono text-slate-900">{order.tracking_number}</p>
               </div>
             )}
           </div>
 
           {/* Payment Summary */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-            <h3 className="font-bold text-[var(--color-charcoal)] mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
               Payment Summary
             </h3>
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Subtotal</span>
+                <span className="text-slate-500">Subtotal</span>
                 <span>{formatCurrency(order.subtotal)}</span>
               </div>
               {order.shipping_fee > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">
+                  <span className="text-slate-500">
                     {order.fulfillment_type === "shipping" ? "Shipping" : "Delivery"}
                   </span>
                   <span>{formatCurrency(order.shipping_fee)}</span>
@@ -253,29 +253,29 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               )}
               {order.tax > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">Tax</span>
+                  <span className="text-slate-500">Tax</span>
                   <span>{formatCurrency(order.tax)}</span>
                 </div>
               )}
               {order.discount_amount > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-emerald-600">
                   <span>Discount</span>
                   <span>-{formatCurrency(order.discount_amount)}</span>
                 </div>
               )}
               {order.gift_card_amount_used > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-emerald-600">
                   <span>Gift Card</span>
                   <span>-{formatCurrency(order.gift_card_amount_used)}</span>
                 </div>
               )}
               {order.store_credit_used > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-emerald-600">
                   <span>Store Credit</span>
                   <span>-{formatCurrency(order.store_credit_used)}</span>
                 </div>
               )}
-              <div className="pt-2 mt-2 border-t border-[var(--color-border)]">
+              <div className="pt-2 mt-2 border-t border-slate-200">
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
                   <span>{formatCurrency(order.total)}</span>
@@ -284,7 +284,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </div>
 
             {order.payment_status === "authorized" && (
-              <p className="text-xs text-[var(--color-muted)] mt-4 bg-[var(--color-cream-100)] p-3 rounded-lg">
+              <p className="text-xs text-slate-600 mt-4 bg-slate-50 p-3 rounded-lg">
                 Your payment has been authorized. The final amount will be charged when your order
                 is packed and weighed.
               </p>
@@ -293,20 +293,20 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
           {/* Customer Notes */}
           {order.customer_notes && (
-            <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-              <h3 className="font-bold text-[var(--color-charcoal)] mb-2 flex items-center gap-2">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
                 <FileText className="w-5 h-5" />
                 Your Notes
               </h3>
-              <p className="text-[var(--color-muted)] text-sm">{order.customer_notes}</p>
+              <p className="text-slate-500 text-sm">{order.customer_notes}</p>
             </div>
           )}
 
           {/* Invoice Notes (visible to customer) */}
           {order.invoice_notes && (
-            <div className="bg-[var(--color-cream-100)] rounded-xl p-6">
-              <h3 className="font-bold text-[var(--color-charcoal)] mb-2">Note from Amos Miller Farm</h3>
-              <p className="text-[var(--color-muted)] text-sm">{order.invoice_notes}</p>
+            <div className="bg-slate-50 rounded-2xl p-6">
+              <h3 className="font-bold text-slate-900 mb-2">Note from Amos Miller Farm</h3>
+              <p className="text-slate-500 text-sm">{order.invoice_notes}</p>
             </div>
           )}
         </div>

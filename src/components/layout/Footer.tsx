@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Leaf } from "lucide-react";
 
 const footerLinks = {
   shop: [
@@ -34,18 +34,19 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[var(--color-charcoal)] text-white">
+    <footer className="bg-slate-900 text-white">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-4">
-              <span className="text-2xl font-bold text-white">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4">
+              <Leaf className="w-5 h-5 text-orange-400" />
+              <span className="text-lg font-semibold text-white font-heading">
                 Amos Miller Farm
               </span>
             </Link>
-            <p className="text-[var(--color-slate-300)] mb-6 max-w-sm">
+            <p className="text-slate-400 mb-6 max-w-sm text-sm leading-relaxed">
               Farm-fresh meats, dairy, and produce delivered directly to your
               door. Supporting sustainable agriculture since 1995.
             </p>
@@ -54,20 +55,20 @@ export function Footer() {
             <div className="space-y-3">
               <a
                 href="mailto:orders@amosmillerfarm.com"
-                className="flex items-center gap-3 text-[var(--color-slate-300)] hover:text-white transition-colors"
+                className="flex items-center gap-3 text-slate-400 hover:text-orange-400 transition-colors text-sm"
               >
-                <Mail className="w-5 h-5 text-[var(--color-primary-400)]" />
+                <Mail className="w-4 h-4 text-orange-400" />
                 orders@amosmillerfarm.com
               </a>
               <a
                 href="tel:+1234567890"
-                className="flex items-center gap-3 text-[var(--color-slate-300)] hover:text-white transition-colors"
+                className="flex items-center gap-3 text-slate-400 hover:text-orange-400 transition-colors text-sm"
               >
-                <Phone className="w-5 h-5 text-[var(--color-primary-400)]" />
+                <Phone className="w-4 h-4 text-orange-400" />
                 (123) 456-7890
               </a>
-              <div className="flex items-start gap-3 text-[var(--color-slate-300)]">
-                <MapPin className="w-5 h-5 text-[var(--color-primary-400)] flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-slate-400 text-sm">
+                <MapPin className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
                 <span>
                   123 Farm Road
                   <br />
@@ -79,13 +80,15 @@ export function Footer() {
 
           {/* Shop Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-white">Shop</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-heading">
+              Shop
+            </h3>
+            <ul className="space-y-2.5">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[var(--color-slate-300)] hover:text-white transition-colors"
+                    className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -96,13 +99,15 @@ export function Footer() {
 
           {/* Account Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-white">Account</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-heading">
+              Account
+            </h3>
+            <ul className="space-y-2.5">
               {footerLinks.account.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[var(--color-slate-300)] hover:text-white transition-colors"
+                    className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -113,13 +118,15 @@ export function Footer() {
 
           {/* Info Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-white">Information</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-heading">
+              Information
+            </h3>
+            <ul className="space-y-2.5">
               {footerLinks.info.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[var(--color-slate-300)] hover:text-white transition-colors"
+                    className="text-sm text-slate-400 hover:text-orange-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -131,10 +138,10 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[var(--color-slate-700)]">
+      <div className="border-t border-slate-800">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[var(--color-slate-400)] text-sm">
+            <p className="text-slate-500 text-sm">
               &copy; {currentYear} Amos Miller Farm. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
@@ -142,7 +149,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-[var(--color-slate-400)] text-sm hover:text-white transition-colors"
+                  className="text-slate-500 text-sm hover:text-orange-400 transition-colors"
                 >
                   {link.label}
                 </Link>

@@ -26,10 +26,10 @@ export default async function SettingsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+        <h1 className="text-2xl font-bold font-heading text-slate-900">
           Account Settings
         </h1>
-        <p className="text-[var(--color-muted)] mt-1">
+        <p className="text-slate-500 mt-1">
           Manage your profile and account preferences
         </p>
       </div>

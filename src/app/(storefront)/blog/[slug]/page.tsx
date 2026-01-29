@@ -59,7 +59,7 @@ export default async function BlogPostPage({
       {/* Back link */}
       <Link
         href="/blog"
-        className="inline-flex items-center text-sm text-[var(--color-muted)] hover:text-[var(--color-primary-500)] mb-6"
+        className="inline-flex items-center text-sm text-slate-500 hover:text-orange-500 mb-6"
       >
         <ArrowLeft className="w-4 h-4 mr-1" />
         Back to Blog
@@ -67,12 +67,12 @@ export default async function BlogPostPage({
 
       {/* Article Header */}
       <header className="mb-8">
-        <h1 className="text-3xl lg:text-4xl font-bold text-[var(--color-charcoal)] mb-4">
+        <h1 className="font-heading text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
           {post.title}
         </h1>
 
         {/* Meta */}
-        <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-muted)]">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
           {post.author?.full_name && (
             <span className="flex items-center gap-1.5">
               <User className="w-4 h-4" />
@@ -104,13 +104,13 @@ export default async function BlogPostPage({
 
       {/* Featured Image */}
       {post.featured_image_url && (
-        <div className="mb-8 rounded-xl overflow-hidden">
+        <div className="mb-8 rounded-2xl overflow-hidden">
           <Image
             src={post.featured_image_url}
             alt={post.title}
             width={1200}
             height={675}
-            className="w-full max-h-[500px] object-cover rounded-xl"
+            className="w-full max-h-[500px] object-cover rounded-2xl"
           />
         </div>
       )}
@@ -118,15 +118,15 @@ export default async function BlogPostPage({
       {/* Content */}
       {post.content && (
         <div
-          className="tiptap max-w-3xl"
+          className="tiptap max-w-3xl prose prose-slate prose-a:text-orange-500 prose-a:hover:text-orange-600 text-slate-600"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
       )}
 
       {/* Related Posts */}
       {related.length > 0 && (
-        <div className="mt-16 pt-8 border-t border-[var(--color-border)]">
-          <h2 className="text-2xl font-bold text-[var(--color-charcoal)] mb-6">
+        <div className="mt-16 pt-8 border-t border-slate-200">
+          <h2 className="font-heading text-2xl font-bold text-slate-900 mb-6">
             More from Our Blog
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -144,8 +144,8 @@ export default async function BlogPostPage({
                   href={`/blog/${relPost.slug}`}
                   className="group"
                 >
-                  <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="aspect-[16/10] bg-[var(--color-cream-100)] overflow-hidden relative">
+                  <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="aspect-[16/10] bg-slate-50 overflow-hidden relative">
                       {relPost.featured_image_url ? (
                         <Image
                           src={relPost.featured_image_url}
@@ -155,18 +155,18 @@ export default async function BlogPostPage({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-3xl text-[var(--color-muted)]">
+                          <span className="text-3xl text-slate-500">
                             ✍
                           </span>
                         </div>
                       )}
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-[var(--color-charcoal)] group-hover:text-[var(--color-primary-500)] transition-colors mb-1">
+                      <h3 className="font-heading font-semibold text-slate-900 group-hover:text-orange-500 transition-colors mb-1">
                         {relPost.title}
                       </h3>
                       {relPost.published_at && (
-                        <p className="text-xs text-[var(--color-muted)]">
+                        <p className="text-xs text-slate-500">
                           {format(
                             new Date(relPost.published_at),
                             "MMM d, yyyy"

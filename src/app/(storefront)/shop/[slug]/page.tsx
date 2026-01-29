@@ -49,7 +49,6 @@ export default async function ProductPage({
 
   const product = result.data;
 
-  // Fetch related products if product has a category
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let relatedProducts: any[] = [];
   if (product.category_id) {
@@ -64,7 +63,6 @@ export default async function ProductPage({
   const categoryName = product.categories?.name || "Products";
   const categorySlug = product.categories?.slug || "";
 
-  // Transform images to expected format
   const images = product.images?.length > 0
     ? product.images.map((img: string | { url: string; alt?: string }, index: number) => ({
         url: typeof img === "string" ? img : img.url,
@@ -78,26 +76,26 @@ export default async function ProductPage({
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm mb-8">
-        <Link href="/" className="text-[var(--color-muted)] hover:text-[var(--color-primary-500)]">
+        <Link href="/" className="text-slate-500 hover:text-orange-500 transition-colors">
           Home
         </Link>
-        <ChevronRight className="w-4 h-4 text-[var(--color-muted)]" />
-        <Link href="/shop" className="text-[var(--color-muted)] hover:text-[var(--color-primary-500)]">
+        <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+        <Link href="/shop" className="text-slate-500 hover:text-orange-500 transition-colors">
           Shop
         </Link>
         {categorySlug && (
           <>
-            <ChevronRight className="w-4 h-4 text-[var(--color-muted)]" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
             <Link
               href={`/shop?category=${categorySlug}`}
-              className="text-[var(--color-muted)] hover:text-[var(--color-primary-500)]"
+              className="text-slate-500 hover:text-orange-500 transition-colors"
             >
               {categoryName}
             </Link>
           </>
         )}
-        <ChevronRight className="w-4 h-4 text-[var(--color-muted)]" />
-        <span className="text-[var(--color-charcoal)]">{product.name}</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+        <span className="text-slate-900 font-medium">{product.name}</span>
       </nav>
 
       {/* Product Section */}
@@ -105,7 +103,7 @@ export default async function ProductPage({
         {/* Images */}
         <div className="space-y-4">
           {/* Main Image */}
-          <div className="aspect-square bg-[var(--color-cream-100)] rounded-2xl overflow-hidden relative">
+          <div className="aspect-square bg-slate-50 rounded-3xl overflow-hidden relative">
             {images[0]?.url ? (
               <Image
                 src={images[0].url}
@@ -115,7 +113,7 @@ export default async function ProductPage({
                 className="object-cover"
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-[var(--color-muted)]">
+              <div className="absolute inset-0 flex items-center justify-center text-slate-300">
                 Product Image
               </div>
             )}
@@ -123,7 +121,7 @@ export default async function ProductPage({
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">
               {isOnSale && <Badge variant="error">Sale</Badge>}
-              {product.is_featured && <Badge variant="info">Featured</Badge>}
+              {product.is_featured && <Badge variant="accent">Featured</Badge>}
             </div>
           </div>
 
@@ -133,7 +131,9 @@ export default async function ProductPage({
               {images.map((image: { url: string; alt: string }, index: number) => (
                 <button
                   key={index}
-                  className="w-20 h-20 rounded-lg bg-[var(--color-cream-100)] overflow-hidden border-2 border-transparent hover:border-[var(--color-primary-500)] transition-colors"
+                  type="button"
+                  aria-label={`View image ${index + 1}`}
+                  className="w-20 h-20 rounded-xl bg-slate-50 overflow-hidden border-2 border-slate-200 hover:border-orange-500 transition-colors"
                 >
                   {image.url ? (
                     <Image
@@ -144,7 +144,7 @@ export default async function ProductPage({
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-slate-300 text-xs">
                       {index + 1}
                     </div>
                   )}
@@ -162,18 +162,18 @@ export default async function ProductPage({
                 <>
                   <Link
                     href={`/shop?category=${categorySlug}`}
-                    className="text-sm text-[var(--color-primary-500)] hover:underline"
+                    className="text-sm text-orange-500 hover:text-orange-600 transition-colors"
                   >
                     {categoryName}
                   </Link>
-                  <span className="text-[var(--color-muted)]">·</span>
+                  <span className="text-slate-300">·</span>
                 </>
               )}
               {product.sku && (
-                <span className="text-sm text-[var(--color-muted)]">SKU: {product.sku}</span>
+                <span className="text-sm text-slate-400">SKU: {product.sku}</span>
               )}
             </div>
-            <h1 className="text-3xl font-bold text-[var(--color-charcoal)] mb-4">
+            <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-4 font-heading">
               {product.name}
             </h1>
 
@@ -181,28 +181,28 @@ export default async function ProductPage({
             <div className="mb-4">
               {product.pricing_type === "weight" ? (
                 <div>
-                  <p className="text-2xl font-bold text-[var(--color-primary-500)]">
+                  <p className="text-2xl font-bold text-slate-900">
                     {formatWeightPrice(displayPrice, product.weight_unit || "lb")}
                   </p>
                   {product.min_weight && product.max_weight && product.estimated_weight && (
-                    <p className="text-[var(--color-muted)]">
+                    <p className="text-slate-500 text-sm">
                       Estimated: {formatCurrency(displayPrice * product.estimated_weight)} (
                       ~{product.estimated_weight} {product.weight_unit || "lb"})
                     </p>
                   )}
                   {isOnSale && (
-                    <p className="text-[var(--color-muted)] line-through">
+                    <p className="text-slate-400 line-through text-sm">
                       {formatWeightPrice(product.base_price, product.weight_unit || "lb")}
                     </p>
                   )}
                 </div>
               ) : (
                 <div>
-                  <p className="text-2xl font-bold text-[var(--color-primary-500)]">
+                  <p className="text-2xl font-bold text-slate-900">
                     {formatCurrency(displayPrice)}
                   </p>
                   {isOnSale && (
-                    <p className="text-[var(--color-muted)] line-through">
+                    <p className="text-slate-400 line-through text-sm">
                       {formatCurrency(product.base_price)}
                     </p>
                   )}
@@ -211,7 +211,7 @@ export default async function ProductPage({
             </div>
 
             {product.short_description && (
-              <p className="text-[var(--color-muted-foreground)]">
+              <p className="text-slate-500 leading-relaxed">
                 {product.short_description}
               </p>
             )}
@@ -229,7 +229,6 @@ export default async function ProductPage({
             estimated_weight: product.estimated_weight,
             stock_quantity: product.stock_quantity,
             featured_image_url: product.featured_image_url,
-            // Subscription fields
             is_subscribable: product.is_subscribable,
             subscription_frequencies: product.subscription_frequencies,
             min_subscription_quantity: product.min_subscription_quantity,
@@ -237,18 +236,18 @@ export default async function ProductPage({
           }} />
 
           {/* Features */}
-          <div className="grid grid-cols-3 gap-4 py-6 border-t border-[var(--color-border)]">
+          <div className="grid grid-cols-3 gap-4 py-6 border-t border-slate-200">
             <div className="text-center">
-              <Truck className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
-              <p className="text-xs text-[var(--color-muted)]">Local Delivery</p>
+              <Truck className="w-5 h-5 text-slate-900 mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Local Delivery</p>
             </div>
             <div className="text-center">
-              <Shield className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
-              <p className="text-xs text-[var(--color-muted)]">Quality Guaranteed</p>
+              <Shield className="w-5 h-5 text-slate-900 mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Quality Guaranteed</p>
             </div>
             <div className="text-center">
-              <Leaf className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
-              <p className="text-xs text-[var(--color-muted)]">Sustainably Raised</p>
+              <Leaf className="w-5 h-5 text-slate-900 mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Sustainably Raised</p>
             </div>
           </div>
 
@@ -256,9 +255,9 @@ export default async function ProductPage({
           {product.tags && product.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {product.tags.map((tag: string) => (
-                <Badge key={tag} variant="outline" size="sm">
+                <span key={tag} className="px-3 py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
                   {tag}
-                </Badge>
+                </span>
               ))}
             </div>
           )}
@@ -268,14 +267,14 @@ export default async function ProductPage({
       {/* Description */}
       {product.description && (
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-[var(--color-charcoal)] mb-6">
+          <h2 className="text-xl lg:text-2xl font-bold text-slate-900 mb-6 font-heading">
             About This Product
           </h2>
-          <div className="prose prose-lg max-w-none text-[var(--color-muted-foreground)]">
+          <div className="prose prose-lg max-w-none text-slate-600 prose-headings:text-slate-900 prose-headings:font-heading">
             {product.description.split("\n\n").map((paragraph: string, index: number) => {
               if (paragraph.startsWith("**") && paragraph.endsWith("**")) {
                 return (
-                  <h3 key={index} className="text-lg font-semibold text-[var(--color-charcoal)] mt-6 mb-3">
+                  <h3 key={index} className="text-lg font-semibold text-slate-900 mt-6 mb-3 font-heading">
                     {paragraph.replace(/\*\*/g, "")}
                   </h3>
                 );
@@ -299,7 +298,7 @@ export default async function ProductPage({
       {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-[var(--color-charcoal)] mb-6">
+          <h2 className="text-xl lg:text-2xl font-bold text-slate-900 mb-6 font-heading">
             You May Also Like
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">

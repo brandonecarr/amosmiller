@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
-/* Custom Design System for Amos Miller Farm */
+/* ─── Design System: Minimalist Premium (Linear-inspired) ─── */
 
 @theme inline {
-  /* Primary Colors - Forest Green for trust & nature */
-  --color-primary-50: #f0f7f2;
-  --color-primary-100: #dcede1;
-  --color-primary-200: #bcdbc6;
-  --color-primary-300: #8fc2a1;
-  --color-primary-400: #5fa377;
-  --color-primary-500: #2d5a3d;
-  --color-primary-600: #264d34;
-  --color-primary-700: #1f3f2b;
-  --color-primary-800: #1a3324;
-  --color-primary-900: #152a1e;
+  /* Primary = Orange accent (active states, highlights, CTAs) */
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-200: #fed7aa;
+  --color-primary-300: #fdba74;
+  --color-primary-400: #fb923c;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-700: #c2410c;
+  --color-primary-800: #9a3412;
+  --color-primary-900: #7c2d12;
 
-  /* Accent Colors - Warm Cream for organic feel */
+  /* Cream (subtle warm accents) */
   --color-cream-50: #fdfcfa;
   --color-cream-100: #f9f6f0;
   --color-cream-200: #f5f0e6;
@@ -23,10 +23,10 @@
   --color-cream-400: #e0d4be;
   --color-cream-500: #d4c4a8;
 
-  /* Neutral */
+  /* Neutrals */
   --color-charcoal: #1a1a1a;
 
-  /* Semantic Colors */
+  /* Semantic */
   --color-success: #22c55e;
   --color-success-light: #dcfce7;
   --color-warning: #f59e0b;
@@ -39,21 +39,18 @@
   /* Aliases */
   --color-primary: var(--color-primary-500);
   --color-primary-hover: var(--color-primary-600);
-  --color-primary-active: var(--color-primary-700);
-  --color-primary-light: var(--color-primary-100);
+  --color-accent: var(--color-primary-500);
+  --color-accent-end: #ef4444;
 
-  --color-accent: var(--color-cream-200);
-  --color-accent-dark: var(--color-cream-500);
+  --color-background: #fafafa;
+  --color-foreground: #0f172a;
+  --color-muted: #64748b;
+  --color-muted-foreground: #475569;
+  --color-border: #e2e8f0;
 
-  --color-background: #ffffff;
-  --color-foreground: var(--color-charcoal);
-  --color-muted: var(--color-slate-500);
-  --color-muted-foreground: var(--color-slate-600);
-  --color-border: var(--color-slate-200);
-
-  /* Font */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Inter", system-ui, -apple-system, sans-serif;
+  /* Fonts */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-jakarta), system-ui, -apple-system, sans-serif;
 }
 
 :root {
@@ -71,6 +68,7 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 
   /* Shadows */
@@ -78,9 +76,11 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-nav: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.04);
 }
 
-/* Base Styles — inside @layer base so Tailwind utilities can override */
+/* Base Styles */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -97,10 +97,10 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+    font-family: var(--font-heading);
     font-weight: 600;
     line-height: 1.25;
-    color: var(--color-charcoal);
+    color: #0f172a;
   }
 
   h1 { font-size: 2.5rem; }
@@ -111,13 +111,13 @@
   h6 { font-size: 1rem; }
 
   a {
-    color: var(--color-primary-500);
+    color: #0f172a;
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   a:hover {
-    color: var(--color-primary-600);
+    color: var(--color-primary-500);
   }
 
   *:focus-visible {
@@ -126,26 +126,26 @@
   }
 
   ::selection {
-    background: var(--color-primary-200);
-    color: var(--color-primary-800);
+    background: var(--color-primary-100);
+    color: var(--color-primary-900);
   }
 
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--color-slate-100);
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-slate-300);
-    border-radius: 4px;
+    background: #cbd5e1;
+    border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-slate-400);
+    background: #94a3b8;
   }
 }
 
@@ -172,6 +172,13 @@
       padding-left: 2rem;
       padding-right: 2rem;
     }
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #f97316, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
@@ -233,5 +240,5 @@
 .tiptap a { color: var(--color-primary-500); text-decoration: underline; }
 .tiptap img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 1em 0; }
 .tiptap hr { border: none; border-top: 1px solid var(--color-border); margin: 1.5em 0; }
-.tiptap code { background: var(--color-slate-100); padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; }
+.tiptap code { background: #f1f5f9; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; }
 .tiptap p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--color-muted); pointer-events: none; float: left; height: 0; }

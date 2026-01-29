@@ -2,14 +2,17 @@ import { Skeleton } from "@/components/ui";
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-8 lg:py-12">
       {/* Page Title */}
-      <Skeleton className="h-8 w-48 mx-auto" />
+      <div className="text-center mb-8">
+        <Skeleton className="h-8 w-48 mx-auto" />
+        <Skeleton className="h-4 w-72 mx-auto mt-2" />
+      </div>
 
       {/* Tag Pills */}
-      <div className="flex gap-2 justify-center">
+      <div className="flex gap-2 justify-center mb-8">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-16 rounded-full" />
+          <Skeleton key={i} className="h-9 w-20 rounded-full" />
         ))}
       </div>
 
@@ -18,13 +21,21 @@ export default function Loading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden"
+            className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
           >
             <Skeleton className="aspect-[16/10] w-full rounded-none" />
-            <div className="p-4 space-y-3">
+            <div className="p-5 space-y-3">
+              <div className="flex gap-2">
+                <Skeleton className="h-5 w-14 rounded-full" />
+                <Skeleton className="h-5 w-14 rounded-full" />
+              </div>
               <Skeleton className="h-5 w-3/4" />
               <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-4 w-2/3" />
+              <div className="flex items-center gap-2 pt-2">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-3 w-24" />
+              </div>
             </div>
           </div>
         ))}

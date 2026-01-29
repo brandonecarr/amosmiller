@@ -11,20 +11,20 @@ export function BannerBlock({ block }: BannerBlockProps) {
   if (!text) return null;
 
   const bannerStyle: React.CSSProperties = {
-    backgroundColor: backgroundColor || "var(--color-primary-500)",
+    backgroundColor: backgroundColor || "#0f172a",
     color: textColor || "#ffffff",
   };
 
   const content = (
     <div
-      className="w-full py-4 px-6 text-center font-medium"
+      className="w-full py-4 px-6 text-center font-medium rounded-2xl"
       style={bannerStyle}
     >
       <span>{text}</span>
       {linkUrl && linkText && (
         <>
           {" "}
-          <span className="underline underline-offset-2 font-semibold">
+          <span className="inline-block ml-2 px-4 py-1 rounded-full bg-white/20 text-sm font-semibold hover:bg-white/30 transition-colors">
             {linkText}
           </span>
         </>

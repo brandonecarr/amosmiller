@@ -7,9 +7,9 @@ export default function Loading() {
       <Skeleton className="h-10 w-full rounded-lg" />
 
       {/* Orders Table */}
-      <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {/* Table Header */}
-        <div className="grid grid-cols-6 gap-4 p-4 border-b border-[var(--color-border)]">
+        <div className="grid grid-cols-6 gap-4 p-4 border-b border-slate-200">
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-20" />
@@ -22,7 +22,7 @@ export default function Loading() {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="grid grid-cols-6 gap-4 p-4 border-b border-[var(--color-border)] last:border-b-0"
+            className="grid grid-cols-6 gap-4 p-4 border-b border-slate-200 last:border-b-0"
           >
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-4 w-28" />

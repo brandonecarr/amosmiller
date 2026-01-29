@@ -51,10 +51,10 @@ export default async function PaymentMethodsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+          <h1 className="text-2xl font-bold font-heading text-slate-900">
             Payment Methods
           </h1>
-          <p className="text-[var(--color-muted)]">
+          <p className="text-slate-500">
             Manage your saved payment methods
           </p>
         </div>
@@ -62,14 +62,14 @@ export default async function PaymentMethodsPage() {
       </div>
 
       {(!paymentMethods || paymentMethods.length === 0) ? (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-cream-100)] flex items-center justify-center mx-auto mb-4">
-            <CreditCard className="w-8 h-8 text-[var(--color-primary-500)]" />
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4">
+            <CreditCard className="w-8 h-8 text-orange-500" />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--color-charcoal)] mb-2">
+          <h2 className="text-xl font-semibold font-heading text-slate-900 mb-2">
             No Payment Methods
           </h2>
-          <p className="text-[var(--color-muted)] mb-6 max-w-md mx-auto">
+          <p className="text-slate-500 mb-6 max-w-md mx-auto">
             Add a payment method to enable subscriptions and faster checkout.
           </p>
           <AddPaymentMethodButton userId={user.id} />
@@ -79,31 +79,31 @@ export default async function PaymentMethodsPage() {
           {paymentMethods.map((method: PaymentMethod) => (
             <div
               key={method.id}
-              className={`bg-white rounded-xl border p-6 ${
+              className={`bg-white rounded-2xl border p-6 ${
                 method.is_default
-                  ? "border-[var(--color-primary-500)]"
-                  : "border-[var(--color-border)]"
+                  ? "border-orange-500"
+                  : "border-slate-200"
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-8 bg-[var(--color-slate-100)] rounded flex items-center justify-center">
-                    <CreditCard className="w-6 h-6 text-[var(--color-muted)]" />
+                  <div className="w-12 h-8 bg-slate-100 rounded flex items-center justify-center">
+                    <CreditCard className="w-6 h-6 text-slate-500" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-[var(--color-charcoal)]">
+                      <p className="font-medium text-slate-900">
                         {cardBrandIcons[method.card_brand || ""] || method.card_brand || "Card"}{" "}
                         ending in {method.card_last_four}
                       </p>
                       {method.is_default && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary-100)] text-[var(--color-primary-700)]">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
                           <Star className="w-3 h-3 mr-1" />
                           Default
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-[var(--color-muted)]">
+                    <p className="text-sm text-slate-500">
                       Expires {method.card_exp_month}/{method.card_exp_year}
                     </p>
                   </div>
@@ -119,11 +119,11 @@ export default async function PaymentMethodsPage() {
         </div>
       )}
 
-      <div className="bg-[var(--color-slate-50)] rounded-xl p-6">
-        <h3 className="font-medium text-[var(--color-charcoal)] mb-2">
+      <div className="bg-slate-50 rounded-2xl p-6">
+        <h3 className="font-medium text-slate-900 mb-2">
           About Payment Methods
         </h3>
-        <ul className="text-sm text-[var(--color-muted)] space-y-1">
+        <ul className="text-sm text-slate-500 space-y-1">
           <li>Your payment information is securely stored with Stripe.</li>
           <li>The default payment method is used for subscription charges.</li>
           <li>You can change the payment method for individual subscriptions.</li>

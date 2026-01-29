@@ -19,7 +19,6 @@ interface Product {
   weight_unit: "lb" | "oz" | "kg" | "g";
   estimated_weight: number | null;
   featured_image_url: string | null;
-  // Subscription fields
   is_subscribable?: boolean;
   subscription_frequencies?: ("weekly" | "biweekly" | "monthly")[];
   min_subscription_quantity?: number;
@@ -44,7 +43,6 @@ export function AddToCartSection({ product }: { product: Product }) {
   const isOutOfStock = product.stock_quantity === 0;
   const isSubscribable = product.is_subscribable && (product.subscription_frequencies?.length ?? 0) > 0;
 
-  // Track product view on mount
   useEffect(() => {
     const price = product.sale_price ?? product.base_price;
     trackViewItem({
@@ -84,7 +82,6 @@ export function AddToCartSection({ product }: { product: Product }) {
       quantity,
       imageUrl: product.featured_image_url,
     });
-    // Track add to cart
     trackAddToCart({ id: product.id, name: product.name, price, quantity });
     fbTrackAddToCart({ value: price * quantity, contentName: product.name });
     setJustAdded(true);
@@ -92,7 +89,6 @@ export function AddToCartSection({ product }: { product: Product }) {
   };
 
   const handleSubscribe = () => {
-    // Redirect to subscription setup page with product info
     const params = new URLSearchParams({
       product: product.id,
       quantity: quantity.toString(),
@@ -106,15 +102,15 @@ export function AddToCartSection({ product }: { product: Product }) {
       {/* Stock Status */}
       <div className="flex items-center gap-2">
         <div
-          className={`w-3 h-3 rounded-full ${
+          className={`w-2.5 h-2.5 rounded-full ${
             isOutOfStock
-              ? "bg-[var(--color-error)]"
+              ? "bg-red-500"
               : product.stock_quantity < 10
-              ? "bg-[var(--color-warning)]"
-              : "bg-[var(--color-success)]"
+              ? "bg-orange-500"
+              : "bg-emerald-500"
           }`}
         />
-        <span className="text-sm">
+        <span className="text-sm text-slate-600">
           {isOutOfStock
             ? "Out of Stock"
             : product.stock_quantity < 10
@@ -126,22 +122,24 @@ export function AddToCartSection({ product }: { product: Product }) {
       {/* Quantity Selector */}
       {!isOutOfStock && (
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">Quantity:</span>
-          <div className="flex items-center border border-[var(--color-border)] rounded-lg">
+          <span className="text-sm font-medium text-slate-700">Quantity:</span>
+          <div className="flex items-center border border-slate-200 rounded-xl">
             <button
+              type="button"
               onClick={decrementQuantity}
               disabled={quantity <= 1}
-              className="p-3 hover:bg-[var(--color-slate-100)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-3 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-xl"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-4 h-4 text-slate-600" />
             </button>
-            <span className="w-12 text-center font-medium">{quantity}</span>
+            <span className="w-12 text-center font-medium text-slate-900">{quantity}</span>
             <button
+              type="button"
               onClick={incrementQuantity}
               disabled={quantity >= product.stock_quantity}
-              className="p-3 hover:bg-[var(--color-slate-100)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-3 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-xl"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-slate-600" />
             </button>
           </div>
         </div>
@@ -149,23 +147,25 @@ export function AddToCartSection({ product }: { product: Product }) {
 
       {/* Purchase Type Toggle */}
       {isSubscribable && !isOutOfStock && (
-        <div className="flex rounded-lg border border-[var(--color-border)] p-1">
+        <div className="flex rounded-xl border border-slate-200 p-1">
           <button
+            type="button"
             onClick={() => setShowSubscribe(false)}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               !showSubscribe
-                ? "bg-[var(--color-primary-500)] text-white"
-                : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
+                ? "bg-slate-900 text-white"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
             One-time
           </button>
           <button
+            type="button"
             onClick={() => setShowSubscribe(true)}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
               showSubscribe
-                ? "bg-[var(--color-primary-500)] text-white"
-                : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
+                ? "bg-orange-500 text-white"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
             <RefreshCw className="w-4 h-4" />
@@ -176,26 +176,27 @@ export function AddToCartSection({ product }: { product: Product }) {
 
       {/* Subscription Frequency Selector */}
       {showSubscribe && isSubscribable && !isOutOfStock && (
-        <div className="space-y-3 p-4 bg-[var(--color-primary-50)] rounded-lg">
-          <p className="text-sm font-medium text-[var(--color-charcoal)]">
+        <div className="space-y-3 p-4 bg-orange-50 rounded-2xl border border-orange-100">
+          <p className="text-sm font-medium text-slate-900">
             Delivery Frequency
           </p>
           <div className="flex flex-wrap gap-2">
             {product.subscription_frequencies?.map((freq) => (
               <button
                 key={freq}
+                type="button"
                 onClick={() => setSelectedFrequency(freq)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                   selectedFrequency === freq
-                    ? "border-[var(--color-primary-500)] bg-white text-[var(--color-primary-700)]"
-                    : "border-[var(--color-border)] bg-white text-[var(--color-charcoal)] hover:border-[var(--color-primary-300)]"
+                    ? "border-orange-500 bg-white text-orange-700"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-orange-300"
                 }`}
               >
                 {frequencyLabels[freq]}
               </button>
             ))}
           </div>
-          <p className="text-xs text-[var(--color-primary-700)]">
+          <p className="text-xs text-orange-600">
             Save 10% on all subscription orders. Skip or cancel anytime.
           </p>
         </div>
@@ -233,16 +234,16 @@ export function AddToCartSection({ product }: { product: Product }) {
             )}
           </Button>
         )}
-        <Button variant="outline" size="lg">
+        <Button variant="secondary" size="lg">
           <Heart className="w-5 h-5" />
         </Button>
-        <Button variant="outline" size="lg">
+        <Button variant="secondary" size="lg">
           <Share2 className="w-5 h-5" />
         </Button>
       </div>
 
       {product.pricing_type === "weight" && !isOutOfStock && (
-        <p className="text-sm text-[var(--color-muted)]">
+        <p className="text-sm text-slate-400">
           Note: Final price will be calculated based on actual weight when your order is packed.
         </p>
       )}

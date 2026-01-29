@@ -12,16 +12,18 @@ export function ImageBlock({ block }: ImageBlockProps) {
 
   return (
     <figure className="max-w-4xl mx-auto px-4">
-      <Image
-        src={url}
-        alt={alt || ""}
-        width={1024}
-        height={576}
-        className="w-full h-auto rounded-lg"
-        style={{ height: 'auto' }}
-      />
+      <div className="rounded-2xl overflow-hidden">
+        <Image
+          src={url}
+          alt={alt || ""}
+          width={1024}
+          height={576}
+          className="w-full h-auto"
+          style={{ height: 'auto' }}
+        />
+      </div>
       {caption && (
-        <figcaption className="mt-3 text-center text-sm text-[var(--color-muted)]">
+        <figcaption className="mt-3 text-center text-sm text-slate-500">
           {caption}
         </figcaption>
       )}

@@ -42,7 +42,7 @@ interface Subscription {
 }
 
 const statusColors: Record<string, string> = {
-  active: "bg-green-100 text-green-800",
+  active: "bg-orange-100 text-orange-800",
   paused: "bg-yellow-100 text-yellow-800",
   cancelled: "bg-gray-100 text-gray-800",
 };
@@ -80,8 +80,8 @@ export default async function SubscriptionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">My Subscriptions</h1>
-          <p className="text-[var(--color-muted)]">
+          <h1 className="text-2xl font-bold font-heading text-slate-900">My Subscriptions</h1>
+          <p className="text-slate-500">
             Manage your recurring orders and deliveries
           </p>
         </div>
@@ -94,14 +94,14 @@ export default async function SubscriptionsPage() {
       </div>
 
       {activeSubscriptions.length === 0 && cancelledSubscriptions.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-cream-100)] flex items-center justify-center mx-auto mb-4">
-            <RefreshCw className="w-8 h-8 text-[var(--color-primary-500)]" />
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4">
+            <RefreshCw className="w-8 h-8 text-orange-500" />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--color-charcoal)] mb-2">
+          <h2 className="text-xl font-semibold font-heading text-slate-900 mb-2">
             No Subscriptions Yet
           </h2>
-          <p className="text-[var(--color-muted)] mb-6 max-w-md mx-auto">
+          <p className="text-slate-500 mb-6 max-w-md mx-auto">
             Subscribe to your favorite products and never run out. We&apos;ll deliver fresh
             farm products on your schedule.
           </p>
@@ -117,7 +117,7 @@ export default async function SubscriptionsPage() {
           {/* Active Subscriptions */}
           {activeSubscriptions.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[var(--color-charcoal)]">
+              <h2 className="text-lg font-semibold font-heading text-slate-900">
                 Active Subscriptions
               </h2>
               <div className="grid gap-4">
@@ -136,11 +136,11 @@ export default async function SubscriptionsPage() {
                       href={`/account/subscriptions/${subscription.id}`}
                       className="block"
                     >
-                      <div className="bg-white rounded-xl border border-[var(--color-border)] p-6 hover:border-[var(--color-primary-300)] transition-colors">
+                      <div className="bg-white rounded-2xl border border-slate-200 p-6 hover:border-orange-300 transition-colors">
                         <div className="flex flex-wrap items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-[var(--color-charcoal)]">
+                              <h3 className="font-semibold text-slate-900">
                                 {subscription.name}
                               </h3>
                               <span
@@ -158,7 +158,7 @@ export default async function SubscriptionsPage() {
                                   subscription.status.slice(1)}
                               </span>
                             </div>
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-muted)]">
+                            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Package className="w-4 h-4" />
                                 {itemCount} {itemCount === 1 ? "item" : "items"}
@@ -180,10 +180,10 @@ export default async function SubscriptionsPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold text-[var(--color-charcoal)]">
+                            <p className="font-semibold text-slate-900">
                               {formatCurrency(total)}
                             </p>
-                            <p className="text-xs text-[var(--color-muted)]">
+                            <p className="text-xs text-slate-500">
                               per {subscription.frequency === "biweekly" ? "delivery" : subscription.frequency.replace("ly", "")}
                             </p>
                           </div>
@@ -191,7 +191,7 @@ export default async function SubscriptionsPage() {
 
                         {/* Item Preview */}
                         {subscription.subscription_items?.length > 0 && (
-                          <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
+                          <div className="mt-4 pt-4 border-t border-slate-200">
                             <div className="flex flex-wrap gap-2">
                               {subscription.subscription_items.slice(0, 4).map((item: {
                                 id: string;
@@ -200,13 +200,13 @@ export default async function SubscriptionsPage() {
                               }) => (
                                 <span
                                   key={item.id}
-                                  className="inline-flex items-center px-2 py-1 bg-[var(--color-slate-50)] rounded text-xs text-[var(--color-charcoal)]"
+                                  className="inline-flex items-center px-2 py-1 bg-slate-50 rounded text-xs text-slate-900"
                                 >
-                                  {item.product.name} ×{item.quantity}
+                                  {item.product.name} &times;{item.quantity}
                                 </span>
                               ))}
                               {subscription.subscription_items.length > 4 && (
-                                <span className="inline-flex items-center px-2 py-1 text-xs text-[var(--color-muted)]">
+                                <span className="inline-flex items-center px-2 py-1 text-xs text-slate-500">
                                   +{subscription.subscription_items.length - 4} more
                                 </span>
                               )}
@@ -224,26 +224,26 @@ export default async function SubscriptionsPage() {
           {/* Cancelled Subscriptions */}
           {cancelledSubscriptions.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-[var(--color-muted)]">
+              <h2 className="text-lg font-semibold text-slate-500">
                 Past Subscriptions
               </h2>
               <div className="grid gap-4">
                 {cancelledSubscriptions.map((subscription) => (
                   <div
                     key={subscription.id}
-                    className="bg-white rounded-xl border border-[var(--color-border)] p-6 opacity-60"
+                    className="bg-white rounded-2xl border border-slate-200 p-6 opacity-60"
                   >
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-semibold text-[var(--color-charcoal)]">
+                          <h3 className="font-semibold text-slate-900">
                             {subscription.name}
                           </h3>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                             Cancelled
                           </span>
                         </div>
-                        <p className="text-sm text-[var(--color-muted)]">
+                        <p className="text-sm text-slate-500">
                           Cancelled on{" "}
                           {subscription.cancelled_at
                             ? format(new Date(subscription.cancelled_at), "MMM d, yyyy")

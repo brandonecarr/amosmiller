@@ -23,10 +23,10 @@ export default async function AddressesPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+        <h1 className="text-2xl font-bold font-heading text-slate-900">
           Address Book
         </h1>
-        <p className="text-[var(--color-muted)] mt-1">
+        <p className="text-slate-500 mt-1">
           Manage your saved addresses for faster checkout
         </p>
       </div>

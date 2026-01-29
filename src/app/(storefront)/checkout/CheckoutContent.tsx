@@ -466,12 +466,12 @@ export function CheckoutContent({
       <div className="mb-8">
         <Link
           href="/cart"
-          className="inline-flex items-center text-sm text-[var(--color-muted)] hover:text-[var(--color-primary-500)] mb-4"
+          className="inline-flex items-center text-sm text-slate-500 hover:text-orange-500 mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Cart
         </Link>
-        <h1 className="text-3xl font-bold text-[var(--color-charcoal)]">Checkout</h1>
+        <h1 className="text-3xl font-heading font-bold text-slate-900">Checkout</h1>
       </div>
 
       {/* Progress Steps */}
@@ -479,7 +479,7 @@ export function CheckoutContent({
         {["fulfillment", "details", "payment"].map((step, index) => (
           <div key={step} className="flex items-center">
             {index > 0 && (
-              <ChevronRight className="w-4 h-4 text-[var(--color-muted)] mx-2" />
+              <ChevronRight className="w-4 h-4 text-slate-400 mx-2" />
             )}
             <button
               onClick={() => {
@@ -491,18 +491,18 @@ export function CheckoutContent({
               disabled={step === "payment"}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
                 currentStep === step
-                  ? "bg-[var(--color-primary-500)] text-white"
+                  ? "bg-slate-900 text-white"
                   : step === "fulfillment" ||
                     (step === "details" && canProceedFromFulfillment())
-                  ? "bg-[var(--color-slate-100)] text-[var(--color-charcoal)] hover:bg-[var(--color-slate-200)]"
-                  : "bg-[var(--color-slate-100)] text-[var(--color-muted)] cursor-not-allowed"
+                  ? "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}
             >
               <span
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                   currentStep === step
-                    ? "bg-white text-[var(--color-primary-500)]"
-                    : "bg-[var(--color-slate-200)] text-[var(--color-muted)]"
+                    ? "bg-white text-slate-900"
+                    : "bg-slate-200 text-slate-500"
                 }`}
               >
                 {index + 1}
@@ -516,7 +516,7 @@ export function CheckoutContent({
       </div>
 
       {orderError && (
-        <div className="mb-6 p-4 bg-[var(--color-error-50)] border border-[var(--color-error)] text-[var(--color-error)] rounded-lg">
+        <div className="mb-6 p-4 bg-red-50 border border-red-300 text-red-600 rounded-2xl">
           {orderError}
         </div>
       )}
@@ -555,6 +555,7 @@ export function CheckoutContent({
                   size="lg"
                   disabled={!canProceedFromFulfillment()}
                   onClick={() => setCurrentStep("details")}
+                  className="rounded-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
                   Continue to Details
                   <ChevronRight className="w-5 h-5 ml-2" />
@@ -566,8 +567,8 @@ export function CheckoutContent({
           {/* Step 2: Customer Details */}
           {currentStep === "details" && (
             <div className="space-y-8">
-              <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-                <h2 className="text-lg font-bold text-[var(--color-charcoal)] mb-6">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                <h2 className="text-lg font-heading font-bold text-slate-900 mb-6">
                   Contact Information
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -608,8 +609,8 @@ export function CheckoutContent({
               </div>
 
               {(fulfillment.type === "delivery" || fulfillment.type === "shipping") && (
-                <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-                  <h2 className="text-lg font-bold text-[var(--color-charcoal)] mb-6">
+                <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <h2 className="text-lg font-heading font-bold text-slate-900 mb-6">
                     {fulfillment.type === "delivery" ? "Delivery Address" : "Shipping Address"}
                   </h2>
                   <div className="space-y-4">
@@ -660,21 +661,21 @@ export function CheckoutContent({
               )}
 
               {/* Order Notes */}
-              <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-                <h2 className="text-lg font-bold text-[var(--color-charcoal)] mb-4">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                <h2 className="text-lg font-heading font-bold text-slate-900 mb-4">
                   Order Notes (Optional)
                 </h2>
                 <textarea
                   value={customerNotes}
                   onChange={(e) => setCustomerNotes(e.target.value)}
                   placeholder="Any special instructions for your order..."
-                  className="w-full px-4 py-3 border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] resize-none"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none text-slate-900 placeholder:text-slate-400"
                   rows={3}
                 />
               </div>
 
               <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setCurrentStep("fulfillment")}>
+                <Button variant="outline" onClick={() => setCurrentStep("fulfillment")} className="rounded-full border-slate-200 text-slate-900 hover:bg-slate-50">
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Back
                 </Button>
@@ -682,6 +683,7 @@ export function CheckoutContent({
                   size="lg"
                   disabled={!canProceedFromDetails() || isProcessing}
                   onClick={handleProceedToPayment}
+                  className="rounded-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
                   {isProcessing ? (
                     <>
@@ -713,8 +715,8 @@ export function CheckoutContent({
 
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-[var(--color-cream-100)] rounded-xl p-6 sticky top-24">
-            <h2 className="text-lg font-bold text-[var(--color-charcoal)] mb-4">
+          <div className="bg-slate-50 rounded-2xl p-6 sticky top-24">
+            <h2 className="text-lg font-heading font-bold text-slate-900 mb-4">
               Order Summary
             </h2>
 
@@ -729,28 +731,28 @@ export function CheckoutContent({
 
                 return (
                   <div key={item.id} className="flex gap-3">
-                    <div className="w-12 h-12 bg-white rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-12 h-12 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
                           alt={item.name}
                           width={48}
                           height={48}
-                          className="object-cover rounded"
+                          className="object-cover rounded-xl"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                           No Img
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[var(--color-charcoal)] truncate">
+                      <p className="text-sm font-medium text-slate-900 truncate">
                         {item.name}
                       </p>
-                      <p className="text-xs text-[var(--color-muted)]">Qty: {item.quantity}</p>
+                      <p className="text-xs text-slate-500">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-medium">{formatCurrency(itemTotal)}</p>
+                    <p className="text-sm font-medium text-slate-900">{formatCurrency(itemTotal)}</p>
                   </div>
                 );
               })}
@@ -758,22 +760,22 @@ export function CheckoutContent({
 
             {/* Coupon Code */}
             {currentStep !== "payment" && (
-              <div className="border-t border-[var(--color-border)] pt-4 mb-4">
+              <div className="border-t border-slate-200 pt-4 mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Tag className="w-4 h-4 text-[var(--color-muted)]" />
-                  <span className="text-sm font-medium">Coupon Code</span>
+                  <Tag className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm font-medium text-slate-900">Coupon Code</span>
                 </div>
                 {appliedCoupon ? (
-                  <div className="flex items-center justify-between p-3 bg-[var(--color-success-50)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl">
                     <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-[var(--color-success)]" />
-                      <span className="text-sm font-medium">{appliedCoupon.code}</span>
+                      <Check className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-700">{appliedCoupon.code}</span>
                     </div>
                     <button
                       onClick={handleRemoveCoupon}
-                      className="p-1 hover:bg-white rounded"
+                      className="p-1 hover:bg-white rounded-lg"
                     >
-                      <X className="w-4 h-4 text-[var(--color-muted)]" />
+                      <X className="w-4 h-4 text-slate-400" />
                     </button>
                   </div>
                 ) : (
@@ -789,43 +791,44 @@ export function CheckoutContent({
                       variant="outline"
                       onClick={handleApplyCoupon}
                       disabled={couponLoading || isPending}
+                      className="rounded-full border-slate-200"
                     >
                       {couponLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
                     </Button>
                   </div>
                 )}
                 {couponError && (
-                  <p className="text-xs text-[var(--color-error)] mt-1">{couponError}</p>
+                  <p className="text-xs text-red-500 mt-1">{couponError}</p>
                 )}
               </div>
             )}
 
             {/* Gift Card */}
             {currentStep !== "payment" && (
-              <div className="border-t border-[var(--color-border)] pt-4 mb-4">
+              <div className="border-t border-slate-200 pt-4 mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Gift className="w-4 h-4 text-[var(--color-muted)]" />
-                  <span className="text-sm font-medium">Gift Card</span>
+                  <Gift className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm font-medium text-slate-900">Gift Card</span>
                 </div>
                 {appliedGiftCard ? (
-                  <div className="flex items-center justify-between p-3 bg-[var(--color-success-50)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-[var(--color-success)]" />
-                        <span className="text-sm font-medium">
+                        <Check className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-700">
                           {appliedGiftCard.code.slice(0, 4)}...
                         </span>
                       </div>
-                      <p className="text-xs text-[var(--color-muted)]">
+                      <p className="text-xs text-slate-500">
                         Using {formatCurrency(appliedGiftCard.amountToUse)} of{" "}
                         {formatCurrency(appliedGiftCard.balance)}
                       </p>
                     </div>
                     <button
                       onClick={handleRemoveGiftCard}
-                      className="p-1 hover:bg-white rounded"
+                      className="p-1 hover:bg-white rounded-lg"
                     >
-                      <X className="w-4 h-4 text-[var(--color-muted)]" />
+                      <X className="w-4 h-4 text-slate-400" />
                     </button>
                   </div>
                 ) : (
@@ -841,20 +844,21 @@ export function CheckoutContent({
                       variant="outline"
                       onClick={handleApplyGiftCard}
                       disabled={giftCardLoading || isPending}
+                      className="rounded-full border-slate-200"
                     >
                       {giftCardLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
                     </Button>
                   </div>
                 )}
                 {giftCardError && (
-                  <p className="text-xs text-[var(--color-error)] mt-1">{giftCardError}</p>
+                  <p className="text-xs text-red-500 mt-1">{giftCardError}</p>
                 )}
               </div>
             )}
 
             {/* Store Credit */}
             {currentStep !== "payment" && storeCreditBalance > 0 && (
-              <div className="border-t border-[var(--color-border)] pt-4 mb-4">
+              <div className="border-t border-slate-200 pt-4 mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <input
@@ -862,18 +866,18 @@ export function CheckoutContent({
                       id="useStoreCredit"
                       checked={useStoreCredit}
                       onChange={(e) => setUseStoreCredit(e.target.checked)}
-                      className="w-4 h-4 text-[var(--color-primary-500)] rounded border-[var(--color-border)]"
+                      className="w-4 h-4 text-orange-500 rounded border-slate-200 focus:ring-orange-500"
                     />
-                    <label htmlFor="useStoreCredit" className="text-sm font-medium">
+                    <label htmlFor="useStoreCredit" className="text-sm font-medium text-slate-900">
                       Use Store Credit
                     </label>
                   </div>
-                  <span className="text-sm text-[var(--color-muted)]">
+                  <span className="text-sm text-slate-500">
                     {formatCurrency(storeCreditBalance)} available
                   </span>
                 </div>
                 {useStoreCredit && storeCreditAmount > 0 && (
-                  <p className="text-xs text-[var(--color-success)] mt-2">
+                  <p className="text-xs text-green-600 mt-2">
                     Applying {formatCurrency(storeCreditAmount)} in store credit
                   </p>
                 )}
@@ -881,16 +885,16 @@ export function CheckoutContent({
             )}
 
             {/* Totals */}
-            <div className="border-t border-[var(--color-border)] pt-4 space-y-3">
+            <div className="border-t border-slate-200 pt-4 space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Subtotal</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
+                <span className="text-slate-500">Subtotal</span>
+                <span className="font-medium text-slate-900">{formatCurrency(subtotal)}</span>
               </div>
 
               {fulfillment.type === "delivery" && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">Delivery</span>
-                  <span className="font-medium">
+                  <span className="text-slate-500">Delivery</span>
+                  <span className="font-medium text-slate-900">
                     {deliveryFee === 0 ? "Free" : formatCurrency(deliveryFee)}
                   </span>
                 </div>
@@ -898,46 +902,46 @@ export function CheckoutContent({
 
               {fulfillment.type === "shipping" && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">Shipping</span>
-                  <span className="font-medium">
+                  <span className="text-slate-500">Shipping</span>
+                  <span className="font-medium text-slate-900">
                     {shippingFee === 0 ? "Free" : formatCurrency(shippingFee)}
                   </span>
                 </div>
               )}
 
               {appliedCoupon && appliedCoupon.discount > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-green-600">
                   <span>Discount ({appliedCoupon.code})</span>
                   <span>-{formatCurrency(appliedCoupon.discount)}</span>
                 </div>
               )}
 
               {appliedGiftCard && appliedGiftCard.amountToUse > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-green-600">
                   <span>Gift Card</span>
                   <span>-{formatCurrency(appliedGiftCard.amountToUse)}</span>
                 </div>
               )}
 
               {storeCreditAmount > 0 && (
-                <div className="flex justify-between text-sm text-[var(--color-success)]">
+                <div className="flex justify-between text-sm text-green-600">
                   <span>Store Credit</span>
                   <span>-{formatCurrency(storeCreditAmount)}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Tax</span>
-                <span className="font-medium">
+                <span className="text-slate-500">Tax</span>
+                <span className="font-medium text-slate-900">
                   {taxAmount > 0 ? formatCurrency(taxAmount) : taxDescription || "Tax exempt"}
                 </span>
               </div>
             </div>
 
-            <div className="border-t border-[var(--color-border)] pt-4 mt-4">
+            <div className="border-t border-slate-200 pt-4 mt-4">
               <div className="flex justify-between">
-                <span className="font-bold text-[var(--color-charcoal)]">Total</span>
-                <span className="font-bold text-[var(--color-charcoal)]">
+                <span className="font-bold text-slate-900">Total</span>
+                <span className="font-bold text-slate-900">
                   {formatCurrency(total)}
                 </span>
               </div>
@@ -945,25 +949,25 @@ export function CheckoutContent({
 
             {/* Fulfillment Summary */}
             {fulfillment.type && (
-              <div className="border-t border-[var(--color-border)] pt-4 mt-4">
+              <div className="border-t border-slate-200 pt-4 mt-4">
                 <div className="flex items-start gap-3">
                   {fulfillment.type === "pickup" && (
-                    <MapPin className="w-5 h-5 text-[var(--color-primary-500)] flex-shrink-0 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   )}
                   {fulfillment.type === "delivery" && (
-                    <Truck className="w-5 h-5 text-[var(--color-primary-500)] flex-shrink-0 mt-0.5" />
+                    <Truck className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   )}
                   {fulfillment.type === "shipping" && (
-                    <Package className="w-5 h-5 text-[var(--color-primary-500)] flex-shrink-0 mt-0.5" />
+                    <Package className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   )}
                   <div>
-                    <p className="text-sm font-medium text-[var(--color-charcoal)]">
+                    <p className="text-sm font-medium text-slate-900">
                       {fulfillment.type === "pickup" && "Pickup"}
                       {fulfillment.type === "delivery" && "Local Delivery"}
                       {fulfillment.type === "shipping" && "Shipping"}
                     </p>
                     {fulfillment.scheduledDate && (
-                      <p className="text-sm text-[var(--color-muted)]">
+                      <p className="text-sm text-slate-500">
                         <Calendar className="w-4 h-4 inline mr-1" />
                         {new Date(fulfillment.scheduledDate).toLocaleDateString("en-US", {
                           weekday: "short",

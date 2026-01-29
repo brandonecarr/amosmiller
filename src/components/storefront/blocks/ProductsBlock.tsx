@@ -34,11 +34,11 @@ export async function ProductsBlock({ block }: ProductsBlockProps) {
     return (
       <div className="max-w-7xl mx-auto px-4">
         {title && (
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-charcoal)] mb-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold font-heading text-slate-900 mb-6 text-center">
             {title}
           </h2>
         )}
-        <p className="text-center text-[var(--color-muted)] py-8">
+        <p className="text-center text-slate-500 py-8">
           No products available at this time.
         </p>
       </div>
@@ -48,7 +48,7 @@ export async function ProductsBlock({ block }: ProductsBlockProps) {
   return (
     <div className="max-w-7xl mx-auto px-4">
       {title && (
-        <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-charcoal)] mb-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold font-heading text-slate-900 mb-8 text-center">
           {title}
         </h2>
       )}

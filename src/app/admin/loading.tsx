@@ -8,7 +8,7 @@ export default function Loading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-[var(--color-border)] p-6"
+            className="bg-white rounded-xl border border-slate-200 p-6"
           >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-8 w-32 mt-2" />
@@ -17,7 +17,7 @@ export default function Loading() {
       </div>
 
       {/* Recent Orders Card */}
-      <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <Skeleton className="h-6 w-40 mb-6" />
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (

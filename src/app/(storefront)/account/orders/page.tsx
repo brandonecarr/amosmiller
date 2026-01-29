@@ -24,7 +24,7 @@ export default async function OrdersPage() {
     processing: "bg-blue-100 text-blue-800",
     packed: "bg-purple-100 text-purple-800",
     shipped: "bg-indigo-100 text-indigo-800",
-    delivered: "bg-green-100 text-green-800",
+    delivered: "bg-emerald-100 text-emerald-800",
     cancelled: "bg-red-100 text-red-800",
   };
 
@@ -36,25 +36,25 @@ export default async function OrdersPage() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--color-border)] p-8 text-center">
-        <p className="text-[var(--color-error)]">Failed to load orders</p>
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+        <p className="text-red-600">Failed to load orders</p>
       </div>
     );
   }
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--color-border)] p-8 text-center">
-        <Package className="w-16 h-16 text-[var(--color-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-[var(--color-charcoal)] mb-2">
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+        <Package className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+        <h2 className="text-xl font-bold font-heading text-slate-900 mb-2">
           No orders yet
         </h2>
-        <p className="text-[var(--color-muted)] mb-6">
+        <p className="text-slate-500 mb-6">
           When you place an order, it will appear here.
         </p>
         <Link
           href="/shop"
-          className="inline-flex items-center px-6 py-3 bg-[var(--color-primary-500)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-600)] transition-colors"
+          className="inline-flex items-center px-6 py-3 bg-slate-900 text-white rounded-full font-medium hover:bg-slate-800 transition-colors"
         >
           Start Shopping
         </Link>
@@ -64,7 +64,7 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-[var(--color-charcoal)]">Order History</h2>
+      <h2 className="text-xl font-bold font-heading text-slate-900">Order History</h2>
 
       {orders.map((order: {
         id: string;
@@ -84,13 +84,13 @@ export default async function OrdersPage() {
           <Link
             key={order.id}
             href={`/account/orders/${order.id}`}
-            className="block bg-white rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary-300)] transition-colors"
+            className="block bg-white rounded-2xl border border-slate-200 hover:border-orange-300 transition-colors"
           >
             <div className="p-6">
               <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-bold text-[var(--color-charcoal)]">
+                    <h3 className="font-bold text-slate-900">
                       Order #{order.order_number}
                     </h3>
                     <span
@@ -101,31 +101,31 @@ export default async function OrdersPage() {
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--color-muted)] flex items-center gap-1">
+                  <p className="text-sm text-slate-500 flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     {format(new Date(order.created_at), "MMMM d, yyyy")}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-[var(--color-charcoal)]">
+                  <p className="text-lg font-bold text-slate-900">
                     {formatCurrency(order.total)}
                   </p>
-                  <p className="text-sm text-[var(--color-muted)]">{itemCount} items</p>
+                  <p className="text-sm text-slate-500">{itemCount} items</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
-                <div className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 text-sm text-slate-500">
                   <FulfillmentIcon className="w-4 h-4" />
                   <span className="capitalize">{order.fulfillment_type}</span>
                   {order.scheduled_date && (
                     <>
-                      <span className="text-[var(--color-border)]">|</span>
+                      <span className="text-slate-200">|</span>
                       <span>{format(new Date(order.scheduled_date), "MMM d")}</span>
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-1 text-[var(--color-primary-500)]">
+                <div className="flex items-center gap-1 text-orange-500">
                   <span className="text-sm font-medium">View Details</span>
                   <ChevronRight className="w-4 h-4" />
                 </div>

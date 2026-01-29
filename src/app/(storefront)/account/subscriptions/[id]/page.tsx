@@ -23,7 +23,7 @@ interface SubscriptionDetailPageProps {
 }
 
 const statusColors: Record<string, string> = {
-  active: "bg-green-100 text-green-800",
+  active: "bg-orange-100 text-orange-800",
   paused: "bg-yellow-100 text-yellow-800",
   cancelled: "bg-gray-100 text-gray-800",
 };
@@ -84,7 +84,7 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+            <h1 className="text-2xl font-bold font-heading text-slate-900">
               {subscription.name}
             </h1>
             <span
@@ -95,8 +95,8 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
               {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
             </span>
           </div>
-          <p className="text-[var(--color-muted)]">
-            {frequencyLabels[subscription.frequency]} •{" "}
+          <p className="text-slate-500">
+            {frequencyLabels[subscription.frequency]} &bull;{" "}
             {fulfillmentLabels[subscription.fulfillment_type]}
           </p>
         </div>
@@ -107,11 +107,11 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
         <div className="lg:col-span-2 space-y-6">
           {/* Next Order Card */}
           {!isCancelled && subscription.next_order_date && (
-            <div className="bg-[var(--color-primary-50)] rounded-xl p-6">
+            <div className="bg-orange-50 rounded-2xl p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--color-primary-700)] mb-1">Next Order</p>
-                  <p className="text-2xl font-bold text-[var(--color-primary-900)]">
+                  <p className="text-sm text-orange-700 mb-1">Next Order</p>
+                  <p className="text-2xl font-bold text-slate-900">
                     {format(new Date(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
@@ -127,9 +127,9 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
           )}
 
           {/* Subscription Items */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
-            <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-              <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
                 <Package className="w-5 h-5" />
                 Subscription Items
               </h2>
@@ -143,26 +143,26 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
               )}
             </div>
             <SubscriptionItemsList items={subscription.subscription_items || []} />
-            <div className="px-6 py-4 bg-[var(--color-slate-50)] border-t border-[var(--color-border)]">
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
               <div className="flex justify-between items-center">
-                <span className="text-[var(--color-muted)]">Subtotal</span>
+                <span className="text-slate-500">Subtotal</span>
                 <span className="font-medium">
                   {formatCurrency(total - shippingFee)}
                 </span>
               </div>
               {shippingFee > 0 && (
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-[var(--color-muted)]">
+                  <span className="text-slate-500">
                     {subscription.fulfillment_type === "shipping" ? "Shipping" : "Delivery Fee"}
                   </span>
                   <span className="font-medium">{formatCurrency(shippingFee)}</span>
                 </div>
               )}
-              <div className="flex justify-between items-center mt-2 pt-2 border-t border-[var(--color-border)]">
-                <span className="font-semibold text-[var(--color-charcoal)]">
+              <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
+                <span className="font-semibold text-slate-900">
                   Total per {subscription.frequency === "biweekly" ? "delivery" : subscription.frequency.replace("ly", "")}
                 </span>
-                <span className="font-bold text-lg text-[var(--color-charcoal)]">
+                <span className="font-bold text-lg text-slate-900">
                   {formatCurrency(total)}
                 </span>
               </div>
@@ -171,15 +171,15 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
 
           {/* Skipped Dates */}
           {subscription.skip_dates?.length > 0 && (
-            <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-              <h2 className="font-semibold text-[var(--color-charcoal)] mb-4">Skipped Dates</h2>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h2 className="font-semibold text-slate-900 mb-4">Skipped Dates</h2>
               <div className="flex flex-wrap gap-2">
                 {subscription.skip_dates.map((date: string) => (
                   <span
                     key={date}
-                    className="inline-flex items-center px-3 py-1 bg-[var(--color-slate-50)] rounded-full text-sm"
+                    className="inline-flex items-center px-3 py-1 bg-slate-50 rounded-full text-sm"
                   >
-                    <Calendar className="w-4 h-4 mr-1 text-[var(--color-muted)]" />
+                    <Calendar className="w-4 h-4 mr-1 text-slate-500" />
                     {format(new Date(date), "MMM d, yyyy")}
                   </span>
                 ))}
@@ -192,8 +192,8 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
         <div className="space-y-6">
           {/* Subscription Controls */}
           {!isCancelled && (
-            <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-              <h3 className="font-semibold text-[var(--color-charcoal)] mb-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="font-semibold text-slate-900 mb-4">
                 Manage Subscription
               </h3>
               <SubscriptionActions
@@ -205,30 +205,30 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
           )}
 
           {/* Schedule Info */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-            <h3 className="font-semibold text-[var(--color-charcoal)] mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <RefreshCw className="w-4 h-4" />
               Schedule
             </h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-[var(--color-muted)] uppercase">Frequency</p>
-                <p className="font-medium text-[var(--color-charcoal)]">
+                <p className="text-xs text-slate-500 uppercase">Frequency</p>
+                <p className="font-medium text-slate-900">
                   {frequencyLabels[subscription.frequency]}
                 </p>
               </div>
               {subscription.next_order_date && (
                 <div>
-                  <p className="text-xs text-[var(--color-muted)] uppercase">Next Order</p>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="text-xs text-slate-500 uppercase">Next Order</p>
+                  <p className="font-medium text-slate-900">
                     {format(new Date(subscription.next_order_date), "MMM d, yyyy")}
                   </p>
                 </div>
               )}
               {subscription.last_order_date && (
                 <div>
-                  <p className="text-xs text-[var(--color-muted)] uppercase">Last Order</p>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="text-xs text-slate-500 uppercase">Last Order</p>
+                  <p className="font-medium text-slate-900">
                     {format(new Date(subscription.last_order_date), "MMM d, yyyy")}
                   </p>
                 </div>
@@ -237,24 +237,24 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
           </div>
 
           {/* Fulfillment Info */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-            <h3 className="font-semibold text-[var(--color-charcoal)] mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
               {fulfillmentLabels[subscription.fulfillment_type]}
             </h3>
             <div className="space-y-3">
               {subscription.fulfillment_locations && (
                 <div>
-                  <p className="text-xs text-[var(--color-muted)] uppercase">Location</p>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="text-xs text-slate-500 uppercase">Location</p>
+                  <p className="font-medium text-slate-900">
                     {subscription.fulfillment_locations.name}
                   </p>
                 </div>
               )}
               {subscription.shipping_address && (
                 <div>
-                  <p className="text-xs text-[var(--color-muted)] uppercase">Address</p>
-                  <p className="text-sm text-[var(--color-charcoal)]">
+                  <p className="text-xs text-slate-500 uppercase">Address</p>
+                  <p className="text-sm text-slate-900">
                     {subscription.shipping_address.line1}
                     {subscription.shipping_address.line2 && (
                       <br />
@@ -270,16 +270,16 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
           </div>
 
           {/* Payment Info */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-            <h3 className="font-semibold text-[var(--color-charcoal)] mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
               Payment
             </h3>
-            <p className="text-sm text-[var(--color-muted)]">
+            <p className="text-sm text-slate-500">
               Payment will be processed when your order is prepared.
             </p>
             {subscription.stripe_subscription_id && (
-              <p className="text-xs text-[var(--color-muted)] mt-2 font-mono">
+              <p className="text-xs text-slate-500 mt-2 font-mono">
                 ID: {subscription.stripe_subscription_id.slice(0, 20)}...
               </p>
             )}
@@ -287,7 +287,7 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
 
           {/* Cancellation Info */}
           {isCancelled && (
-            <div className="bg-red-50 rounded-xl p-6">
+            <div className="bg-red-50 rounded-2xl p-6">
               <h3 className="font-semibold text-red-800 mb-2">Subscription Cancelled</h3>
               <p className="text-sm text-red-700">
                 Cancelled on{" "}

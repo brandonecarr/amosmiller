@@ -138,7 +138,7 @@ export function FulfillmentSelector({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-bold text-[var(--color-charcoal)]">
+      <h2 className="text-lg font-heading font-bold text-slate-900">
         How would you like to receive your order?
       </h2>
 
@@ -151,12 +151,12 @@ export function FulfillmentSelector({
             className={cn(
               "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
               fulfillment.type === "pickup"
-                ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                : "border-[var(--color-border)] hover:border-[var(--color-primary-300)] bg-white"
+                ? "border-orange-500 bg-orange-50"
+                : "border-slate-200 hover:border-slate-300 bg-white"
             )}
           >
             {fulfillment.type === "pickup" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-[var(--color-primary-500)] rounded-full flex items-center justify-center">
+              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                 <Check className="w-4 h-4 text-white" />
               </div>
             )}
@@ -164,15 +164,15 @@ export function FulfillmentSelector({
               className={cn(
                 "w-8 h-8",
                 fulfillment.type === "pickup"
-                  ? "text-[var(--color-primary-500)]"
-                  : "text-[var(--color-muted)]"
+                  ? "text-orange-500"
+                  : "text-slate-400"
               )}
             />
             <div className="text-center">
-              <p className="font-semibold text-[var(--color-charcoal)]">
+              <p className="font-semibold text-slate-900">
                 Pickup
               </p>
-              <p className="text-sm text-[var(--color-muted)]">
+              <p className="text-sm text-slate-500">
                 Free · Pick up at our location
               </p>
             </div>
@@ -186,12 +186,12 @@ export function FulfillmentSelector({
             className={cn(
               "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
               fulfillment.type === "delivery"
-                ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                : "border-[var(--color-border)] hover:border-[var(--color-primary-300)] bg-white"
+                ? "border-orange-500 bg-orange-50"
+                : "border-slate-200 hover:border-slate-300 bg-white"
             )}
           >
             {fulfillment.type === "delivery" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-[var(--color-primary-500)] rounded-full flex items-center justify-center">
+              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                 <Check className="w-4 h-4 text-white" />
               </div>
             )}
@@ -199,15 +199,15 @@ export function FulfillmentSelector({
               className={cn(
                 "w-8 h-8",
                 fulfillment.type === "delivery"
-                  ? "text-[var(--color-primary-500)]"
-                  : "text-[var(--color-muted)]"
+                  ? "text-orange-500"
+                  : "text-slate-400"
               )}
             />
             <div className="text-center">
-              <p className="font-semibold text-[var(--color-charcoal)]">
+              <p className="font-semibold text-slate-900">
                 Local Delivery
               </p>
-              <p className="text-sm text-[var(--color-muted)]">
+              <p className="text-sm text-slate-500">
                 Delivered to your door
               </p>
             </div>
@@ -221,12 +221,12 @@ export function FulfillmentSelector({
             className={cn(
               "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
               fulfillment.type === "shipping"
-                ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                : "border-[var(--color-border)] hover:border-[var(--color-primary-300)] bg-white"
+                ? "border-orange-500 bg-orange-50"
+                : "border-slate-200 hover:border-slate-300 bg-white"
             )}
           >
             {fulfillment.type === "shipping" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-[var(--color-primary-500)] rounded-full flex items-center justify-center">
+              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                 <Check className="w-4 h-4 text-white" />
               </div>
             )}
@@ -234,15 +234,15 @@ export function FulfillmentSelector({
               className={cn(
                 "w-8 h-8",
                 fulfillment.type === "shipping"
-                  ? "text-[var(--color-primary-500)]"
-                  : "text-[var(--color-muted)]"
+                  ? "text-orange-500"
+                  : "text-slate-400"
               )}
             />
             <div className="text-center">
-              <p className="font-semibold text-[var(--color-charcoal)]">
+              <p className="font-semibold text-slate-900">
                 Shipping
               </p>
-              <p className="text-sm text-[var(--color-muted)]">
+              <p className="text-sm text-slate-500">
                 Ship anywhere in the US
               </p>
             </div>
@@ -252,22 +252,22 @@ export function FulfillmentSelector({
 
       {/* Pickup Location Selection */}
       {fulfillment.type === "pickup" && (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-          <h3 className="font-semibold text-[var(--color-charcoal)] mb-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-semibold text-slate-900 mb-4">
             Select Pickup Location
           </h3>
 
           <div className="relative">
             <button
               onClick={() => setShowLocationDropdown(!showLocationDropdown)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-[var(--color-slate-100)] rounded-lg text-left"
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 text-left hover:border-slate-300 transition-colors"
             >
               {selectedLocation ? (
                 <div>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="font-medium text-slate-900">
                     {selectedLocation.name}
                   </p>
-                  <p className="text-sm text-[var(--color-muted)]">
+                  <p className="text-sm text-slate-500">
                     {[
                       selectedLocation.address_line1,
                       selectedLocation.city,
@@ -278,36 +278,36 @@ export function FulfillmentSelector({
                   </p>
                 </div>
               ) : (
-                <span className="text-[var(--color-muted)]">
+                <span className="text-slate-400">
                   Choose a location...
                 </span>
               )}
               <ChevronDown
                 className={cn(
-                  "w-5 h-5 text-[var(--color-muted)] transition-transform",
+                  "w-5 h-5 text-slate-400 transition-transform",
                   showLocationDropdown && "rotate-180"
                 )}
               />
             </button>
 
             {showLocationDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl border border-[var(--color-border)] shadow-lg z-10 max-h-64 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl border border-slate-200 shadow-lg z-10 max-h-64 overflow-y-auto">
                 {pickupLocations.map((location) => (
                   <button
                     key={location.id}
                     onClick={() => handleSelectLocation(location.id)}
                     className={cn(
-                      "w-full flex items-start gap-3 p-4 text-left hover:bg-[var(--color-slate-100)] transition-colors",
+                      "w-full flex items-start gap-3 p-4 text-left hover:bg-slate-50 transition-colors",
                       location.id === fulfillment.locationId &&
-                        "bg-[var(--color-primary-50)]"
+                        "bg-orange-50"
                     )}
                   >
-                    <MapPin className="w-5 h-5 text-[var(--color-primary-500)] flex-shrink-0 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium text-[var(--color-charcoal)]">
+                      <p className="font-medium text-slate-900">
                         {location.name}
                       </p>
-                      <p className="text-sm text-[var(--color-muted)]">
+                      <p className="text-sm text-slate-500">
                         {[
                           location.address_line1,
                           location.city,
@@ -318,7 +318,7 @@ export function FulfillmentSelector({
                           .join(", ")}
                       </p>
                       {location.description && (
-                        <p className="text-sm text-[var(--color-muted)] mt-1">
+                        <p className="text-sm text-slate-500 mt-1">
                           {location.description}
                         </p>
                       )}
@@ -330,8 +330,8 @@ export function FulfillmentSelector({
           </div>
 
           {selectedLocation?.instructions && (
-            <div className="mt-4 p-4 bg-[var(--color-cream-100)] rounded-lg">
-              <p className="text-sm text-[var(--color-charcoal)]">
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <p className="text-sm text-slate-900">
                 <strong>Pickup Instructions:</strong>{" "}
                 {selectedLocation.instructions}
               </p>
@@ -342,8 +342,8 @@ export function FulfillmentSelector({
 
       {/* Delivery Zone Check */}
       {fulfillment.type === "delivery" && (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-          <h3 className="font-semibold text-[var(--color-charcoal)] mb-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-semibold text-slate-900 mb-4">
             Check Delivery Availability
           </h3>
 
@@ -358,30 +358,30 @@ export function FulfillmentSelector({
             {zipCode.length >= 5 && (
               <div
                 className={cn(
-                  "p-4 rounded-lg",
+                  "p-4 rounded-xl",
                   matchedDeliveryZone
-                    ? "bg-[var(--color-success-50)] border border-[var(--color-success)]"
-                    : "bg-[var(--color-error-50)] border border-[var(--color-error)]"
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
                 )}
               >
                 {matchedDeliveryZone ? (
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Check className="w-5 h-5 text-[var(--color-success)]" />
-                      <p className="font-medium text-[var(--color-success)]">
+                      <Check className="w-5 h-5 text-green-600" />
+                      <p className="font-medium text-green-700">
                         We deliver to your area!
                       </p>
                     </div>
-                    <p className="text-sm text-[var(--color-muted)]">
+                    <p className="text-sm text-slate-500">
                       {matchedDeliveryZone.name}
                     </p>
-                    <p className="text-sm font-medium mt-2">
+                    <p className="text-sm font-medium text-slate-900 mt-2">
                       Delivery Fee:{" "}
                       {matchedDeliveryZone.delivery_fee === 0
                         ? "Free"
                         : formatCurrency(matchedDeliveryZone.delivery_fee)}
                       {matchedDeliveryZone.free_delivery_minimum && (
-                        <span className="text-[var(--color-muted)] font-normal">
+                        <span className="text-slate-500 font-normal">
                           {" "}
                           (Free over{" "}
                           {formatCurrency(matchedDeliveryZone.free_delivery_minimum)})
@@ -390,7 +390,7 @@ export function FulfillmentSelector({
                     </p>
                   </div>
                 ) : (
-                  <p className="text-[var(--color-error)]">
+                  <p className="text-red-600">
                     Sorry, we don&apos;t currently deliver to this ZIP code.
                     Please try pickup or shipping instead.
                   </p>
@@ -403,8 +403,8 @@ export function FulfillmentSelector({
 
       {/* Shipping Zone Check */}
       {fulfillment.type === "shipping" && (
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-          <h3 className="font-semibold text-[var(--color-charcoal)] mb-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-semibold text-slate-900 mb-4">
             Check Shipping Availability
           </h3>
 
@@ -420,34 +420,34 @@ export function FulfillmentSelector({
             {state.length >= 2 && (
               <div
                 className={cn(
-                  "p-4 rounded-lg",
+                  "p-4 rounded-xl",
                   matchedShippingZone
-                    ? "bg-[var(--color-success-50)] border border-[var(--color-success)]"
-                    : "bg-[var(--color-error-50)] border border-[var(--color-error)]"
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
                 )}
               >
                 {matchedShippingZone ? (
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Check className="w-5 h-5 text-[var(--color-success)]" />
-                      <p className="font-medium text-[var(--color-success)]">
+                      <Check className="w-5 h-5 text-green-600" />
+                      <p className="font-medium text-green-700">
                         We ship to your state!
                       </p>
                     </div>
-                    <p className="text-sm text-[var(--color-muted)]">
+                    <p className="text-sm text-slate-500">
                       {matchedShippingZone.name}
                     </p>
-                    <p className="text-sm font-medium mt-2">
+                    <p className="text-sm font-medium text-slate-900 mt-2">
                       Shipping: Starting at{" "}
                       {formatCurrency(matchedShippingZone.base_rate)}
                       {matchedShippingZone.per_lb_rate > 0 && (
-                        <span className="text-[var(--color-muted)] font-normal">
+                        <span className="text-slate-500 font-normal">
                           {" "}
                           + {formatCurrency(matchedShippingZone.per_lb_rate)}/lb
                         </span>
                       )}
                       {matchedShippingZone.free_shipping_minimum && (
-                        <span className="text-[var(--color-muted)] font-normal">
+                        <span className="text-slate-500 font-normal">
                           {" "}
                           (Free over{" "}
                           {formatCurrency(matchedShippingZone.free_shipping_minimum)})
@@ -456,7 +456,7 @@ export function FulfillmentSelector({
                     </p>
                   </div>
                 ) : (
-                  <p className="text-[var(--color-error)]">
+                  <p className="text-red-600">
                     Sorry, we don&apos;t currently ship to this state. Please
                     try pickup or local delivery instead.
                   </p>

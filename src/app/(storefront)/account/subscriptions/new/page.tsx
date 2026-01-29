@@ -179,8 +179,8 @@ function NewSubscriptionContent() {
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[var(--color-primary-500)]" />
-        <p className="mt-4 text-[var(--color-muted)]">Loading...</p>
+        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-orange-500" />
+        <p className="mt-4 text-slate-500">Loading...</p>
       </div>
     );
   }
@@ -196,10 +196,10 @@ function NewSubscriptionContent() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+          <h1 className="text-2xl font-bold font-heading text-slate-900">
             New Subscription
           </h1>
-          <p className="text-[var(--color-muted)]">
+          <p className="text-slate-500">
             Set up recurring delivery of your favorite products
           </p>
         </div>
@@ -213,22 +213,22 @@ function NewSubscriptionContent() {
               onClick={() => s < step && setStep(s)}
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 s === step
-                  ? "bg-[var(--color-primary-500)] text-white"
+                  ? "bg-orange-500 text-white"
                   : s < step
-                  ? "bg-[var(--color-primary-100)] text-[var(--color-primary-700)]"
-                  : "bg-[var(--color-slate-100)] text-[var(--color-muted)]"
+                  ? "bg-orange-100 text-orange-700"
+                  : "bg-slate-100 text-slate-500"
               }`}
             >
               {s}
             </button>
             <span
               className={`text-sm ${
-                s === step ? "font-medium text-[var(--color-charcoal)]" : "text-[var(--color-muted)]"
+                s === step ? "font-medium text-slate-900" : "text-slate-500"
               }`}
             >
               {s === 1 ? "Products" : s === 2 ? "Schedule" : "Delivery"}
             </span>
-            {s < 3 && <div className="w-8 h-px bg-[var(--color-border)]" />}
+            {s < 3 && <div className="w-8 h-px bg-slate-200" />}
           </div>
         ))}
       </div>
@@ -240,7 +240,7 @@ function NewSubscriptionContent() {
           {step === 1 && (
             <>
               <Card variant="default">
-                <CardHeader className="border-b border-[var(--color-border)]">
+                <CardHeader className="border-b border-slate-200">
                   <CardTitle className="flex items-center gap-2">
                     <Package className="w-5 h-5" />
                     Select Products
@@ -253,9 +253,13 @@ function NewSubscriptionContent() {
                       return (
                         <div
                           key={product.id}
-                          className="flex items-center gap-4 p-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary-300)] transition-colors"
+                          className={`flex items-center gap-4 p-3 rounded-2xl border transition-colors ${
+                            inCart
+                              ? "border-orange-500 bg-orange-50"
+                              : "border-slate-200 hover:border-orange-300"
+                          }`}
                         >
-                          <div className="w-16 h-16 rounded-lg bg-[var(--color-cream-100)] overflow-hidden flex-shrink-0 relative">
+                          <div className="w-16 h-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 relative">
                             {product.featured_image_url ? (
                               <Image
                                 src={product.featured_image_url}
@@ -264,16 +268,16 @@ function NewSubscriptionContent() {
                                 className="object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                                 No Image
                               </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-[var(--color-charcoal)] truncate">
+                            <p className="font-medium text-slate-900 truncate">
                               {product.name}
                             </p>
-                            <p className="text-sm text-[var(--color-primary-500)]">
+                            <p className="text-sm text-orange-500">
                               {formatCurrency(product.sale_price ?? product.base_price)}
                               {product.pricing_type === "weight" && "/lb"}
                             </p>
@@ -282,14 +286,14 @@ function NewSubscriptionContent() {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => updateQuantity(product.id, inCart.quantity - 1)}
-                                className="p-1 hover:bg-[var(--color-slate-100)] rounded"
+                                className="p-1 hover:bg-slate-100 rounded"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
                               <span className="w-8 text-center">{inCart.quantity}</span>
                               <button
                                 onClick={() => updateQuantity(product.id, inCart.quantity + 1)}
-                                className="p-1 hover:bg-[var(--color-slate-100)] rounded"
+                                className="p-1 hover:bg-slate-100 rounded"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -325,7 +329,7 @@ function NewSubscriptionContent() {
           {step === 2 && (
             <>
               <Card variant="default">
-                <CardHeader className="border-b border-[var(--color-border)]">
+                <CardHeader className="border-b border-slate-200">
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
                     Delivery Schedule
@@ -333,7 +337,7 @@ function NewSubscriptionContent() {
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-2">
+                    <label className="block text-sm font-medium text-slate-900 mb-2">
                       Subscription Name (Optional)
                     </label>
                     <Input
@@ -344,7 +348,7 @@ function NewSubscriptionContent() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-3">
+                    <label className="block text-sm font-medium text-slate-900 mb-3">
                       How often would you like delivery?
                     </label>
                     <div className="grid grid-cols-3 gap-3">
@@ -352,17 +356,17 @@ function NewSubscriptionContent() {
                         <button
                           key={freq}
                           onClick={() => setFrequency(freq)}
-                          className={`p-4 rounded-lg border-2 transition-colors text-center ${
+                          className={`p-4 rounded-2xl border-2 transition-colors text-center ${
                             frequency === freq
-                              ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                              : "border-[var(--color-border)] hover:border-[var(--color-primary-300)]"
+                              ? "border-orange-500 bg-orange-50"
+                              : "border-slate-200 hover:border-orange-300"
                           }`}
                         >
                           <RefreshCw
                             className={`w-6 h-6 mx-auto mb-2 ${
                               frequency === freq
-                                ? "text-[var(--color-primary-500)]"
-                                : "text-[var(--color-muted)]"
+                                ? "text-orange-500"
+                                : "text-slate-500"
                             }`}
                           />
                           <p className="font-medium">{frequencyLabels[freq]}</p>
@@ -386,7 +390,7 @@ function NewSubscriptionContent() {
           {step === 3 && (
             <>
               <Card variant="default">
-                <CardHeader className="border-b border-[var(--color-border)]">
+                <CardHeader className="border-b border-slate-200">
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="w-5 h-5" />
                     Delivery Method
@@ -398,10 +402,10 @@ function NewSubscriptionContent() {
                       <button
                         key={type}
                         onClick={() => setFulfillmentType(type)}
-                        className={`p-4 rounded-lg border-2 transition-colors text-center ${
+                        className={`p-4 rounded-2xl border-2 transition-colors text-center ${
                           fulfillmentType === type
-                            ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                            : "border-[var(--color-border)] hover:border-[var(--color-primary-300)]"
+                            ? "border-orange-500 bg-orange-50"
+                            : "border-slate-200 hover:border-orange-300"
                         }`}
                       >
                         <p className="font-medium capitalize">{type}</p>
@@ -411,7 +415,7 @@ function NewSubscriptionContent() {
 
                   {fulfillmentType === "pickup" && (
                     <div>
-                      <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-3">
+                      <label className="block text-sm font-medium text-slate-900 mb-3">
                         Select Pickup Location
                       </label>
                       <div className="space-y-2">
@@ -420,10 +424,10 @@ function NewSubscriptionContent() {
                           .map((location) => (
                             <label
                               key={location.id}
-                              className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
+                              className={`flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-colors ${
                                 fulfillmentLocationId === location.id
-                                  ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
-                                  : "border-[var(--color-border)] hover:border-[var(--color-primary-300)]"
+                                  ? "border-orange-500 bg-orange-50"
+                                  : "border-slate-200 hover:border-orange-300"
                               }`}
                             >
                               <input
@@ -432,12 +436,12 @@ function NewSubscriptionContent() {
                                 value={location.id}
                                 checked={fulfillmentLocationId === location.id}
                                 onChange={() => setFulfillmentLocationId(location.id)}
-                                className="w-4 h-4 text-[var(--color-primary-500)]"
+                                className="w-4 h-4 text-orange-500 focus:ring-orange-500"
                               />
                               <div>
                                 <p className="font-medium">{location.name}</p>
                                 {location.city && (
-                                  <p className="text-sm text-[var(--color-muted)]">
+                                  <p className="text-sm text-slate-500">
                                     {location.city}, {location.state}
                                   </p>
                                 )}
@@ -450,7 +454,7 @@ function NewSubscriptionContent() {
 
                   {(fulfillmentType === "delivery" || fulfillmentType === "shipping") && (
                     <div className="space-y-4">
-                      <label className="block text-sm font-medium text-[var(--color-charcoal)]">
+                      <label className="block text-sm font-medium text-slate-900">
                         Delivery Address
                       </label>
                       <Input
@@ -517,12 +521,12 @@ function NewSubscriptionContent() {
         {/* Order Summary Sidebar */}
         <div className="space-y-6">
           <Card variant="default">
-            <CardHeader className="border-b border-[var(--color-border)]">
+            <CardHeader className="border-b border-slate-200">
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               {items.length === 0 ? (
-                <p className="text-[var(--color-muted)] text-sm text-center py-4">
+                <p className="text-slate-400 text-sm text-center py-4">
                   No items selected
                 </p>
               ) : (
@@ -536,16 +540,16 @@ function NewSubscriptionContent() {
                     </div>
                   ))}
 
-                  <div className="border-t border-[var(--color-border)] pt-4 space-y-2">
+                  <div className="border-t border-slate-200 pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
                       <span>{formatCurrency(subtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-sm text-green-600">
+                    <div className="flex justify-between text-sm text-emerald-600">
                       <span>Subscription Discount (10%)</span>
                       <span>-{formatCurrency(discount)}</span>
                     </div>
-                    <div className="flex justify-between font-medium text-lg pt-2 border-t border-[var(--color-border)]">
+                    <div className="flex justify-between font-medium text-lg pt-2 border-t border-slate-200">
                       <span>Total per {frequencyLabels[frequency].toLowerCase()}</span>
                       <span>{formatCurrency(total)}</span>
                     </div>
@@ -555,11 +559,11 @@ function NewSubscriptionContent() {
             </CardContent>
           </Card>
 
-          <div className="bg-[var(--color-primary-50)] rounded-xl p-4">
-            <h3 className="font-medium text-[var(--color-primary-800)] mb-2">
+          <div className="bg-orange-50 rounded-2xl p-4">
+            <h3 className="font-medium text-slate-900 mb-2">
               Subscription Benefits
             </h3>
-            <ul className="text-sm text-[var(--color-primary-700)] space-y-1">
+            <ul className="text-sm text-slate-600 space-y-1">
               <li>10% off every order</li>
               <li>Skip or pause anytime</li>
               <li>Modify items before each delivery</li>
@@ -577,8 +581,8 @@ export default function NewSubscriptionPage() {
     <Suspense
       fallback={
         <div className="p-8 text-center">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[var(--color-primary-500)]" />
-          <p className="mt-4 text-[var(--color-muted)]">Loading...</p>
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-orange-500" />
+          <p className="mt-4 text-slate-500">Loading...</p>
         </div>
       }
     >

@@ -30,15 +30,15 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <ShoppingBag className="w-16 h-16 text-[var(--color-muted)] mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-[var(--color-charcoal)] mb-2">
+        <ShoppingBag className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+        <h1 className="text-2xl font-heading font-bold text-slate-900 mb-2">
           Your cart is empty
         </h1>
-        <p className="text-[var(--color-muted)] mb-6">
+        <p className="text-slate-500 mb-6">
           Looks like you haven&apos;t added anything to your cart yet.
         </p>
         <Link href="/shop">
-          <Button size="lg">
+          <Button size="lg" className="rounded-full bg-slate-900 hover:bg-slate-800 text-white">
             Start Shopping
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
@@ -50,13 +50,13 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-8 lg:py-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-[var(--color-charcoal)]">
+        <h1 className="text-3xl font-heading font-bold text-slate-900">
           Shopping Cart
         </h1>
         <button
           onClick={() => validateInventory()}
           disabled={isSyncing}
-          className="flex items-center gap-2 text-sm text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] disabled:opacity-50"
+          className="flex items-center gap-2 text-sm text-orange-500 hover:text-orange-600 disabled:opacity-50"
         >
           {isSyncing ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -69,7 +69,7 @@ export default function CartPage() {
 
       {/* Inventory Warnings */}
       {inventoryWarnings.length > 0 && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -114,14 +114,14 @@ export default function CartPage() {
             return (
               <div
                 key={item.id}
-                className={`flex gap-4 p-4 bg-white rounded-xl border ${
+                className={`flex gap-4 p-4 bg-white rounded-2xl border transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${
                   hasWarning
                     ? "border-amber-300 bg-amber-50"
-                    : "border-[var(--color-border)]"
+                    : "border-slate-200"
                 }`}
               >
                 {/* Product Image */}
-                <div className="w-24 h-24 bg-[var(--color-cream-100)] rounded-lg overflow-hidden flex-shrink-0">
+                <div className="w-24 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -131,7 +131,7 @@ export default function CartPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                       No Image
                     </div>
                   )}
@@ -141,18 +141,18 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/shop/${item.slug}`}
-                    className="font-medium text-[var(--color-charcoal)] hover:text-[var(--color-primary-500)] transition-colors"
+                    className="font-medium text-slate-900 hover:text-orange-500 transition-colors"
                   >
                     {item.name}
                   </Link>
 
                   {item.isBundle && (
-                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary-100)] text-[var(--color-primary-700)]">
+                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
                       Bundle
                     </span>
                   )}
 
-                  <div className="mt-1 text-sm text-[var(--color-muted)]">
+                  <div className="mt-1 text-sm text-slate-500">
                     {item.pricingType === "weight" ? (
                       <>
                         {formatWeightPrice(price, item.weightUnit)}
@@ -173,29 +173,29 @@ export default function CartPage() {
 
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-4 mt-3">
-                    <div className="flex items-center border border-[var(--color-border)] rounded-lg">
+                    <div className="flex items-center border border-slate-200 rounded-lg">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-2 hover:bg-[var(--color-slate-100)] transition-colors"
+                        className="p-2 hover:bg-slate-50 transition-colors rounded-l-lg"
                         aria-label="Decrease quantity"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-4 h-4 text-slate-600" />
                       </button>
-                      <span className="w-10 text-center font-medium">
+                      <span className="w-10 text-center font-medium text-slate-900">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-2 hover:bg-[var(--color-slate-100)] transition-colors"
+                        className="p-2 hover:bg-slate-50 transition-colors rounded-r-lg"
                         aria-label="Increase quantity"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-slate-600" />
                       </button>
                     </div>
 
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="p-2 text-[var(--color-error)] hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       aria-label="Remove item"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -205,11 +205,11 @@ export default function CartPage() {
 
                 {/* Item Total */}
                 <div className="text-right">
-                  <p className="font-bold text-[var(--color-charcoal)]">
+                  <p className="font-bold text-slate-900">
                     {formatCurrency(itemTotal)}
                   </p>
                   {item.pricingType === "weight" && (
-                    <p className="text-xs text-[var(--color-muted)] mt-1">
+                    <p className="text-xs text-slate-500 mt-1">
                       Est. price
                     </p>
                   )}
@@ -221,46 +221,46 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-[var(--color-cream-100)] rounded-xl p-6 sticky top-24">
-            <h2 className="text-lg font-bold text-[var(--color-charcoal)] mb-4">
+          <div className="bg-slate-50 rounded-2xl p-6 sticky top-24">
+            <h2 className="text-lg font-heading font-bold text-slate-900 mb-4">
               Order Summary
             </h2>
 
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Subtotal</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
+                <span className="text-slate-500">Subtotal</span>
+                <span className="font-medium text-slate-900">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Shipping</span>
-                <span className="text-[var(--color-muted)]">
+                <span className="text-slate-500">Shipping</span>
+                <span className="text-slate-500">
                   Calculated at checkout
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--color-muted)]">Tax</span>
-                <span className="text-[var(--color-muted)]">
+                <span className="text-slate-500">Tax</span>
+                <span className="text-slate-500">
                   Calculated at checkout
                 </span>
               </div>
             </div>
 
-            <div className="border-t border-[var(--color-border)] pt-4 mb-6">
+            <div className="border-t border-slate-200 pt-4 mb-6">
               <div className="flex justify-between">
-                <span className="font-bold text-[var(--color-charcoal)]">
+                <span className="font-bold text-slate-900">
                   Estimated Total
                 </span>
-                <span className="font-bold text-[var(--color-charcoal)]">
+                <span className="font-bold text-slate-900">
                   {formatCurrency(subtotal)}
                 </span>
               </div>
-              <p className="text-xs text-[var(--color-muted)] mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Final prices for weight-based items will be determined when packed.
               </p>
             </div>
 
             <Link href="/checkout" className="block">
-              <Button size="lg" className="w-full">
+              <Button size="lg" className="w-full rounded-full bg-slate-900 hover:bg-slate-800 text-white">
                 Proceed to Checkout
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -268,7 +268,7 @@ export default function CartPage() {
 
             <Link
               href="/shop"
-              className="block text-center text-sm text-[var(--color-primary-500)] hover:underline mt-4"
+              className="block text-center text-sm text-orange-500 hover:text-orange-600 hover:underline mt-4"
             >
               Continue Shopping
             </Link>

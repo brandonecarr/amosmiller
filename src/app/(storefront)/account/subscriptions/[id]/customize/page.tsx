@@ -195,8 +195,8 @@ export default function CustomizeSubscriptionPage({
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[var(--color-primary-500)]" />
-        <p className="mt-4 text-[var(--color-muted)]">Loading...</p>
+        <RefreshCw className="w-8 h-8 animate-spin mx-auto text-orange-500" />
+        <p className="mt-4 text-slate-500">Loading...</p>
       </div>
     );
   }
@@ -204,7 +204,7 @@ export default function CustomizeSubscriptionPage({
   if (!subscription) {
     return (
       <div className="p-8 text-center">
-        <p className="text-[var(--color-muted)]">Subscription not found</p>
+        <p className="text-slate-400">Subscription not found</p>
       </div>
     );
   }
@@ -225,10 +225,10 @@ export default function CustomizeSubscriptionPage({
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-[var(--color-charcoal)]">
+          <h1 className="text-2xl font-bold font-heading text-slate-900">
             Customize Subscription
           </h1>
-          <p className="text-[var(--color-muted)]">{subscription.name}</p>
+          <p className="text-slate-500">{subscription.name}</p>
         </div>
         <Button onClick={handleSave} isLoading={isPending} disabled={!hasChanges || items.size === 0}>
           <Save className="w-4 h-4 mr-2" />
@@ -240,12 +240,12 @@ export default function CustomizeSubscriptionPage({
         {/* Current Items */}
         <div className="lg:col-span-2 space-y-6">
           <Card variant="default">
-            <CardHeader className="border-b border-[var(--color-border)]">
+            <CardHeader className="border-b border-slate-200">
               <CardTitle>Current Items</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               {currentProducts.length === 0 ? (
-                <p className="text-center text-[var(--color-muted)] py-8">
+                <p className="text-center text-slate-400 py-8">
                   No items in subscription. Add products below.
                 </p>
               ) : (
@@ -255,9 +255,9 @@ export default function CustomizeSubscriptionPage({
                     return (
                       <div
                         key={product.id}
-                        className="flex items-center gap-4 p-3 rounded-lg border border-[var(--color-border)]"
+                        className="flex items-center gap-4 p-3 rounded-2xl border border-orange-500 bg-orange-50"
                       >
-                        <div className="w-16 h-16 rounded-lg bg-[var(--color-cream-100)] overflow-hidden flex-shrink-0 relative">
+                        <div className="w-16 h-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 relative">
                           {product.featured_image_url ? (
                             <Image
                               src={product.featured_image_url}
@@ -266,16 +266,16 @@ export default function CustomizeSubscriptionPage({
                               className="object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                            <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                               No Image
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-[var(--color-charcoal)] truncate">
+                          <p className="font-medium text-slate-900 truncate">
                             {product.name}
                           </p>
-                          <p className="text-sm text-[var(--color-primary-500)]">
+                          <p className="text-sm text-orange-500">
                             {formatCurrency(product.sale_price ?? product.base_price)}
                             {product.pricing_type === "weight" && "/lb"}
                           </p>
@@ -283,14 +283,14 @@ export default function CustomizeSubscriptionPage({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => updateQuantity(product.id, quantity - 1, product)}
-                            className="p-2 hover:bg-[var(--color-slate-100)] rounded transition-colors"
+                            className="p-2 hover:bg-slate-100 rounded transition-colors"
                           >
                             <Minus className="w-4 h-4" />
                           </button>
                           <span className="w-10 text-center font-medium">{quantity}</span>
                           <button
                             onClick={() => updateQuantity(product.id, quantity + 1, product)}
-                            className="p-2 hover:bg-[var(--color-slate-100)] rounded transition-colors"
+                            className="p-2 hover:bg-slate-100 rounded transition-colors"
                           >
                             <Plus className="w-4 h-4" />
                           </button>
@@ -317,7 +317,7 @@ export default function CustomizeSubscriptionPage({
           {/* Add More Items */}
           {availableProducts.length > 0 && (
             <Card variant="default">
-              <CardHeader className="border-b border-[var(--color-border)]">
+              <CardHeader className="border-b border-slate-200">
                 <CardTitle>Add More Products</CardTitle>
               </CardHeader>
               <CardContent className="p-4">
@@ -325,9 +325,9 @@ export default function CustomizeSubscriptionPage({
                   {availableProducts.map((product) => (
                     <div
                       key={product.id}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary-300)] transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-2xl border border-slate-200 hover:border-orange-300 transition-colors"
                     >
-                      <div className="w-12 h-12 rounded-lg bg-[var(--color-cream-100)] overflow-hidden flex-shrink-0 relative">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 relative">
                         {product.featured_image_url ? (
                           <Image
                             src={product.featured_image_url}
@@ -336,16 +336,16 @@ export default function CustomizeSubscriptionPage({
                             className="object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[var(--color-muted)] text-xs">
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                             IMG
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-[var(--color-charcoal)] truncate">
+                        <p className="font-medium text-sm text-slate-900 truncate">
                           {product.name}
                         </p>
-                        <p className="text-xs text-[var(--color-primary-500)]">
+                        <p className="text-xs text-orange-500">
                           {formatCurrency(product.sale_price ?? product.base_price)}
                         </p>
                       </div>
@@ -367,26 +367,26 @@ export default function CustomizeSubscriptionPage({
         {/* Summary */}
         <div className="space-y-6">
           <Card variant="default">
-            <CardHeader className="border-b border-[var(--color-border)]">
+            <CardHeader className="border-b border-slate-200">
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">Items</span>
+                  <span className="text-slate-500">Items</span>
                   <span>{items.size}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--color-muted)]">Subtotal</span>
+                  <span className="text-slate-500">Subtotal</span>
                   <span>{formatCurrency(total - shippingFee)}</span>
                 </div>
                 {shippingFee > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-[var(--color-muted)]">Delivery</span>
+                    <span className="text-slate-500">Delivery</span>
                     <span>{formatCurrency(shippingFee)}</span>
                   </div>
                 )}
-                <div className="border-t border-[var(--color-border)] pt-3 flex justify-between font-medium">
+                <div className="border-t border-slate-200 pt-3 flex justify-between font-medium">
                   <span>Total per delivery</span>
                   <span className="text-lg">{formatCurrency(total)}</span>
                 </div>
@@ -395,7 +395,7 @@ export default function CustomizeSubscriptionPage({
           </Card>
 
           {hasChanges && (
-            <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+            <div className="bg-yellow-50 rounded-2xl p-4 border border-yellow-200">
               <p className="text-sm text-yellow-800">
                 You have unsaved changes. Click &quot;Save Changes&quot; to apply them to your
                 subscription.

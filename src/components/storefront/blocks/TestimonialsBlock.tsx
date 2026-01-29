@@ -13,7 +13,7 @@ export function TestimonialsBlock({ block }: TestimonialsBlockProps) {
   return (
     <div className="max-w-6xl mx-auto px-4">
       {title && (
-        <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-charcoal)] mb-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold font-heading text-slate-900 mb-8 text-center">
           {title}
         </h2>
       )}
@@ -21,18 +21,18 @@ export function TestimonialsBlock({ block }: TestimonialsBlockProps) {
         {items.map((item, index) => (
           <div
             key={index}
-            className="bg-white rounded-lg border border-[var(--color-border)] p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-md transition-shadow"
           >
-            <Quote className="w-8 h-8 text-[var(--color-primary-500)] opacity-30 mb-3" />
-            <p className="text-[var(--color-charcoal)] leading-relaxed mb-4 italic">
+            <Quote className="w-8 h-8 text-orange-400 opacity-30 mb-3" />
+            <p className="text-slate-600 leading-relaxed mb-4 italic">
               &ldquo;{item.quote}&rdquo;
             </p>
             <div>
-              <p className="font-semibold text-[var(--color-charcoal)]">
+              <p className="font-semibold text-slate-900">
                 {item.name}
               </p>
               {item.role && (
-                <p className="text-sm text-[var(--color-muted)]">
+                <p className="text-sm text-slate-500">
                   {item.role}
                 </p>
               )}

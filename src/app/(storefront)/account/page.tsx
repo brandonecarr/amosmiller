@@ -32,46 +32,46 @@ export default async function AccountDashboardPage() {
     processing: "bg-blue-100 text-blue-800",
     packed: "bg-purple-100 text-purple-800",
     shipped: "bg-indigo-100 text-indigo-800",
-    delivered: "bg-green-100 text-green-800",
+    delivered: "bg-emerald-100 text-emerald-800",
     cancelled: "bg-red-100 text-red-800",
   };
 
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="bg-[var(--color-cream-100)] rounded-xl p-6">
-        <h2 className="text-xl font-bold text-[var(--color-charcoal)] mb-2">
+      <div className="bg-slate-50 rounded-2xl p-6">
+        <h2 className="text-xl font-bold font-heading text-slate-900 mb-2">
           Welcome back!
         </h2>
-        <p className="text-[var(--color-muted)]">
+        <p className="text-slate-500">
           {user.email}
         </p>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[var(--color-primary-100)] rounded-full flex items-center justify-center">
-              <Package className="w-6 h-6 text-[var(--color-primary-500)]" />
+            <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center">
+              <Package className="w-6 h-6 text-orange-500" />
             </div>
             <div>
-              <p className="text-sm text-[var(--color-muted)]">Total Orders</p>
-              <p className="text-2xl font-bold text-[var(--color-charcoal)]">
+              <p className="text-sm text-slate-500">Total Orders</p>
+              <p className="text-2xl font-bold text-slate-900">
                 {ordersResult.data?.length || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[var(--color-success-50)] rounded-full flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-[var(--color-success)]" />
+            <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-emerald-500" />
             </div>
             <div>
-              <p className="text-sm text-[var(--color-muted)]">Store Credit</p>
-              <p className="text-2xl font-bold text-[var(--color-charcoal)]">
+              <p className="text-sm text-slate-500">Store Credit</p>
+              <p className="text-2xl font-bold text-slate-900">
                 {formatCurrency(storeCredits)}
               </p>
             </div>
@@ -80,12 +80,12 @@ export default async function AccountDashboardPage() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-          <h3 className="font-bold text-[var(--color-charcoal)]">Recent Orders</h3>
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="font-bold font-heading text-slate-900">Recent Orders</h3>
           <Link
             href="/account/orders"
-            className="text-sm text-[var(--color-primary-500)] hover:underline flex items-center gap-1"
+            className="text-sm text-orange-500 hover:text-orange-600 flex items-center gap-1"
           >
             View All
             <ArrowRight className="w-4 h-4" />
@@ -94,17 +94,17 @@ export default async function AccountDashboardPage() {
 
         {recentOrders.length === 0 ? (
           <div className="p-8 text-center">
-            <Package className="w-12 h-12 text-[var(--color-muted)] mx-auto mb-4" />
-            <p className="text-[var(--color-muted)]">No orders yet</p>
+            <Package className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <p className="text-slate-400">No orders yet</p>
             <Link
               href="/shop"
-              className="inline-block mt-4 text-[var(--color-primary-500)] hover:underline"
+              className="inline-block mt-4 text-orange-500 hover:text-orange-600"
             >
               Start Shopping
             </Link>
           </div>
         ) : (
-          <div className="divide-y divide-[var(--color-border)]">
+          <div className="divide-y divide-slate-200">
             {recentOrders.map((order: {
               id: string;
               order_number: number;
@@ -115,13 +115,13 @@ export default async function AccountDashboardPage() {
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-[var(--color-cream-50)] transition-colors"
+                className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors"
               >
                 <div>
-                  <p className="font-medium text-[var(--color-charcoal)]">
+                  <p className="font-medium text-slate-900">
                     Order #{order.order_number}
                   </p>
-                  <p className="text-sm text-[var(--color-muted)]">
+                  <p className="text-sm text-slate-500">
                     {format(new Date(order.created_at), "MMM d, yyyy")}
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default async function AccountDashboardPage() {
                   >
                     {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                   </span>
-                  <p className="text-sm font-medium text-[var(--color-charcoal)] mt-1">
+                  <p className="text-sm font-medium text-slate-900 mt-1">
                     {formatCurrency(order.total)}
                   </p>
                 </div>

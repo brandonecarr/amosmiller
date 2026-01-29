@@ -53,7 +53,6 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
   const [showInStock, setShowInStock] = useState(false);
   const [showOnSale, setShowOnSale] = useState(false);
 
-  // Build category list with counts
   const categoryOptions = useMemo(() => {
     const activeCategories = categories.filter((c) => c.is_active);
     const options = [
@@ -70,12 +69,10 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
   const filteredProducts = useMemo(() => {
     let products = [...initialProducts];
 
-    // Filter by category
     if (selectedCategory !== "all") {
       products = products.filter((p) => p.category_id === selectedCategory);
     }
 
-    // Filter by price
     if (priceRange.min) {
       products = products.filter((p) => p.base_price >= Number(priceRange.min));
     }
@@ -83,17 +80,14 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
       products = products.filter((p) => p.base_price <= Number(priceRange.max));
     }
 
-    // Filter by stock
     if (showInStock) {
       products = products.filter((p) => p.stock_quantity > 0);
     }
 
-    // Filter by sale
     if (showOnSale) {
       products = products.filter((p) => p.sale_price !== null);
     }
 
-    // Sort
     switch (sortBy) {
       case "name-asc":
         products.sort((a, b) => a.name.localeCompare(b.name));
@@ -138,10 +132,10 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
     <div className="container mx-auto px-4 py-8 lg:py-12">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--color-charcoal)] mb-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2 font-heading">
           Shop All Products
         </h1>
-        <p className="text-[var(--color-muted)]">
+        <p className="text-slate-500">
           Browse our selection of farm-fresh products
         </p>
       </div>
@@ -149,26 +143,27 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Filters - Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="sticky top-24 space-y-6">
+          <div className="sticky top-28 space-y-6">
             {/* Categories */}
-            <div>
-              <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5">
+              <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                 Categories
               </h3>
               <div className="space-y-1">
                 {categoryOptions.map((category) => (
                   <button
                     key={category.id}
+                    type="button"
                     onClick={() => setSelectedCategory(category.id)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                      "w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors",
                       selectedCategory === category.id
-                        ? "bg-[var(--color-primary-100)] text-[var(--color-primary-600)] font-medium"
-                        : "text-[var(--color-muted-foreground)] hover:bg-[var(--color-slate-100)]"
+                        ? "bg-orange-100 text-orange-700 font-medium"
+                        : "text-slate-600 hover:bg-slate-50"
                     )}
                   >
                     <span>{category.name}</span>
-                    <span className="text-[var(--color-muted)]">
+                    <span className="text-xs text-slate-400">
                       {category.count}
                     </span>
                   </button>
@@ -177,8 +172,8 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
             </div>
 
             {/* Price Range */}
-            <div>
-              <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5">
+              <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                 Price Range
               </h3>
               <div className="flex gap-2">
@@ -202,34 +197,34 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
             </div>
 
             {/* Other Filters */}
-            <div>
-              <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5">
+              <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                 Availability
               </h3>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
+              <div className="space-y-2.5">
+                <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showInStock}
                     onChange={(e) => setShowInStock(e.target.checked)}
-                    className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary-500)]"
+                    className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm">In Stock Only</span>
+                  <span className="text-sm text-slate-700">In Stock Only</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showOnSale}
                     onChange={(e) => setShowOnSale(e.target.checked)}
-                    className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary-500)]"
+                    className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="text-sm">On Sale</span>
+                  <span className="text-sm text-slate-700">On Sale</span>
                 </label>
               </div>
             </div>
 
             {activeFiltersCount > 0 && (
-              <Button variant="outline" className="w-full" onClick={clearFilters}>
+              <Button variant="secondary" className="w-full" onClick={clearFilters}>
                 Clear All Filters
               </Button>
             )}
@@ -243,31 +238,31 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
             <div className="flex items-center gap-4">
               {/* Mobile Filter Toggle */}
               <Button
-                variant="outline"
+                variant="secondary"
                 className="lg:hidden"
                 onClick={() => setShowFilters(true)}
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
                 {activeFiltersCount > 0 && (
-                  <Badge variant="default" className="ml-2">
+                  <Badge variant="accent" size="sm" className="ml-2">
                     {activeFiltersCount}
                   </Badge>
                 )}
               </Button>
 
               {/* Results Count */}
-              <p className="text-sm text-[var(--color-muted)]">
+              <p className="text-sm text-slate-500">
                 {filteredProducts.length} products
               </p>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Sort */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 bg-white border border-[var(--color-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
+                className="px-3 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-slate-300 transition-colors"
               >
                 {sortOptions.map((option) => (
                   <option key={option.id} value={option.id}>
@@ -277,25 +272,27 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
               </select>
 
               {/* View Toggle */}
-              <div className="hidden sm:flex items-center border border-[var(--color-border)] rounded-lg overflow-hidden">
+              <div className="hidden sm:flex items-center border border-slate-200 rounded-full overflow-hidden">
                 <button
+                  type="button"
                   onClick={() => setViewMode("grid")}
                   className={cn(
                     "p-2 transition-colors",
                     viewMode === "grid"
-                      ? "bg-[var(--color-primary-500)] text-white"
-                      : "text-[var(--color-muted)] hover:bg-[var(--color-slate-100)]"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-400 hover:bg-slate-50"
                   )}
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setViewMode("list")}
                   className={cn(
                     "p-2 transition-colors",
                     viewMode === "list"
-                      ? "bg-[var(--color-primary-500)] text-white"
-                      : "text-[var(--color-muted)] hover:bg-[var(--color-slate-100)]"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-400 hover:bg-slate-50"
                   )}
                 >
                   <LayoutList className="w-4 h-4" />
@@ -308,25 +305,25 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
           {activeFiltersCount > 0 && (
             <div className="flex flex-wrap gap-2 mb-6 lg:hidden">
               {selectedCategory !== "all" && (
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge variant="accent" className="flex items-center gap-1">
                   {getSelectedCategoryName()}
-                  <button onClick={() => setSelectedCategory("all")}>
+                  <button type="button" onClick={() => setSelectedCategory("all")}>
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
               )}
               {showInStock && (
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge variant="accent" className="flex items-center gap-1">
                   In Stock
-                  <button onClick={() => setShowInStock(false)}>
+                  <button type="button" onClick={() => setShowInStock(false)}>
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
               )}
               {showOnSale && (
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge variant="accent" className="flex items-center gap-1">
                   On Sale
-                  <button onClick={() => setShowOnSale(false)}>
+                  <button type="button" onClick={() => setShowOnSale(false)}>
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
@@ -350,10 +347,10 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-[var(--color-muted)] mb-4">
+              <p className="text-slate-400 mb-4">
                 No products found matching your criteria.
               </p>
-              <Button variant="outline" onClick={clearFilters}>
+              <Button variant="secondary" onClick={clearFilters}>
                 Clear Filters
               </Button>
             </div>
@@ -365,37 +362,37 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
       {showFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowFilters(false)}
           />
-          <div className="fixed right-0 top-0 bottom-0 w-80 bg-white p-6 overflow-y-auto animate-slide-down">
+          <div className="fixed right-0 top-0 bottom-0 w-80 bg-white rounded-l-2xl p-6 overflow-y-auto shadow-xl">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">Filters</h2>
-              <button onClick={() => setShowFilters(false)}>
+              <h2 className="text-lg font-semibold text-slate-900 font-heading">Filters</h2>
+              <button type="button" onClick={() => setShowFilters(false)} className="p-2 text-slate-400 hover:text-slate-900 rounded-full hover:bg-slate-100 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Same filter content as sidebar */}
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+                <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                   Categories
                 </h3>
                 <div className="space-y-1">
                   {categoryOptions.map((category) => (
                     <button
                       key={category.id}
+                      type="button"
                       onClick={() => setSelectedCategory(category.id)}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                        "w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors",
                         selectedCategory === category.id
-                          ? "bg-[var(--color-primary-100)] text-[var(--color-primary-600)] font-medium"
-                          : "text-[var(--color-muted-foreground)] hover:bg-[var(--color-slate-100)]"
+                          ? "bg-orange-100 text-orange-700 font-medium"
+                          : "text-slate-600 hover:bg-slate-50"
                       )}
                     >
                       <span>{category.name}</span>
-                      <span className="text-[var(--color-muted)]">
+                      <span className="text-xs text-slate-400">
                         {category.count}
                       </span>
                     </button>
@@ -404,7 +401,7 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
               </div>
 
               <div>
-                <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+                <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                   Price Range
                 </h3>
                 <div className="flex gap-2">
@@ -428,33 +425,33 @@ export function ShopContent({ initialProducts, categories }: ShopContentProps) {
               </div>
 
               <div>
-                <h3 className="font-semibold text-[var(--color-charcoal)] mb-3">
+                <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
                   Availability
                 </h3>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                <div className="space-y-2.5">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={showInStock}
                       onChange={(e) => setShowInStock(e.target.checked)}
-                      className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary-500)]"
+                      className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                     />
-                    <span className="text-sm">In Stock Only</span>
+                    <span className="text-sm text-slate-700">In Stock Only</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={showOnSale}
                       onChange={(e) => setShowOnSale(e.target.checked)}
-                      className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary-500)]"
+                      className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                     />
-                    <span className="text-sm">On Sale</span>
+                    <span className="text-sm text-slate-700">On Sale</span>
                   </label>
                 </div>
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button variant="outline" className="flex-1" onClick={clearFilters}>
+                <Button variant="secondary" className="flex-1" onClick={clearFilters}>
                   Clear All
                 </Button>
                 <Button className="flex-1" onClick={() => setShowFilters(false)}>

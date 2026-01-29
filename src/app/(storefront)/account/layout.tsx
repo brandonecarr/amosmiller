@@ -28,21 +28,21 @@ export default async function AccountLayout({
 
   return (
     <div className="container mx-auto px-4 py-8 lg:py-12">
-      <h1 className="text-3xl font-bold text-[var(--color-charcoal)] mb-8">My Account</h1>
+      <h1 className="text-3xl font-bold font-heading text-slate-900 mb-8">My Account</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar Navigation */}
         <aside className="lg:col-span-1">
-          <nav className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
+          <nav className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 text-[var(--color-charcoal)] hover:bg-[var(--color-cream-100)] transition-colors border-b border-[var(--color-border)] last:border-b-0"
+                  className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-orange-50 hover:text-orange-700 hover:border-l-2 hover:border-orange-500 transition-colors border-b border-slate-200 last:border-b-0"
                 >
-                  <Icon className="w-5 h-5 text-[var(--color-muted)]" />
+                  <Icon className="w-5 h-5 text-slate-400" />
                   <span className="font-medium">{item.label}</span>
                 </Link>
               );
@@ -50,7 +50,7 @@ export default async function AccountLayout({
             <form action="/api/auth/signout" method="post">
               <button
                 type="submit"
-                className="flex items-center gap-3 px-4 py-3 text-[var(--color-error)] hover:bg-red-50 transition-colors w-full text-left"
+                className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors w-full text-left"
               >
                 <LogOut className="w-5 h-5" />
                 <span className="font-medium">Sign Out</span>
