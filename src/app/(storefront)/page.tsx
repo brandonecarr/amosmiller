@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -145,10 +146,15 @@ export default function HomePage() {
 
             {/* Right Column — Hero Image */}
             <div className="relative">
-              <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100">
-                <div className="absolute inset-0 flex items-center justify-center text-orange-300">
-                  <span className="text-lg">Hero Image</span>
-                </div>
+              <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+                  alt="Fresh farm produce"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
               </div>
 
               {/* Floating Verification Card */}
