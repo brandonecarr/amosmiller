@@ -43,7 +43,7 @@ export default async function EditProductPage({
     is_featured: product.is_featured ?? false,
     is_taxable: product.is_taxable ?? true,
     tags: product.tags || [],
-    images: product.images || [],
+    images: (product.images || []).map((img: { url: string }) => img.url),
     featured_image_url: product.featured_image_url || "",
     // Subscription fields
     is_subscribable: product.is_subscribable ?? false,

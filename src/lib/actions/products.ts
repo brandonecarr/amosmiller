@@ -72,6 +72,7 @@ interface ProductFormInput {
   is_taxable: boolean;
   tags: string[];
   images: { url: string; alt: string }[];
+  featured_image_url?: string;
   // Subscription fields
   is_subscribable?: boolean;
   subscription_frequencies?: ("weekly" | "biweekly" | "monthly")[];
@@ -105,6 +106,7 @@ function convertFormInput(input: ProductFormInput): ProductFormData {
     is_taxable: input.is_taxable,
     tags: input.tags,
     images: input.images,
+    featured_image_url: input.featured_image_url || (input.images.length > 0 ? input.images[0].url : null),
     // Subscription fields
     is_subscribable: input.is_subscribable || false,
     subscription_frequencies: input.subscription_frequencies || [],

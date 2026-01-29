@@ -230,6 +230,7 @@ export function ProductForm({ initialData, isEditing = false }: ProductFormProps
         is_taxable: formData.is_taxable,
         tags: formData.tags || [],
         images: (formData.images || []).map((url) => ({ url, alt: formData.name })),
+        featured_image_url: formData.featured_image_url || (formData.images.length > 0 ? formData.images[0] : ""),
         // Subscription fields
         is_subscribable: formData.is_subscribable,
         subscription_frequencies: formData.subscription_frequencies,
