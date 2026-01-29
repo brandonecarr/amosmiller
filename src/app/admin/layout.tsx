@@ -99,7 +99,7 @@ export default function AdminLayout({
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-[var(--color-primary-500)] text-white"
-                    : "text-white/70 hover:bg-[var(--color-slate-800)] hover:text-white"
+                    : "text-white hover:bg-[var(--color-slate-800)]"
                 )}
               >
                 <item.icon className="w-5 h-5" />
@@ -113,7 +113,7 @@ export default function AdminLayout({
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--color-slate-700)]">
           <Link
             href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white/70 hover:bg-[var(--color-slate-800)] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-[var(--color-slate-800)] transition-colors"
           >
             <LogOut className="w-5 h-5" />
             Back to Store
