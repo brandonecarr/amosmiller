@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getProductReviews, getProductReviewSummary, getUserReviewForProduct } from "@/lib/actions/reviews";
+import { getProductReviews, getProductReviewSummary, getUserReviewForProduct, hasUserPurchasedProduct } from "@/lib/actions/reviews";
 import { StarRating } from "./StarRating";
 import { ReviewForm } from "./ReviewForm";
 import { MessageSquare } from "lucide-react";
@@ -42,13 +42,18 @@ export async function ProductReviews({ productId, productSlug }: ProductReviewsP
   } = await supabase.auth.getUser();
 
   let userName: string | null = null;
+  let hasPurchased = false;
   if (user) {
-    const { data: profile } = await (supabase as any)
-      .from("profiles")
-      .select("full_name")
-      .eq("id", user.id)
-      .single();
+    const [{ data: profile }, purchased] = await Promise.all([
+      (supabase as any)
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single(),
+      hasUserPurchasedProduct(productId),
+    ]);
     userName = profile?.full_name || null;
+    hasPurchased = purchased;
   }
 
   const hasReviews = summary.totalCount > 0;
@@ -107,15 +112,23 @@ export async function ProductReviews({ productId, productSlug }: ProductReviewsP
         </div>
       )}
 
-      {/* Review Form or Login Prompt */}
+      {/* Review Form or Login/Purchase Prompt */}
       <div className="mb-8">
         {user ? (
-          <ReviewForm
-            productId={productId}
-            productSlug={productSlug}
-            existingReview={existingReview}
-            userName={userName}
-          />
+          hasPurchased ? (
+            <ReviewForm
+              productId={productId}
+              productSlug={productSlug}
+              existingReview={existingReview}
+              userName={userName}
+            />
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center">
+              <p className="text-slate-500">
+                Only verified buyers can leave a review for this product.
+              </p>
+            </div>
+          )
         ) : (
           <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center">
             <p className="text-slate-500">

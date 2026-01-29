@@ -74,6 +74,38 @@ export async function getProductReviewSummary(productId: string) {
   return { averageRating, totalCount, ratingDistribution };
 }
 
+// ── Check if current user has purchased this product ─────────────────────────
+
+export async function hasUserPurchasedProduct(productId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  // Find any non-cancelled order by this user that contains this product
+  // and has been paid (authorized or captured)
+  const { data: orders, error } = await (supabase as any)
+    .from("orders")
+    .select("id, order_items!inner(product_id)")
+    .eq("user_id", user.id)
+    .in("payment_status", ["authorized", "paid", "partially_refunded"])
+    .neq("status", "cancelled")
+    .eq("order_items.product_id", productId)
+    .limit(1);
+
+  if (error) {
+    console.error("Failed to check purchase history:", error.message);
+    return false;
+  }
+
+  return (orders?.length ?? 0) > 0;
+}
+
 // ── Check if current user already has a review for this product ───────────────
 
 export async function getUserReviewForProduct(productId: string) {
@@ -123,6 +155,12 @@ export async function createReview(formData: {
   const validated = reviewSchema.safeParse(formData);
   if (!validated.success) {
     return { data: null, error: validated.error.issues[0].message };
+  }
+
+  // Verify user has purchased this product
+  const purchased = await hasUserPurchasedProduct(validated.data.product_id);
+  if (!purchased) {
+    return { data: null, error: "Only confirmed buyers can review this product." };
   }
 
   // Check for existing review by this user on this product
