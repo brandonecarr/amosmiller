@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { HeaderWrapper } from "@/components/layout/HeaderWrapper";
-import { Footer } from "@/components/layout/Footer";
-import { CartProvider } from "@/contexts/CartContext";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 
@@ -47,13 +44,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <GoogleAnalytics />
         <FacebookPixel />
-        <CartProvider>
-          <div className="flex flex-col min-h-screen">
-            <HeaderWrapper />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </CartProvider>
+        {children}
       </body>
     </html>
   );
