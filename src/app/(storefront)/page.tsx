@@ -146,13 +146,13 @@ export default function HomePage() {
 
             {/* Right Column — Hero Image */}
             <div className="relative">
-              <div className="group/hero relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden">
+              <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden transition-transform duration-500 hover:scale-[1.03]">
                 <Image
                   src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                   alt="Fresh farm produce"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-500 group-hover/hero:scale-105"
+                  className="object-cover"
                   priority
                 />
               </div>
