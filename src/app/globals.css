@@ -112,8 +112,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography Base */
-h1, h2, h3, h4, h5, h6 {
+/* Typography Base — :where() gives zero specificity so Tailwind utilities can override */
+:where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-display);
   font-weight: 600;
   line-height: 1.25;
@@ -127,14 +127,14 @@ h4 { font-size: 1.25rem; }
 h5 { font-size: 1.125rem; }
 h6 { font-size: 1rem; }
 
-/* Link Base */
-a {
+/* Link Base — :where() gives zero specificity so Tailwind utilities can override */
+:where(a) {
   color: var(--color-primary-500);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-a:hover {
+:where(a:hover) {
   color: var(--color-primary-600);
 }
 
