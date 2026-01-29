@@ -13,12 +13,18 @@ export async function uploadProductImage(
   const fileExt = file.name.split(".").pop();
   const fileName = `${productId}/${Date.now()}.${fileExt}`;
 
+  // Convert File to Buffer for reliable server-side upload
+  // (File objects can lose binary data during server action serialization)
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   // Upload to storage
   const { data, error } = await supabase.storage
     .from("product-images")
-    .upload(fileName, file, {
+    .upload(fileName, buffer, {
       cacheControl: "3600",
       upsert: false,
+      contentType: file.type,
     });
 
   if (error) {
@@ -94,11 +100,15 @@ export async function uploadCategoryImage(
   const fileExt = file.name.split(".").pop();
   const fileName = `categories/${categoryId}.${fileExt}`;
 
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   const { data, error } = await supabase.storage
     .from("product-images")
-    .upload(fileName, file, {
+    .upload(fileName, buffer, {
       cacheControl: "3600",
       upsert: true, // Overwrite if exists
+      contentType: file.type,
     });
 
   if (error) {
