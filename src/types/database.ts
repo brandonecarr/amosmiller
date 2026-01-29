@@ -730,6 +730,47 @@ export type Database = {
           updated_at?: string;
         };
       };
+      product_reviews: {
+        Row: {
+          id: string;
+          product_id: string;
+          user_id: string | null;
+          author_name: string;
+          rating: number;
+          review_body: string | null;
+          is_approved: boolean;
+          is_imported: boolean;
+          source_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          user_id?: string | null;
+          author_name: string;
+          rating: number;
+          review_body?: string | null;
+          is_approved?: boolean;
+          is_imported?: boolean;
+          source_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          product_id?: string;
+          user_id?: string | null;
+          author_name?: string;
+          rating?: number;
+          review_body?: string | null;
+          is_approved?: boolean;
+          is_imported?: boolean;
+          source_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       settings: {
         Row: {
           key: string;
@@ -1019,3 +1060,4 @@ export type DeliveryZone = Tables<"delivery_zones">;
 export type Coupon = Tables<"coupons">;
 export type GiftCard = Tables<"gift_cards">;
 export type Setting = Tables<"settings">;
+export type ProductReview = Tables<"product_reviews">;

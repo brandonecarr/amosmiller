@@ -8,6 +8,7 @@ import { formatCurrency, formatWeightPrice } from "@/lib/utils";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { AddToCartSection } from "./AddToCartSection";
 import { getProductBySlug, getRelatedProducts } from "@/lib/actions/products";
+import { ProductReviews } from "@/components/storefront/ProductReviews";
 
 export async function generateMetadata({
   params,
@@ -294,6 +295,11 @@ export default async function ProductPage({
           </div>
         </div>
       )}
+
+      {/* Reviews */}
+      <div className="mb-16">
+        <ProductReviews productId={product.id} productSlug={slug} />
+      </div>
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
