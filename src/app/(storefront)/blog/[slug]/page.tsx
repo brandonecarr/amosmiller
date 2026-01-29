@@ -55,24 +55,24 @@ export default async function BlogPostPage({
     .slice(0, 3);
 
   return (
-    <article>
+    <article className="max-w-4xl mx-auto">
       {/* Back link */}
       <Link
         href="/blog"
-        className="inline-flex items-center text-sm text-slate-500 hover:text-orange-500 mb-6"
+        className="inline-flex items-center text-sm text-slate-500 hover:text-orange-500 mb-8 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4 mr-1" />
+        <ArrowLeft className="w-4 h-4 mr-1.5" />
         Back to Blog
       </Link>
 
       {/* Article Header */}
-      <header className="mb-8">
-        <h1 className="font-heading text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+      <header className="mb-10">
+        <h1 className="font-heading text-3xl lg:text-5xl font-bold text-slate-900 mb-5 leading-tight">
           {post.title}
         </h1>
 
         {/* Meta */}
-        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
           {post.author?.full_name && (
             <span className="flex items-center gap-1.5">
               <User className="w-4 h-4" />
@@ -104,13 +104,14 @@ export default async function BlogPostPage({
 
       {/* Featured Image */}
       {post.featured_image_url && (
-        <div className="mb-8 rounded-2xl overflow-hidden">
+        <div className="mb-12 rounded-2xl overflow-hidden shadow-sm">
           <Image
             src={post.featured_image_url}
             alt={post.title}
             width={1200}
             height={675}
-            className="w-full max-h-[500px] object-cover rounded-2xl"
+            priority
+            className="w-full max-h-[520px] object-cover"
           />
         </div>
       )}
@@ -118,15 +119,15 @@ export default async function BlogPostPage({
       {/* Content */}
       {post.content && (
         <div
-          className="tiptap max-w-3xl prose prose-slate prose-a:text-orange-500 prose-a:hover:text-orange-600 text-slate-600"
+          className="blog-content max-w-3xl mx-auto"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
       )}
 
       {/* Related Posts */}
       {related.length > 0 && (
-        <div className="mt-16 pt-8 border-t border-slate-200">
-          <h2 className="font-heading text-2xl font-bold text-slate-900 mb-6">
+        <div className="mt-20 pt-10 border-t border-slate-200 max-w-4xl mx-auto">
+          <h2 className="font-heading text-2xl font-bold text-slate-900 mb-8">
             More from Our Blog
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -144,7 +145,7 @@ export default async function BlogPostPage({
                   href={`/blog/${relPost.slug}`}
                   className="group"
                 >
-                  <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200">
                     <div className="aspect-[16/10] bg-slate-50 overflow-hidden relative">
                       {relPost.featured_image_url ? (
                         <Image
@@ -154,10 +155,8 @@ export default async function BlogPostPage({
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-3xl text-slate-500">
-                            ✍
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                          <Calendar className="w-8 h-8 text-slate-300" />
                         </div>
                       )}
                     </div>
@@ -166,7 +165,7 @@ export default async function BlogPostPage({
                         {relPost.title}
                       </h3>
                       {relPost.published_at && (
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-slate-400">
                           {format(
                             new Date(relPost.published_at),
                             "MMM d, yyyy"
