@@ -270,3 +270,86 @@ export async function deleteReview(id: string) {
 
   return { success: true, error: null };
 }
+
+// ── Admin: Get all reviews with product name ──────────────────────────────────
+
+export async function getAdminReviews(filters?: {
+  is_approved?: boolean;
+  is_imported?: boolean;
+}) {
+  const supabase = await createClient();
+
+  let query = (supabase as any)
+    .from("product_reviews")
+    .select("*, products(name)")
+    .order("created_at", { ascending: false });
+
+  if (filters?.is_approved !== undefined) {
+    query = query.eq("is_approved", filters.is_approved);
+  }
+
+  if (filters?.is_imported !== undefined) {
+    query = query.eq("is_imported", filters.is_imported);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Failed to fetch admin reviews:", error.message);
+    return { data: [], error: error.message };
+  }
+
+  return { data: data || [], error: null };
+}
+
+// ── Admin: Toggle review approval ─────────────────────────────────────────────
+
+export async function toggleReviewApproval(id: string) {
+  const supabase = await createClient();
+
+  const { data: current, error: fetchError } = await (supabase as any)
+    .from("product_reviews")
+    .select("is_approved")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) {
+    return { success: false, error: fetchError.message };
+  }
+
+  const { error } = await (supabase as any)
+    .from("product_reviews")
+    .update({ is_approved: !current.is_approved })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Failed to toggle review approval:", error.message);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/admin/reviews");
+  revalidatePath("/shop");
+
+  return { success: true, error: null };
+}
+
+// ── Admin: Delete any review ──────────────────────────────────────────────────
+
+export async function adminDeleteReview(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await (supabase as any)
+    .from("product_reviews")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Failed to delete review:", error.message);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/admin/reviews");
+  revalidatePath("/shop");
+
+  return { success: true, error: null };
+}

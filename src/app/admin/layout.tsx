@@ -15,6 +15,7 @@ import {
   Gift,
   FileText,
   BookOpen,
+  MessageSquare,
   BarChart3,
   Settings,
   Store,
@@ -38,6 +39,7 @@ const navigation = [
   { name: "Gift Cards", href: "/admin/gift-cards", icon: Gift },
   { name: "Pages", href: "/admin/pages", icon: FileText },
   { name: "Blog", href: "/admin/blog", icon: BookOpen },
+  { name: "Reviews", href: "/admin/reviews", icon: MessageSquare },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
