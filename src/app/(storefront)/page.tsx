@@ -158,7 +158,7 @@ export default function HomePage() {
               </div>
 
               {/* Floating Verification Card */}
-              <div className="absolute -bottom-4 -left-4 lg:-left-8 bg-white rounded-2xl shadow-lg border border-slate-200 p-4 max-w-[220px]">
+              <div className="absolute -bottom-4 -left-4 lg:-left-8 bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50 p-4 max-w-[220px]">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
