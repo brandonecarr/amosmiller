@@ -266,7 +266,7 @@ async function main() {
         meta_description: excerpt || null,
         is_published: true,
         published_at: date,
-        tags: ["imported"],
+        tags: [],
         created_at: date,
       });
 
