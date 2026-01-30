@@ -29,24 +29,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const BUCKET = "page-images";
 const SLUG = "dr-weston-a-price";
 
-// ── Image download & upload ──────────────────────────────────────────────────
+// ── Image upload from local file ─────────────────────────────────────────────
 
-async function downloadAndUpload(
-  sourceUrl: string,
+async function uploadLocalFile(
+  localPath: string,
   name: string
 ): Promise<string | null> {
-  console.log(`  Downloading ${name}...`);
+  console.log(`  Uploading ${name} from ${path.basename(localPath)}...`);
   try {
-    const response = await fetch(sourceUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (Seed Script)" },
-    });
-    if (!response.ok) {
-      console.error(`    Failed to download ${name}: ${response.status}`);
-      return null;
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    const ext = path.extname(new URL(sourceUrl).pathname).toLowerCase() || ".jpg";
+    const buffer = fs.readFileSync(localPath);
+    const ext = path.extname(localPath).toLowerCase() || ".jpg";
     const filePath = `${SLUG}/${name}${ext}`;
 
     const contentTypeMap: Record<string, string> = {
@@ -76,6 +68,8 @@ async function downloadAndUpload(
     return null;
   }
 }
+
+const DOWNLOADS = "/Users/brandonecarr/Downloads";
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
@@ -112,12 +106,20 @@ async function main() {
     await supabase.from("pages").delete().eq("id", existing.id);
   }
 
-  // Step 3: Download and upload images
-  console.log("\nStep 3: Downloading images...");
+  // Step 3: Upload local images
+  console.log("\nStep 3: Uploading images...");
   const images = {
-    drPrice: await downloadAndUpload(
-      "https://amosmillerorganicfarm.com/wp-content/uploads/2018/03/image001.jpg",
-      "dr-weston-price"
+    milkCow: await uploadLocalFile(
+      path.join(DOWNLOADS, "drPrice1.jpg"),
+      "drinking-raw-milk"
+    ),
+    portrait: await uploadLocalFile(
+      path.join(DOWNLOADS, "drPrice2.jpg"),
+      "portrait"
+    ),
+    dentalExam: await uploadLocalFile(
+      path.join(DOWNLOADS, "drPrice3.jpg"),
+      "dental-exam"
     ),
   };
 
@@ -133,7 +135,7 @@ async function main() {
         title: "Dr. Weston A. Price",
         subtitle:
           "The pioneering research behind our commitment to nutrient-dense, traditional foods.",
-        imageUrl: images.drPrice || "",
+        imageUrl: images.portrait || "",
         ctaText: "Our Standards",
         ctaLink: "/our-standards",
       },
@@ -161,14 +163,14 @@ async function main() {
       },
     },
 
-    // ── Dr. Price Image ──
+    // ── Dr. Price Portrait ──
     {
       id: randomUUID(),
       type: "image",
       data: {
-        url: images.drPrice || "",
-        alt: "Dr. Weston A. Price conducting nutritional research",
-        caption: "Dr. Weston A. Price \u2013 dentist, researcher, and nutritional pioneer",
+        url: images.portrait || "",
+        alt: "Dr. Weston A. Price \u2013 formal portrait",
+        caption: "Dr. Weston A. Price (1870\u20131948) \u2013 dentist, researcher, and nutritional pioneer",
       },
     },
 
@@ -193,6 +195,17 @@ async function main() {
         text: "\u201cExcellent dental health was just the first of many revelations \u2013 for the groups who maintained their traditional diets had not just good teeth or straight teeth: they often had perfect, string-of-pearls teeth.\u201d",
         backgroundColor: "#0f172a",
         textColor: "#ffffff",
+      },
+    },
+
+    // ── Dental Exam Image ──
+    {
+      id: randomUUID(),
+      type: "image",
+      data: {
+        url: images.dentalExam || "",
+        alt: "Dr. Weston A. Price examining a patient\u2019s teeth in his dental practice",
+        caption: "Dr. Price in his Cleveland dental practice, where he first observed the decline in dental health",
       },
     },
 
@@ -244,6 +257,17 @@ async function main() {
 <p>Beyond rampant tooth decay and increased health problems, subsequent generations born consuming these foods showed striking physical changes: crooked teeth, narrower faces, and altered skeletal structures that diverged significantly from their ancestral patterns.</p>
 
 <p>The changes Dr. Price documented in Western-food-consuming populations remarkably paralleled the conditions appearing in his Cleveland clinic\u2019s American patients.</p>`,
+      },
+    },
+
+    // ── Dr. Price Drinking Raw Milk ──
+    {
+      id: randomUUID(),
+      type: "image",
+      data: {
+        url: images.milkCow || "",
+        alt: "Dr. Weston A. Price drinking fresh raw milk beside a cow in a barn",
+        caption: "Dr. Price advocated for raw, grass-fed dairy as one of nature\u2019s most perfect foods",
       },
     },
 
