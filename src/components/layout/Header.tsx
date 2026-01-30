@@ -176,8 +176,9 @@ export function Header({
             {/* Shop Now CTA - Desktop */}
             <Link
               href="/shop"
-              className="hidden lg:inline-flex ml-2 px-4 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-full hover:bg-slate-800 transition-colors"
+              className="hidden lg:inline-flex items-center gap-1.5 ml-3 px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition-colors shadow-sm"
             >
+              <ShoppingCart className="w-3.5 h-3.5" />
               Shop Now
             </Link>
 
