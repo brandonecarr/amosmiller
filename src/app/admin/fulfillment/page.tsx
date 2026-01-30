@@ -95,7 +95,9 @@ interface Schedule {
     frequency: string;
     day_of_week?: number;
   } | null;
-  cutoff_hours_before: number;
+  start_date: string | null;
+  cutoff_days_before: number;
+  cutoff_time: string;
   is_active: boolean;
 }
 
@@ -307,7 +309,9 @@ export default function FulfillmentPage() {
     startTransition(async () => {
       const data = {
         ...formData,
-        cutoff_hours_before: parseInt(formData.cutoff_hours_before) || 24,
+        start_date: formData.start_date || null,
+        cutoff_days_before: parseInt(formData.cutoff_days_before) || 1,
+        cutoff_time: formData.cutoff_time || "23:59:59",
         recurrence_rule:
           formData.schedule_type === "recurring" && formData.frequency
             ? {
@@ -802,11 +806,17 @@ function SchedulesTab({
                         {schedule.recurrence_rule.day_of_week !== undefined && (
                           <span> on {daysOfWeek[schedule.recurrence_rule.day_of_week]}</span>
                         )}
+                        {schedule.start_date && (
+                          <span> · starts {schedule.start_date}</span>
+                        )}
                       </>
                     ) : (
                       "One-time dates"
                     )}
-                    {" · "}Cutoff: {schedule.cutoff_hours_before}h before
+                    {" · "}Cutoff: {schedule.cutoff_days_before}d before
+                    {schedule.cutoff_time && schedule.cutoff_time !== "23:59:59" && (
+                      <span> at {schedule.cutoff_time.slice(0, 5)}</span>
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1273,7 +1283,9 @@ function ScheduleModal({
     schedule_type: item?.schedule_type || "recurring",
     frequency: item?.recurrence_rule?.frequency || "weekly",
     day_of_week: item?.recurrence_rule?.day_of_week?.toString() || "2",
-    cutoff_hours_before: item?.cutoff_hours_before?.toString() || "24",
+    start_date: item?.start_date || "",
+    cutoff_days_before: item?.cutoff_days_before?.toString() || "1",
+    cutoff_time: item?.cutoff_time?.slice(0, 5) || "23:59",
     is_active: item?.is_active ?? true,
   });
 
@@ -1349,14 +1361,33 @@ function ScheduleModal({
             </>
           )}
 
-          <Input
-            label="Cutoff Hours Before"
-            type="number"
-            min="0"
-            value={formData.cutoff_hours_before}
-            onChange={(e) => setFormData({ ...formData, cutoff_hours_before: e.target.value })}
-            helperText="Hours before delivery to stop accepting orders"
-          />
+          {formData.schedule_type === "recurring" && (
+            <Input
+              label="Start Date"
+              type="date"
+              value={formData.start_date}
+              onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+              helperText="Anchor date for biweekly schedules; first occurrence for weekly/monthly"
+            />
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Cutoff Days Before"
+              type="number"
+              min="0"
+              value={formData.cutoff_days_before}
+              onChange={(e) => setFormData({ ...formData, cutoff_days_before: e.target.value })}
+              helperText="Days before event to stop orders"
+            />
+            <Input
+              label="Cutoff Time"
+              type="time"
+              value={formData.cutoff_time}
+              onChange={(e) => setFormData({ ...formData, cutoff_time: e.target.value })}
+              helperText="Time on the cutoff day"
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-1.5">Description</label>

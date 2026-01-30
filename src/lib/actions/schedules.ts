@@ -17,8 +17,9 @@ const scheduleSchema = z.object({
   description: z.string().optional().nullable(),
   schedule_type: z.enum(["recurring", "one_time"]).default("recurring"),
   recurrence_rule: recurrenceRuleSchema.optional().nullable(),
-  cutoff_hours_before: z.number().int().min(0).default(24),
-  cutoff_time: z.string().default("23:59:59"),
+  start_date: z.string().optional().nullable(), // YYYY-MM-DD anchor for recurring schedules
+  cutoff_days_before: z.number().int().min(0).default(1),
+  cutoff_time: z.string().default("23:59:59"), // HH:MM:SS — cutoff time on the cutoff day
   available_dates: z.array(z.string()).default([]),
   blocked_dates: z.array(z.string()).default([]),
   is_active: z.boolean().default(true),
@@ -317,18 +318,36 @@ export async function getAvailableDates(
   const end = endDate || new Date(startDate.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
   const blockedSet = new Set(schedule.blocked_dates || []);
 
+  // Parse cutoff time (HH:MM:SS or HH:MM)
+  const cutoffTimeParts = (schedule.cutoff_time || "23:59:59").split(":");
+  const cutoffHour = parseInt(cutoffTimeParts[0]) || 23;
+  const cutoffMinute = parseInt(cutoffTimeParts[1]) || 59;
+  const cutoffDaysBefore = schedule.cutoff_days_before ?? 1;
+
   if (schedule.schedule_type === "one_time") {
     // For one-time schedules, return available_dates that aren't blocked
     for (const dateStr of schedule.available_dates || []) {
       const date = new Date(dateStr);
       if (date >= startDate && date <= end && !blockedSet.has(dateStr)) {
-        dates.push(date);
+        // Check cutoff: N days before at the specified time
+        const cutoffDate = new Date(date);
+        cutoffDate.setDate(cutoffDate.getDate() - cutoffDaysBefore);
+        cutoffDate.setHours(cutoffHour, cutoffMinute, 0, 0);
+
+        if (cutoffDate > new Date()) {
+          dates.push(date);
+        }
       }
     }
   } else if (schedule.recurrence_rule) {
     // For recurring schedules, calculate based on recurrence rule
     const rule = schedule.recurrence_rule as RecurrenceRule;
     const current = new Date(startDate);
+
+    // Use start_date as anchor for biweekly calculation
+    const anchor = schedule.start_date
+      ? new Date(schedule.start_date + "T00:00:00")
+      : startDate;
 
     while (current <= end && dates.length < 30) {
       const dateStr = current.toISOString().split("T")[0];
@@ -343,25 +362,26 @@ export async function getAvailableDates(
           case "weekly":
             isValidDate = rule.day_of_week === current.getDay();
             break;
-          case "biweekly":
-            // Check if this is the right week
-            const weekNum = Math.floor(
-              (current.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+          case "biweekly": {
+            // Use start_date as the anchor week
+            const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+            const weeksSinceAnchor = Math.floor(
+              (current.getTime() - anchor.getTime()) / msPerWeek
             );
             isValidDate =
-              rule.day_of_week === current.getDay() && weekNum % 2 === 0;
+              rule.day_of_week === current.getDay() && weeksSinceAnchor % 2 === 0;
             break;
+          }
           case "monthly":
             isValidDate = rule.day_of_month === current.getDate();
             break;
         }
 
         if (isValidDate) {
-          // Check cutoff
+          // Check cutoff: N days before at the specified time
           const cutoffDate = new Date(current);
-          cutoffDate.setHours(
-            cutoffDate.getHours() - (schedule.cutoff_hours_before || 24)
-          );
+          cutoffDate.setDate(cutoffDate.getDate() - cutoffDaysBefore);
+          cutoffDate.setHours(cutoffHour, cutoffMinute, 0, 0);
 
           if (cutoffDate > new Date()) {
             dates.push(new Date(current));
