@@ -22,6 +22,8 @@ export interface CartItem {
     productId: string;
     quantity: number;
   }>;
+  // Co-op detection
+  isCoopItem?: boolean;
 }
 
 export interface FulfillmentSelection {
@@ -61,6 +63,8 @@ interface CartContextType {
   setUserId: (userId: string | null) => void;
   isSyncing: boolean;
   syncError: string | null;
+  // Co-op detection
+  hasCoopItems: boolean;
   // Inventory validation
   inventoryWarnings: InventoryWarning[];
   validateInventory: () => Promise<void>;
@@ -353,6 +357,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  const hasCoopItems = items.some((item) => item.isCoopItem === true);
+
   const subtotal = items.reduce((sum, item) => {
     const price = item.salePrice ?? item.basePrice;
     if (item.pricingType === "weight" && item.estimatedWeight) {
@@ -377,6 +383,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setUserId,
         isSyncing,
         syncError,
+        hasCoopItems,
         inventoryWarnings,
         validateInventory,
         clearInventoryWarnings,

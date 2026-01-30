@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Truck, Package, Check, ChevronDown } from "lucide-react";
+import {
+  MapPin,
+  Package,
+  Check,
+  ChevronDown,
+  AlertTriangle,
+  Info,
+} from "lucide-react";
+import Link from "next/link";
 import { Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
@@ -11,6 +19,7 @@ interface Location {
   id: string;
   name: string;
   type: "pickup" | "delivery" | "shipping";
+  is_coop: boolean;
   description: string | null;
   address_line1: string | null;
   address_line2: string | null;
@@ -41,6 +50,8 @@ interface ShippingZone {
   min_order_amount: number | null;
 }
 
+type FulfillmentChoice = "fedex-ups" | "coop" | "farm-pickup" | null;
+
 interface FulfillmentSelectorProps {
   pickupLocations: Location[];
   deliveryZones: DeliveryZone[];
@@ -61,6 +72,8 @@ interface FulfillmentSelectorProps {
     state: string;
     postalCode: string;
   }) => void;
+  hasCoopItems: boolean;
+  subtotal: number;
 }
 
 export function FulfillmentSelector({
@@ -71,29 +84,53 @@ export function FulfillmentSelector({
   setFulfillment,
   shippingAddress,
   setShippingAddress,
+  hasCoopItems,
+  subtotal,
 }: FulfillmentSelectorProps) {
-  const [zipCode, setZipCode] = useState("");
-  const [matchedDeliveryZone, setMatchedDeliveryZone] =
-    useState<DeliveryZone | null>(null);
+  // Partition pickup locations
+  const farmLocation = pickupLocations.find((l) => !l.is_coop);
+  const coopLocations = pickupLocations.filter((l) => l.is_coop);
+
+  // Business rules
+  const isShippingDisabled = subtotal < 50 || hasCoopItems;
+  const isFarmPickupDisabled = hasCoopItems;
+  const isCoopDisabled = coopLocations.length === 0;
+
+  // Local UI choice state
+  const [choice, setChoice] = useState<FulfillmentChoice>(null);
+
+  // Shipping zone matching
   const [state, setState] = useState("");
   const [matchedShippingZone, setMatchedShippingZone] =
     useState<ShippingZone | null>(null);
+
+  // Co-op location dropdown
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
 
-  // Check ZIP code for delivery zone
+  // Initialize choice from existing fulfillment state (for back-navigation)
   useEffect(() => {
-    if (zipCode.length >= 5) {
-      const zone = deliveryZones.find((z) =>
-        z.zip_codes.some((code) => code === zipCode || zipCode.startsWith(code))
+    if (fulfillment.type === "shipping") {
+      setChoice("fedex-ups");
+    } else if (fulfillment.type === "pickup" && fulfillment.locationId) {
+      const loc = pickupLocations.find(
+        (l) => l.id === fulfillment.locationId
       );
-      setMatchedDeliveryZone(zone || null);
-      if (zone) {
-        setFulfillment({ zoneId: zone.id });
+      if (loc?.is_coop) {
+        setChoice("coop");
+      } else {
+        setChoice("farm-pickup");
       }
-    } else {
-      setMatchedDeliveryZone(null);
     }
-  }, [zipCode, deliveryZones, setFulfillment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-select Co-Op when cart has co-op items
+  useEffect(() => {
+    if (hasCoopItems && choice !== "coop") {
+      handleSelectChoice("coop");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasCoopItems]);
 
   // Check state for shipping zone
   useEffect(() => {
@@ -101,7 +138,9 @@ export function FulfillmentSelector({
       const upperState = state.toUpperCase();
       const zone = shippingZones.find((z) =>
         z.states.some(
-          (s) => s.toUpperCase() === upperState || s.toUpperCase().includes(upperState)
+          (s) =>
+            s.toUpperCase() === upperState ||
+            s.toUpperCase().includes(upperState)
         )
       );
       setMatchedShippingZone(zone || null);
@@ -113,296 +152,213 @@ export function FulfillmentSelector({
     }
   }, [state, shippingZones, setFulfillment]);
 
-  const handleSelectType = (type: "pickup" | "delivery" | "shipping") => {
-    setFulfillment({
-      type,
-      locationId: null,
-      zoneId: null,
-      scheduledDate: null,
-    });
-    // Reset form states
-    setZipCode("");
-    setMatchedDeliveryZone(null);
-    setState("");
-    setMatchedShippingZone(null);
+  const handleSelectChoice = (newChoice: FulfillmentChoice) => {
+    setChoice(newChoice);
+
+    switch (newChoice) {
+      case "fedex-ups":
+        setFulfillment({
+          type: "shipping",
+          locationId: null,
+          zoneId: null,
+          scheduledDate: null,
+        });
+        setState("");
+        setMatchedShippingZone(null);
+        break;
+      case "coop":
+        setFulfillment({
+          type: "pickup",
+          locationId: null,
+          zoneId: null,
+          scheduledDate: null,
+        });
+        break;
+      case "farm-pickup":
+        setFulfillment({
+          type: "pickup",
+          locationId: farmLocation?.id ?? null,
+          zoneId: null,
+          scheduledDate: null,
+        });
+        break;
+    }
   };
 
-  const handleSelectLocation = (locationId: string) => {
+  const handleSelectCoopLocation = (locationId: string) => {
     setFulfillment({ locationId });
     setShowLocationDropdown(false);
   };
 
-  const selectedLocation = pickupLocations.find(
+  const selectedCoopLocation = coopLocations.find(
     (l) => l.id === fulfillment.locationId
   );
 
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-heading font-bold text-slate-900">
-        How would you like to receive your order?
+        Please select Delivery Option
       </h2>
 
-      {/* Fulfillment Type Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Pickup Option */}
-        {pickupLocations.length > 0 && (
-          <button
-            onClick={() => handleSelectType("pickup")}
-            className={cn(
-              "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
-              fulfillment.type === "pickup"
-                ? "border-orange-500 bg-orange-50"
-                : "border-slate-200 hover:border-slate-300 bg-white"
-            )}
-          >
-            {fulfillment.type === "pickup" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-white" />
-              </div>
-            )}
-            <MapPin
-              className={cn(
-                "w-8 h-8",
-                fulfillment.type === "pickup"
-                  ? "text-orange-500"
-                  : "text-slate-400"
-              )}
-            />
-            <div className="text-center">
-              <p className="font-semibold text-slate-900">
-                Pickup
-              </p>
-              <p className="text-sm text-slate-500">
-                Free · Pick up at our location
-              </p>
-            </div>
-          </button>
-        )}
+      {/* Notice Banners */}
+      <div className="space-y-3">
+        {/* PA Dairy Restriction Notice */}
+        <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800">Please Note</p>
+            <p className="text-sm text-amber-700 mt-1">
+              We are currently not allowed to sell or ship any of our raw dairy
+              products within our home state of PA. We can only process dairy
+              orders that are sold and shipped outside of PA. Thank you for your
+              understanding.
+            </p>
+          </div>
+        </div>
 
-        {/* Delivery Option */}
-        {deliveryZones.length > 0 && (
-          <button
-            onClick={() => handleSelectType("delivery")}
-            className={cn(
-              "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
-              fulfillment.type === "delivery"
-                ? "border-orange-500 bg-orange-50"
-                : "border-slate-200 hover:border-slate-300 bg-white"
-            )}
-          >
-            {fulfillment.type === "delivery" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-white" />
-              </div>
-            )}
-            <Truck
-              className={cn(
-                "w-8 h-8",
-                fulfillment.type === "delivery"
-                  ? "text-orange-500"
-                  : "text-slate-400"
-              )}
-            />
-            <div className="text-center">
-              <p className="font-semibold text-slate-900">
-                Local Delivery
-              </p>
-              <p className="text-sm text-slate-500">
-                Delivered to your door
-              </p>
-            </div>
-          </button>
-        )}
+        {/* Shipping Cost / $50 Minimum Notice */}
+        <div className="flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-blue-700">
+            FedEx/UPS shipping is <strong>NOT</strong> free.{" "}
+            <Link
+              href="/shipping-faqs"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              See shipping FAQs
+            </Link>
+            . Orders must be $50 or more to choose FedEx/UPS.
+          </p>
+        </div>
 
-        {/* Shipping Option */}
-        {shippingZones.length > 0 && (
-          <button
-            onClick={() => handleSelectType("shipping")}
-            className={cn(
-              "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
-              fulfillment.type === "shipping"
-                ? "border-orange-500 bg-orange-50"
-                : "border-slate-200 hover:border-slate-300 bg-white"
-            )}
-          >
-            {fulfillment.type === "shipping" && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-white" />
-              </div>
-            )}
-            <Package
-              className={cn(
-                "w-8 h-8",
-                fulfillment.type === "shipping"
-                  ? "text-orange-500"
-                  : "text-slate-400"
-              )}
-            />
-            <div className="text-center">
-              <p className="font-semibold text-slate-900">
-                Shipping
-              </p>
-              <p className="text-sm text-slate-500">
-                Ship anywhere in the US
-              </p>
-            </div>
-          </button>
+        {/* Co-Op Restriction Notice */}
+        {hasCoopItems && (
+          <div className="flex gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-yellow-700">
+              If you have co-op items in your shopping cart, the only shipping
+              option available to you is to have your order shipped to the co-op
+              you choose. If you want FedEx/UPS shipping or farm pickup then
+              please remove the co-op items from your cart to make those options
+              available.
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Pickup Location Selection */}
-      {fulfillment.type === "pickup" && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">
-            Select Pickup Location
-          </h3>
-
-          <div className="relative">
-            <button
-              onClick={() => setShowLocationDropdown(!showLocationDropdown)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 text-left hover:border-slate-300 transition-colors"
-            >
-              {selectedLocation ? (
-                <div>
-                  <p className="font-medium text-slate-900">
-                    {selectedLocation.name}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {[
-                      selectedLocation.address_line1,
-                      selectedLocation.city,
-                      selectedLocation.state,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                </div>
-              ) : (
-                <span className="text-slate-400">
-                  Choose a location...
-                </span>
-              )}
-              <ChevronDown
-                className={cn(
-                  "w-5 h-5 text-slate-400 transition-transform",
-                  showLocationDropdown && "rotate-180"
-                )}
-              />
-            </button>
-
-            {showLocationDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl border border-slate-200 shadow-lg z-10 max-h-64 overflow-y-auto">
-                {pickupLocations.map((location) => (
-                  <button
-                    key={location.id}
-                    onClick={() => handleSelectLocation(location.id)}
-                    className={cn(
-                      "w-full flex items-start gap-3 p-4 text-left hover:bg-slate-50 transition-colors",
-                      location.id === fulfillment.locationId &&
-                        "bg-orange-50"
-                    )}
-                  >
-                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-slate-900">
-                        {location.name}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        {[
-                          location.address_line1,
-                          location.city,
-                          location.state,
-                          location.postal_code,
-                        ]
-                          .filter(Boolean)
-                          .join(", ")}
-                      </p>
-                      {location.description && (
-                        <p className="text-sm text-slate-500 mt-1">
-                          {location.description}
-                        </p>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {selectedLocation?.instructions && (
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <p className="text-sm text-slate-900">
-                <strong>Pickup Instructions:</strong>{" "}
-                {selectedLocation.instructions}
-              </p>
+      {/* Fulfillment Choice Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* FedEx/UPS Option */}
+        <button
+          onClick={() => !isShippingDisabled && handleSelectChoice("fedex-ups")}
+          disabled={isShippingDisabled}
+          className={cn(
+            "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
+            isShippingDisabled
+              ? "border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed"
+              : choice === "fedex-ups"
+              ? "border-orange-500 bg-orange-50"
+              : "border-slate-200 hover:border-slate-300 bg-white"
+          )}
+        >
+          {choice === "fedex-ups" && (
+            <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
             </div>
           )}
-        </div>
-      )}
-
-      {/* Delivery Zone Check */}
-      {fulfillment.type === "delivery" && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">
-            Check Delivery Availability
-          </h3>
-
-          <div className="space-y-4">
-            <Input
-              label="Enter your ZIP code"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value.replace(/\D/g, "").slice(0, 5))}
-              placeholder="12345"
-            />
-
-            {zipCode.length >= 5 && (
-              <div
-                className={cn(
-                  "p-4 rounded-xl",
-                  matchedDeliveryZone
-                    ? "bg-green-50 border border-green-200"
-                    : "bg-red-50 border border-red-200"
-                )}
-              >
-                {matchedDeliveryZone ? (
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Check className="w-5 h-5 text-green-600" />
-                      <p className="font-medium text-green-700">
-                        We deliver to your area!
-                      </p>
-                    </div>
-                    <p className="text-sm text-slate-500">
-                      {matchedDeliveryZone.name}
-                    </p>
-                    <p className="text-sm font-medium text-slate-900 mt-2">
-                      Delivery Fee:{" "}
-                      {matchedDeliveryZone.delivery_fee === 0
-                        ? "Free"
-                        : formatCurrency(matchedDeliveryZone.delivery_fee)}
-                      {matchedDeliveryZone.free_delivery_minimum && (
-                        <span className="text-slate-500 font-normal">
-                          {" "}
-                          (Free over{" "}
-                          {formatCurrency(matchedDeliveryZone.free_delivery_minimum)})
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-red-600">
-                    Sorry, we don&apos;t currently deliver to this ZIP code.
-                    Please try pickup or shipping instead.
-                  </p>
-                )}
-              </div>
+          <Package
+            className={cn(
+              "w-8 h-8",
+              choice === "fedex-ups" ? "text-orange-500" : "text-slate-400"
+            )}
+          />
+          <div className="text-center">
+            <p className="font-semibold text-slate-900">FedEx/UPS</p>
+            <p className="text-sm text-slate-500">Ship anywhere in the US</p>
+            {isShippingDisabled && subtotal < 50 && !hasCoopItems && (
+              <p className="text-xs text-red-500 mt-1">
+                Min. order: {formatCurrency(50)}
+              </p>
             )}
           </div>
-        </div>
-      )}
+        </button>
 
-      {/* Shipping Zone Check */}
-      {fulfillment.type === "shipping" && (
+        {/* Co-Op Option */}
+        <button
+          onClick={() => !isCoopDisabled && handleSelectChoice("coop")}
+          disabled={isCoopDisabled}
+          className={cn(
+            "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
+            isCoopDisabled
+              ? "border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed"
+              : choice === "coop"
+              ? "border-orange-500 bg-orange-50"
+              : "border-slate-200 hover:border-slate-300 bg-white"
+          )}
+        >
+          {choice === "coop" && (
+            <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+          )}
+          <MapPin
+            className={cn(
+              "w-8 h-8",
+              choice === "coop" ? "text-orange-500" : "text-slate-400"
+            )}
+          />
+          <div className="text-center">
+            <p className="font-semibold text-slate-900">Co-Op</p>
+            <p className="text-sm text-slate-500">Ship to your co-op</p>
+            {isCoopDisabled && (
+              <p className="text-xs text-red-500 mt-1">
+                No co-op locations available
+              </p>
+            )}
+          </div>
+        </button>
+
+        {/* Farm Pickup Option */}
+        <button
+          onClick={() =>
+            !isFarmPickupDisabled && handleSelectChoice("farm-pickup")
+          }
+          disabled={isFarmPickupDisabled}
+          className={cn(
+            "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all",
+            isFarmPickupDisabled
+              ? "border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed"
+              : choice === "farm-pickup"
+              ? "border-orange-500 bg-orange-50"
+              : "border-slate-200 hover:border-slate-300 bg-white"
+          )}
+        >
+          {choice === "farm-pickup" && (
+            <div className="absolute top-3 right-3 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+              <Check className="w-4 h-4 text-white" />
+            </div>
+          )}
+          <MapPin
+            className={cn(
+              "w-8 h-8",
+              choice === "farm-pickup" ? "text-orange-500" : "text-slate-400"
+            )}
+          />
+          <div className="text-center">
+            <p className="font-semibold text-slate-900">Farm Pickup</p>
+            <p className="text-sm text-slate-500">
+              648 Mill Creek School Rd
+              <br />
+              Bird in Hand, PA 17505
+            </p>
+          </div>
+        </button>
+      </div>
+
+      {/* Detail Panels */}
+
+      {/* FedEx/UPS: Shipping zone check */}
+      {choice === "fedex-ups" && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6">
           <h3 className="font-semibold text-slate-900 mb-4">
             Check Shipping Availability
@@ -410,10 +366,12 @@ export function FulfillmentSelector({
 
           <div className="space-y-4">
             <Input
-              label="Enter your state (e.g., PA, NY)"
+              label="Enter your state (e.g., NY, CA)"
               value={state}
-              onChange={(e) => setState(e.target.value.toUpperCase().slice(0, 2))}
-              placeholder="PA"
+              onChange={(e) =>
+                setState(e.target.value.toUpperCase().slice(0, 2))
+              }
+              placeholder="NY"
               maxLength={2}
             />
 
@@ -450,7 +408,10 @@ export function FulfillmentSelector({
                         <span className="text-slate-500 font-normal">
                           {" "}
                           (Free over{" "}
-                          {formatCurrency(matchedShippingZone.free_shipping_minimum)})
+                          {formatCurrency(
+                            matchedShippingZone.free_shipping_minimum
+                          )}
+                          )
                         </span>
                       )}
                     </p>
@@ -458,12 +419,136 @@ export function FulfillmentSelector({
                 ) : (
                   <p className="text-red-600">
                     Sorry, we don&apos;t currently ship to this state. Please
-                    try pickup or local delivery instead.
+                    try a different delivery option.
                   </p>
                 )}
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Co-Op: Location dropdown */}
+      {choice === "coop" && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-semibold text-slate-900 mb-4">
+            Select Co-Op Location
+          </h3>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 text-left hover:border-slate-300 transition-colors"
+            >
+              {selectedCoopLocation ? (
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {selectedCoopLocation.name}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    {[
+                      selectedCoopLocation.address_line1,
+                      selectedCoopLocation.city,
+                      selectedCoopLocation.state,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                </div>
+              ) : (
+                <span className="text-slate-400">
+                  Choose a co-op location...
+                </span>
+              )}
+              <ChevronDown
+                className={cn(
+                  "w-5 h-5 text-slate-400 transition-transform",
+                  showLocationDropdown && "rotate-180"
+                )}
+              />
+            </button>
+
+            {showLocationDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl border border-slate-200 shadow-lg z-10 max-h-64 overflow-y-auto">
+                {coopLocations.map((location) => (
+                  <button
+                    key={location.id}
+                    onClick={() => handleSelectCoopLocation(location.id)}
+                    className={cn(
+                      "w-full flex items-start gap-3 p-4 text-left hover:bg-slate-50 transition-colors",
+                      location.id === fulfillment.locationId && "bg-orange-50"
+                    )}
+                  >
+                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {location.name}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {[
+                          location.address_line1,
+                          location.city,
+                          location.state,
+                          location.postal_code,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      {location.description && (
+                        <p className="text-sm text-slate-500 mt-1">
+                          {location.description}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {selectedCoopLocation?.instructions && (
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <p className="text-sm text-slate-900">
+                <strong>Pickup Instructions:</strong>{" "}
+                {selectedCoopLocation.instructions}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Farm Pickup: Show address and instructions */}
+      {choice === "farm-pickup" && farmLocation && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="font-semibold text-slate-900 mb-4">
+            Farm Pickup Details
+          </h3>
+
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-slate-900">{farmLocation.name}</p>
+              <p className="text-sm text-slate-500">
+                {[
+                  farmLocation.address_line1,
+                  farmLocation.city,
+                  farmLocation.state,
+                  farmLocation.postal_code,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+            </div>
+          </div>
+
+          {farmLocation.instructions && (
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <p className="text-sm text-slate-900">
+                <strong>Pickup Instructions:</strong>{" "}
+                {farmLocation.instructions}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

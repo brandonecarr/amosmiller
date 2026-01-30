@@ -15,6 +15,7 @@ interface CartItem {
   estimatedWeight: number | null;
   quantity: number;
   imageUrl: string | null;
+  isCoopItem?: boolean;
 }
 
 interface FulfillmentSelection {

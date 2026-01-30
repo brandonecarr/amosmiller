@@ -536,6 +536,7 @@ export type Database = {
           contact_email: string | null;
           instructions: string | null;
           is_active: boolean;
+          is_coop: boolean;
           sort_order: number;
           created_at: string;
           updated_at: string;
@@ -557,6 +558,7 @@ export type Database = {
           contact_email?: string | null;
           instructions?: string | null;
           is_active?: boolean;
+          is_coop?: boolean;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;
@@ -578,6 +580,7 @@ export type Database = {
           contact_email?: string | null;
           instructions?: string | null;
           is_active?: boolean;
+          is_coop?: boolean;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;

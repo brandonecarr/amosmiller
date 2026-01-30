@@ -35,6 +35,7 @@ interface Location {
   id: string;
   name: string;
   type: "pickup" | "delivery" | "shipping";
+  is_coop: boolean;
   description: string | null;
   address_line1: string | null;
   address_line2: string | null;
@@ -91,7 +92,7 @@ export function CheckoutContent({
   isMember = false,
 }: CheckoutContentProps) {
   const router = useRouter();
-  const { items, subtotal, fulfillment, setFulfillment, clearCart } = useCart();
+  const { items, subtotal, fulfillment, setFulfillment, clearCart, hasCoopItems } = useCart();
   const [currentStep, setCurrentStep] = useState<Step>("fulfillment");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -542,6 +543,8 @@ export function CheckoutContent({
                 setFulfillment={setFulfillment}
                 shippingAddress={shippingAddress}
                 setShippingAddress={setShippingAddress}
+                hasCoopItems={hasCoopItems}
+                subtotal={subtotal}
               />
 
               {/* Date Selection */}
@@ -990,9 +993,13 @@ export function CheckoutContent({
                   )}
                   <div>
                     <p className="text-sm font-medium text-slate-900">
-                      {fulfillment.type === "pickup" && "Pickup"}
+                      {fulfillment.type === "shipping" && "FedEx/UPS"}
+                      {fulfillment.type === "pickup" && fulfillment.locationId && (() => {
+                        const loc = pickupLocations.find((l) => l.id === fulfillment.locationId);
+                        return loc?.is_coop ? "Co-Op Pickup" : "Farm Pickup";
+                      })()}
+                      {fulfillment.type === "pickup" && !fulfillment.locationId && "Pickup"}
                       {fulfillment.type === "delivery" && "Local Delivery"}
-                      {fulfillment.type === "shipping" && "Shipping"}
                     </p>
                     {fulfillment.scheduledDate && (
                       <p className="text-sm text-slate-500">

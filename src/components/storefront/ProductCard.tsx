@@ -23,6 +23,7 @@ interface ProductCardProps {
     max_weight?: number | null;
     stock_quantity: number;
     is_featured?: boolean;
+    tags?: string[];
     featured_image_url?: string | null;
   };
 }
@@ -48,6 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
       estimatedWeight: product.estimated_weight ?? null,
       quantity: 1,
       imageUrl: product.featured_image_url ?? null,
+      isCoopItem: product.tags?.includes("co-op") ?? false,
     });
 
     setJustAdded(true);

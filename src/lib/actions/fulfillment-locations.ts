@@ -21,6 +21,7 @@ const fulfillmentLocationSchema = z.object({
   contact_email: z.string().email().optional().nullable(),
   instructions: z.string().optional().nullable(),
   is_active: z.boolean().default(true),
+  is_coop: z.boolean().default(false),
   sort_order: z.number().int().default(0),
 });
 

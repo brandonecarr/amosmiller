@@ -19,6 +19,7 @@ interface Product {
   weight_unit: "lb" | "oz" | "kg" | "g";
   estimated_weight: number | null;
   featured_image_url: string | null;
+  tags?: string[];
   is_subscribable?: boolean;
   subscription_frequencies?: ("weekly" | "biweekly" | "monthly")[];
   min_subscription_quantity?: number;
@@ -81,6 +82,7 @@ export function AddToCartSection({ product }: { product: Product }) {
       estimatedWeight: product.estimated_weight,
       quantity,
       imageUrl: product.featured_image_url,
+      isCoopItem: product.tags?.includes("co-op") ?? false,
     });
     trackAddToCart({ id: product.id, name: product.name, price, quantity });
     fbTrackAddToCart({ value: price * quantity, contentName: product.name });
