@@ -58,6 +58,7 @@ interface FulfillmentLocation {
   state: string | null;
   postal_code: string | null;
   is_active: boolean;
+  is_coop: boolean;
 }
 
 interface DeliveryZone {
@@ -532,6 +533,7 @@ function LocationsTab({
                     <Badge variant={location.type === "pickup" ? "default" : "info"} size="sm">
                       {location.type}
                     </Badge>
+                    {location.is_coop && <Badge variant="accent" size="sm">Co-Op</Badge>}
                     {!location.is_active && <Badge variant="outline" size="sm">Inactive</Badge>}
                   </div>
                   {location.city && location.state && (
@@ -860,6 +862,7 @@ function LocationModal({
     state: item?.state || "",
     postal_code: item?.postal_code || "",
     is_active: item?.is_active ?? true,
+    is_coop: item?.is_coop ?? false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -938,15 +941,32 @@ function LocationModal({
             />
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-5 h-5 rounded"
-            />
-            <span className="font-medium">Active</span>
-          </label>
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                className="w-5 h-5 rounded"
+              />
+              <span className="font-medium">Active</span>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_coop}
+                onChange={(e) => setFormData({ ...formData, is_coop: e.target.checked })}
+                className="w-5 h-5 rounded"
+              />
+              <div>
+                <span className="font-medium">Co-Op Location</span>
+                <p className="text-xs text-[var(--color-muted)]">
+                  Mark this as a co-op pickup location (not the farm)
+                </p>
+              </div>
+            </label>
+          </div>
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={isPending}>
