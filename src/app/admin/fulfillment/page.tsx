@@ -1367,7 +1367,7 @@ function ScheduleModal({
               type="date"
               value={formData.start_date}
               onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-              helperText="Anchor date for biweekly schedules; first occurrence for weekly/monthly"
+              helperText="Anchor date for every-2-week schedules; first occurrence for weekly/monthly"
             />
           )}
 
