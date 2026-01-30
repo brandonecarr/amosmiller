@@ -9,7 +9,7 @@ import {
   ShoppingCart,
   Users,
   Truck,
-  CalendarDays,
+
   Repeat,
   Tag,
   Gift,
@@ -33,7 +33,6 @@ const navigation = [
   { name: "Categories", href: "/admin/categories", icon: FolderTree },
   { name: "Customers", href: "/admin/customers", icon: Users },
   { name: "Fulfillment", href: "/admin/fulfillment", icon: Truck },
-  { name: "Schedules", href: "/admin/schedules", icon: CalendarDays },
   { name: "Subscriptions", href: "/admin/subscriptions", icon: Repeat },
   { name: "Coupons", href: "/admin/coupons", icon: Tag },
   { name: "Gift Cards", href: "/admin/gift-cards", icon: Gift },

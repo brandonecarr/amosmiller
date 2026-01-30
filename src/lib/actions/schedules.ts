@@ -457,6 +457,41 @@ export async function addBlockedDate(scheduleId: string, date: string) {
   return { data, error: null };
 }
 
+// Get schedule assignments for a location/zone (returns assignment IDs for removal)
+export async function getScheduleAssignments(params: {
+  fulfillment_location_id?: string;
+  delivery_zone_id?: string;
+  shipping_zone_id?: string;
+}): Promise<{
+  data: Array<{ id: string; schedule_id: string }> | null;
+  error: string | null;
+}> {
+  const supabase = await createClient();
+
+  let query = (supabase as any)
+    .from("schedule_assignments")
+    .select("id, schedule_id");
+
+  if (params.fulfillment_location_id) {
+    query = query.eq("fulfillment_location_id", params.fulfillment_location_id);
+  } else if (params.delivery_zone_id) {
+    query = query.eq("delivery_zone_id", params.delivery_zone_id);
+  } else if (params.shipping_zone_id) {
+    query = query.eq("shipping_zone_id", params.shipping_zone_id);
+  } else {
+    return { data: null, error: "Must specify a location or zone" };
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching schedule assignments:", error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
 // Remove blocked date from schedule
 export async function removeBlockedDate(scheduleId: string, date: string) {
   const supabase = await createClient();

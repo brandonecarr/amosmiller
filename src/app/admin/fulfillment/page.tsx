@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import {
   MapPin,
   Truck,
@@ -43,6 +43,9 @@ import {
   updateSchedule,
   deleteSchedule,
   toggleScheduleActive,
+  assignSchedule,
+  removeScheduleAssignment,
+  getScheduleAssignments,
 } from "@/lib/actions/schedules";
 
 type TabType = "locations" | "delivery" | "shipping" | "schedules";
@@ -453,6 +456,7 @@ export default function FulfillmentPage() {
           onSave={handleSaveLocation}
           isPending={isPending}
           error={error}
+          schedules={schedules}
         />
       )}
 
@@ -463,6 +467,7 @@ export default function FulfillmentPage() {
           onSave={handleSaveDeliveryZone}
           isPending={isPending}
           error={error}
+          schedules={schedules}
         />
       )}
 
@@ -473,6 +478,7 @@ export default function FulfillmentPage() {
           onSave={handleSaveShippingZone}
           isPending={isPending}
           error={error}
+          schedules={schedules}
         />
       )}
 
@@ -845,12 +851,14 @@ function LocationModal({
   onSave,
   isPending,
   error,
+  schedules,
 }: {
   item: FulfillmentLocation | null;
   onClose: () => void;
   onSave: (data: any) => void;
   isPending: boolean;
   error: string | null;
+  schedules: Schedule[];
 }) {
   const [formData, setFormData] = useState({
     name: item?.name || "",
@@ -968,6 +976,8 @@ function LocationModal({
             </label>
           </div>
 
+          <ScheduleAssigner entityType="location" entityId={item?.id || null} schedules={schedules} />
+
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={isPending}>
               Cancel
@@ -988,12 +998,14 @@ function DeliveryZoneModal({
   onSave,
   isPending,
   error,
+  schedules,
 }: {
   item: DeliveryZone | null;
   onClose: () => void;
   onSave: (data: any) => void;
   isPending: boolean;
   error: string | null;
+  schedules: Schedule[];
 }) {
   const [formData, setFormData] = useState({
     name: item?.name || "",
@@ -1086,6 +1098,8 @@ function DeliveryZoneModal({
             <span className="font-medium">Active</span>
           </label>
 
+          <ScheduleAssigner entityType="delivery_zone" entityId={item?.id || null} schedules={schedules} />
+
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={isPending}>
               Cancel
@@ -1106,12 +1120,14 @@ function ShippingZoneModal({
   onSave,
   isPending,
   error,
+  schedules,
 }: {
   item: ShippingZone | null;
   onClose: () => void;
   onSave: (data: any) => void;
   isPending: boolean;
   error: string | null;
+  schedules: Schedule[];
 }) {
   const [formData, setFormData] = useState({
     name: item?.name || "",
@@ -1221,6 +1237,8 @@ function ShippingZoneModal({
             />
             <span className="font-medium">Active</span>
           </label>
+
+          <ScheduleAssigner entityType="shipping_zone" entityId={item?.id || null} schedules={schedules} />
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={isPending}>
@@ -1371,6 +1389,151 @@ function ScheduleModal({
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+// Schedule Assigner — reusable component for assigning schedules to locations/zones
+function ScheduleAssigner({
+  entityType,
+  entityId,
+  schedules,
+}: {
+  entityType: "location" | "delivery_zone" | "shipping_zone";
+  entityId: string | null;
+  schedules: Schedule[];
+}) {
+  const [assignments, setAssignments] = useState<Map<string, string>>(new Map()); // scheduleId → assignmentId
+  const [loading, setLoading] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  const loadAssignments = useCallback(async () => {
+    if (!entityId) return;
+    setLoading(true);
+
+    const params =
+      entityType === "location"
+        ? { fulfillment_location_id: entityId }
+        : entityType === "delivery_zone"
+        ? { delivery_zone_id: entityId }
+        : { shipping_zone_id: entityId };
+
+    const result = await getScheduleAssignments(params);
+    if (result.data) {
+      const map = new Map<string, string>();
+      for (const a of result.data) {
+        map.set(a.schedule_id, a.id);
+      }
+      setAssignments(map);
+    }
+    setLoading(false);
+  }, [entityId, entityType]);
+
+  useEffect(() => {
+    loadAssignments();
+  }, [loadAssignments]);
+
+  const handleToggle = async (scheduleId: string) => {
+    if (!entityId) return;
+    setToggling(scheduleId);
+
+    const existingAssignmentId = assignments.get(scheduleId);
+
+    if (existingAssignmentId) {
+      // Remove
+      const result = await removeScheduleAssignment(existingAssignmentId);
+      if (!result.error) {
+        setAssignments((prev) => {
+          const next = new Map(prev);
+          next.delete(scheduleId);
+          return next;
+        });
+      }
+    } else {
+      // Assign
+      const assignmentData =
+        entityType === "location"
+          ? { fulfillment_location_id: entityId }
+          : entityType === "delivery_zone"
+          ? { delivery_zone_id: entityId }
+          : { shipping_zone_id: entityId };
+
+      const result = await assignSchedule(scheduleId, assignmentData);
+      if (result.data) {
+        setAssignments((prev) => {
+          const next = new Map(prev);
+          next.set(scheduleId, result.data.id);
+          return next;
+        });
+      }
+    }
+
+    setToggling(null);
+  };
+
+  if (!entityId) {
+    return (
+      <div className="pt-4 border-t border-[var(--color-border)]">
+        <p className="text-sm font-medium text-[var(--color-charcoal)] mb-2">Assigned Schedules</p>
+        <p className="text-sm text-[var(--color-muted)]">Save first, then assign schedules.</p>
+      </div>
+    );
+  }
+
+  if (schedules.length === 0) {
+    return (
+      <div className="pt-4 border-t border-[var(--color-border)]">
+        <p className="text-sm font-medium text-[var(--color-charcoal)] mb-2">Assigned Schedules</p>
+        <p className="text-sm text-[var(--color-muted)]">
+          No schedules exist yet. Create one in the Schedules tab first.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-4 border-t border-[var(--color-border)]">
+      <p className="text-sm font-medium text-[var(--color-charcoal)] mb-2">Assigned Schedules</p>
+      {loading ? (
+        <div className="flex items-center gap-2 py-2">
+          <Loader2 className="w-4 h-4 animate-spin text-[var(--color-muted)]" />
+          <span className="text-sm text-[var(--color-muted)]">Loading...</span>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {schedules
+            .filter((s) => s.is_active)
+            .map((schedule) => (
+              <label
+                key={schedule.id}
+                className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-[var(--color-slate-50)]"
+              >
+                <input
+                  type="checkbox"
+                  checked={assignments.has(schedule.id)}
+                  onChange={() => handleToggle(schedule.id)}
+                  disabled={toggling === schedule.id}
+                  className="w-4 h-4 rounded"
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium">{schedule.name}</span>
+                  <span className="text-xs text-[var(--color-muted)] ml-2">
+                    {schedule.recurrence_rule
+                      ? `${schedule.recurrence_rule.frequency}${
+                          schedule.recurrence_rule.day_of_week !== undefined
+                            ? ` — ${daysOfWeek[schedule.recurrence_rule.day_of_week]}`
+                            : ""
+                        }`
+                      : "One-time"}
+                  </span>
+                </div>
+                {toggling === schedule.id && (
+                  <Loader2 className="w-4 h-4 animate-spin text-[var(--color-muted)]" />
+                )}
+              </label>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
