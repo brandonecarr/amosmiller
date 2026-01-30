@@ -13,6 +13,7 @@ import {
   sendPaymentCapturedEmail,
 } from "@/lib/email/order-emails";
 import { syncCustomerAfterOrder } from "@/lib/integrations/mailchimp";
+import { activateMembership } from "@/lib/actions/membership";
 
 // Address schema
 const addressSchema = z.object({
@@ -61,6 +62,7 @@ const createOrderSchema = z.object({
   // Pricing
   subtotal: z.number().min(0),
   shippingFee: z.number().min(0).default(0),
+  membershipFee: z.number().min(0).default(0),
   taxAmount: z.number().min(0).default(0),
   discountAmount: z.number().min(0).default(0),
 
@@ -133,6 +135,7 @@ export async function createOrder(input: CreateOrderInput) {
   const total =
     data.subtotal +
     data.shippingFee +
+    data.membershipFee +
     data.taxAmount -
     data.discountAmount -
     data.giftCardAmountUsed -
@@ -182,6 +185,7 @@ export async function createOrder(input: CreateOrderInput) {
       discount_amount: data.discountAmount,
       tax_amount: data.taxAmount,
       shipping_fee: data.shippingFee,
+      membership_fee: data.membershipFee,
       total,
       stripe_payment_intent_id: paymentIntent?.id || null,
       customer_notes: data.customerNotes || null,
@@ -285,6 +289,7 @@ export async function createOrder(input: CreateOrderInput) {
       shipping_address: data.shippingAddress || null,
       subtotal: data.subtotal,
       shipping_fee: data.shippingFee,
+      membership_fee: data.membershipFee,
       tax_amount: data.taxAmount,
       discount_amount: data.discountAmount,
       total,
@@ -332,6 +337,16 @@ export async function createOrder(input: CreateOrderInput) {
     });
   } catch (mailchimpError) {
     console.error("Error syncing customer to Mailchimp:", mailchimpError);
+  }
+
+  // Activate membership if this order includes a membership fee
+  if (user?.id && data.membershipFee > 0) {
+    try {
+      await activateMembership(user.id);
+    } catch (membershipError) {
+      console.error("Error activating membership:", membershipError);
+      // Don't fail the order, just log the error
+    }
   }
 
   revalidatePath("/admin/orders");
@@ -716,7 +731,7 @@ export async function recalculateOrderTotal(orderId: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: order, error: orderError } = await (supabase as any)
     .from("orders")
-    .select("shipping_fee, tax_amount, discount_amount, gift_card_amount_used, store_credit_used")
+    .select("shipping_fee, membership_fee, tax_amount, discount_amount, gift_card_amount_used, store_credit_used")
     .eq("id", orderId)
     .single();
 
@@ -727,6 +742,7 @@ export async function recalculateOrderTotal(orderId: string) {
   const total =
     subtotal +
     order.shipping_fee +
+    (order.membership_fee || 0) +
     order.tax_amount -
     order.discount_amount -
     order.gift_card_amount_used -

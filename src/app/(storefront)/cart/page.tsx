@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, AlertTriangle, RefreshCw,
 import { Button } from "@/components/ui";
 import { useCart } from "@/contexts/CartContext";
 import { formatCurrency, formatWeightPrice } from "@/lib/utils";
+import { MEMBERSHIP_FEE } from "@/lib/constants";
 
 export default function CartPage() {
   const {
@@ -256,6 +257,18 @@ export default function CartPage() {
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Final prices for weight-based items will be determined when packed.
+              </p>
+            </div>
+
+            {/* Membership Notice */}
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+              <p className="text-sm text-blue-800 font-medium">
+                Private Membership Association
+              </p>
+              <p className="text-xs text-blue-700 mt-1">
+                New members: a one-time {formatCurrency(MEMBERSHIP_FEE)} lifetime
+                membership fee will be added at checkout. Existing members are
+                not charged again.
               </p>
             </div>
 

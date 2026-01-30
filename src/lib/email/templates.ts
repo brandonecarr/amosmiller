@@ -26,6 +26,7 @@ interface Order {
   } | null;
   subtotal: number;
   shipping_fee: number;
+  membership_fee?: number;
   tax_amount: number;
   discount_amount: number;
   total: number;
@@ -143,6 +144,15 @@ function renderTotals(order: Order): string {
       <div class="total-row">
         <span>${order.fulfillment_type === "shipping" ? "Shipping" : "Delivery Fee"}</span>
         <span>${formatCurrency(order.shipping_fee)}</span>
+      </div>
+    `;
+  }
+
+  if (order.membership_fee && order.membership_fee > 0) {
+    html += `
+      <div class="total-row">
+        <span>Membership Fee (one-time)</span>
+        <span>${formatCurrency(order.membership_fee)}</span>
       </div>
     `;
   }

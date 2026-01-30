@@ -22,6 +22,8 @@ export type Database = {
           is_active: boolean;
           pricing_tier_id: string | null;
           stripe_customer_id: string | null;
+          is_member: boolean;
+          membership_paid_at: string | null;
           avatar_url: string | null;
           notes: string | null;
           created_at: string;
@@ -36,6 +38,8 @@ export type Database = {
           is_active?: boolean;
           pricing_tier_id?: string | null;
           stripe_customer_id?: string | null;
+          is_member?: boolean;
+          membership_paid_at?: string | null;
           avatar_url?: string | null;
           notes?: string | null;
           created_at?: string;
@@ -50,6 +54,8 @@ export type Database = {
           is_active?: boolean;
           pricing_tier_id?: string | null;
           stripe_customer_id?: string | null;
+          is_member?: boolean;
+          membership_paid_at?: string | null;
           avatar_url?: string | null;
           notes?: string | null;
           created_at?: string;
@@ -282,6 +288,7 @@ export type Database = {
           discount_amount: number;
           tax_amount: number;
           shipping_fee: number;
+          membership_fee: number;
           total: number;
           stripe_payment_intent_id: string | null;
           stripe_charge_id: string | null;
@@ -321,6 +328,7 @@ export type Database = {
           discount_amount?: number;
           tax_amount?: number;
           shipping_fee?: number;
+          membership_fee?: number;
           total?: number;
           stripe_payment_intent_id?: string | null;
           stripe_charge_id?: string | null;
@@ -360,6 +368,7 @@ export type Database = {
           discount_amount?: number;
           tax_amount?: number;
           shipping_fee?: number;
+          membership_fee?: number;
           total?: number;
           stripe_payment_intent_id?: string | null;
           stripe_charge_id?: string | null;

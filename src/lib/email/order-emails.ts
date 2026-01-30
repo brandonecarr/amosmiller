@@ -25,6 +25,7 @@ interface OrderEmailData {
   } | null;
   subtotal: number;
   shipping_fee: number;
+  membership_fee?: number;
   tax_amount: number;
   discount_amount: number;
   total: number;

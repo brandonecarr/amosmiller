@@ -27,6 +27,7 @@ import { validateCoupon } from "@/lib/actions/coupons";
 import { validateGiftCard } from "@/lib/actions/gift-cards";
 import { createOrder, validateInventory } from "@/lib/actions/orders";
 import { calculateTax } from "@/lib/actions/tax";
+import { MEMBERSHIP_FEE } from "@/lib/constants";
 import { trackBeginCheckout, trackPurchase } from "@/components/analytics/GoogleAnalytics";
 import { fbTrackInitiateCheckout, fbTrackPurchase } from "@/components/analytics/FacebookPixel";
 
@@ -73,6 +74,7 @@ interface CheckoutContentProps {
   userFullName?: string | null;
   userPhone?: string | null;
   storeCreditBalance?: number;
+  isMember?: boolean;
 }
 
 type Step = "fulfillment" | "details" | "payment";
@@ -86,6 +88,7 @@ export function CheckoutContent({
   userFullName,
   userPhone,
   storeCreditBalance: initialStoreCreditBalance = 0,
+  isMember = false,
 }: CheckoutContentProps) {
   const router = useRouter();
   const { items, subtotal, fulfillment, setFulfillment, clearCart } = useCart();
@@ -155,6 +158,9 @@ export function CheckoutContent({
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
 
+  // Membership fee: $35 one-time fee for non-members
+  const membershipFee = isMember ? 0 : MEMBERSHIP_FEE;
+
   // Redirect if cart is empty
   useEffect(() => {
     if (items.length === 0 && !orderId) {
@@ -210,13 +216,13 @@ export function CheckoutContent({
   // Calculate store credit amount to use
   useEffect(() => {
     if (useStoreCredit && storeCreditBalance > 0) {
-      const remainingAfterDiscounts = subtotal + deliveryFee + shippingFee - (appliedCoupon?.discount || 0) - (appliedGiftCard?.amountToUse || 0);
+      const remainingAfterDiscounts = subtotal + deliveryFee + shippingFee + membershipFee - (appliedCoupon?.discount || 0) - (appliedGiftCard?.amountToUse || 0);
       const amountToUse = Math.min(storeCreditBalance, Math.max(0, remainingAfterDiscounts));
       setStoreCreditAmount(amountToUse);
     } else {
       setStoreCreditAmount(0);
     }
-  }, [useStoreCredit, storeCreditBalance, subtotal, deliveryFee, shippingFee, appliedCoupon, appliedGiftCard]);
+  }, [useStoreCredit, storeCreditBalance, subtotal, deliveryFee, shippingFee, membershipFee, appliedCoupon, appliedGiftCard]);
 
   // Calculate tax when shipping state is set
   useEffect(() => {
@@ -237,7 +243,7 @@ export function CheckoutContent({
   // Calculate totals
   const discountAmount = appliedCoupon?.discount || 0;
   const giftCardAmount = appliedGiftCard?.amountToUse || 0;
-  const totalBeforeCredits = subtotal + deliveryFee + shippingFee + taxAmount - discountAmount;
+  const totalBeforeCredits = subtotal + deliveryFee + shippingFee + membershipFee + taxAmount - discountAmount;
   const totalBeforeGiftCard = totalBeforeCredits - storeCreditAmount;
   const total = Math.max(0, totalBeforeGiftCard - giftCardAmount);
 
@@ -392,6 +398,7 @@ export function CheckoutContent({
       })),
       subtotal,
       shippingFee: deliveryFee + shippingFee,
+      membershipFee,
       taxAmount,
       discountAmount,
       couponCode: appliedCoupon?.code,
@@ -720,6 +727,20 @@ export function CheckoutContent({
               Order Summary
             </h2>
 
+            {/* Membership Fee Notice */}
+            {membershipFee > 0 && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-sm text-amber-800 font-medium">
+                  Private Membership Association
+                </p>
+                <p className="text-xs text-amber-700 mt-1">
+                  A one-time ${MEMBERSHIP_FEE} lifetime membership fee is
+                  included with your first order. This grants you lifetime
+                  access to all farm products.
+                </p>
+              </div>
+            )}
+
             {/* Cart Items Preview */}
             <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
               {items.map((item) => {
@@ -906,6 +927,13 @@ export function CheckoutContent({
                   <span className="font-medium text-slate-900">
                     {shippingFee === 0 ? "Free" : formatCurrency(shippingFee)}
                   </span>
+                </div>
+              )}
+
+              {membershipFee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Membership Fee (one-time)</span>
+                  <span className="font-medium text-slate-900">{formatCurrency(membershipFee)}</span>
                 </div>
               )}
 

@@ -10,6 +10,7 @@ import { getDeliveryZones } from "@/lib/actions/delivery-zones";
 import { getShippingZones } from "@/lib/actions/shipping-zones";
 import { getUserStoreCredits } from "@/lib/actions/store-credits";
 import { createClient } from "@/lib/supabase/server";
+import { checkMembership } from "@/lib/actions/membership";
 import { CheckoutContent } from "./CheckoutContent";
 import { Loader2 } from "lucide-react";
 
@@ -17,18 +18,20 @@ async function CheckoutData() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [locationsResult, deliveryZonesResult, shippingZonesResult, storeCreditResult] =
+  const [locationsResult, deliveryZonesResult, shippingZonesResult, storeCreditResult, membershipResult] =
     await Promise.all([
       getFulfillmentLocations({ is_active: true }),
       getDeliveryZones({ is_active: true }),
       getShippingZones({ is_active: true }),
       user ? getUserStoreCredits(user.id) : Promise.resolve({ balance: 0, error: null }),
+      user ? checkMembership(user.id) : Promise.resolve({ isMember: false, error: null }),
     ]);
 
   const locations = locationsResult.data || [];
   const deliveryZones = deliveryZonesResult.data || [];
   const shippingZones = shippingZonesResult.data || [];
   const storeCreditBalance = storeCreditResult.balance || 0;
+  const isMember = membershipResult.isMember;
 
   // Get user profile for pre-filling checkout
   let userProfile = null;
@@ -51,6 +54,7 @@ async function CheckoutData() {
       userFullName={userProfile?.full_name || null}
       userPhone={userProfile?.phone || null}
       storeCreditBalance={storeCreditBalance}
+      isMember={isMember}
     />
   );
 }
