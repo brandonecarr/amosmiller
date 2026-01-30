@@ -5,7 +5,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { MoreHorizontal, Eye, Printer, Check, Loader2 } from "lucide-react";
 import { Button, Badge } from "@/components/ui";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { updateOrderStatus } from "@/lib/actions/orders";
 
 interface Order {
@@ -216,7 +216,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     </span>
                     {order.scheduled_date && (
                       <p className="text-xs text-[var(--color-muted)]">
-                        {format(new Date(order.scheduled_date), "MMM d")}
+                        {format(parseLocalDate(order.scheduled_date), "MMM d")}
                       </p>
                     )}
                   </td>

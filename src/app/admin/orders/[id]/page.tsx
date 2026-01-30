@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui";
 import { getOrder } from "@/lib/actions/orders";
 import { getPaymentIntent } from "@/lib/stripe/server";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import { OrderNotesForm } from "./OrderNotesForm";
 import { WeightEntryForm } from "./WeightEntryForm";
@@ -370,7 +370,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   <div>
                     <p className="text-xs text-[var(--color-muted)] uppercase">Scheduled Date</p>
                     <p className="font-medium text-[var(--color-charcoal)]">
-                      {format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+                      {format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
                     </p>
                   </div>
                 </div>

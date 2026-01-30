@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { RefreshCw, Users, DollarSign, Calendar } from "lucide-react";
 import { Button } from "@/components/ui";
 import { getSubscriptions, getSubscriptionsDueForProcessing } from "@/lib/actions/subscriptions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 
 interface SubscriptionsPageProps {
   searchParams: Promise<{
@@ -245,7 +245,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Subscript
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--color-charcoal)]">
                     {subscription.next_order_date
-                      ? format(new Date(subscription.next_order_date), "MMM d, yyyy")
+                      ? format(parseLocalDate(subscription.next_order_date), "MMM d, yyyy")
                       : "—"}
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--color-charcoal)] capitalize">

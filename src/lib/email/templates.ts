@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { parseLocalDate } from "@/lib/utils";
 
 interface OrderItem {
   product_name: string;
@@ -215,7 +216,7 @@ export function orderConfirmationEmail(order: Order, baseUrl: string): { subject
           <div class="section">
             <div class="section-title">${getFulfillmentLabel(order.fulfillment_type)} Date</div>
             <div style="font-size: 16px; color: #1a1a1a;">
-              ${format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+              ${format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
             </div>
             ${order.fulfillment_type === "pickup" && order.fulfillment_locations ? `
               <div style="color: #666666; margin-top: 4px;">
@@ -265,7 +266,7 @@ Hi ${getFirstName(order)},
 We've received your order and it's being processed.
 
 Order Number: #${order.order_number}
-${order.scheduled_date ? `${getFulfillmentLabel(order.fulfillment_type)} Date: ${format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}` : ""}
+${order.scheduled_date ? `${getFulfillmentLabel(order.fulfillment_type)} Date: ${format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}` : ""}
 
 Items:
 ${order.order_items?.map((item) => `- ${item.product_name} x${item.quantity}`).join("\n") || ""}
@@ -357,7 +358,7 @@ export function orderStatusUpdateEmail(
           <div class="section">
             <div class="section-title">${getFulfillmentLabel(order.fulfillment_type)} Date</div>
             <div style="font-size: 16px; color: #1a1a1a;">
-              ${format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+              ${format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
             </div>
           </div>
           ` : ""}

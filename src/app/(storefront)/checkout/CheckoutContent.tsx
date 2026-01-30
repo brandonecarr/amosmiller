@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button, Input } from "@/components/ui";
 import { useCart } from "@/contexts/CartContext";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { FulfillmentSelector } from "./FulfillmentSelector";
 import { DateSelector } from "./DateSelector";
 import { PaymentForm } from "./PaymentForm";
@@ -1004,7 +1004,7 @@ export function CheckoutContent({
                     {fulfillment.scheduledDate && (
                       <p className="text-sm text-slate-500">
                         <Calendar className="w-4 h-4 inline mr-1" />
-                        {new Date(fulfillment.scheduledDate).toLocaleDateString("en-US", {
+                        {parseLocalDate(fulfillment.scheduledDate).toLocaleDateString("en-US", {
                           weekday: "short",
                           month: "short",
                           day: "numeric",

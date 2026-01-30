@@ -3,6 +3,7 @@ import { CheckCircle, Package, MapPin, Calendar, CreditCard, ArrowRight } from "
 import { Button } from "@/components/ui";
 import { getOrder } from "@/lib/actions/orders";
 import { format } from "date-fns";
+import { parseLocalDate } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 // Force dynamic rendering since this page depends on searchParams and database
@@ -140,7 +141,7 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
                 <div>
                   <p className="text-sm text-slate-500">Scheduled Date</p>
                   <p className="font-medium text-slate-900">
-                    {format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+                    {format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
               </div>

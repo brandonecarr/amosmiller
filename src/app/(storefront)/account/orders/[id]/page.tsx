@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOrder } from "@/lib/actions/orders";
 import { Button } from "@/components/ui";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -203,7 +203,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 <div>
                   <p className="text-sm text-slate-500">Scheduled Date</p>
                   <p className="font-medium text-slate-900">
-                    {format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+                    {format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
               </div>

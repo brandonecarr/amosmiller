@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { getOrder } from "@/lib/actions/orders";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 
 interface PackingListPageProps {
   params: Promise<{ id: string }>;
@@ -92,7 +92,7 @@ export default async function PackingListPage({ params }: PackingListPageProps) 
           </h2>
           {order.scheduled_date && (
             <p className="font-medium text-gray-900">
-              {format(new Date(order.scheduled_date), "EEEE, MMMM d, yyyy")}
+              {format(parseLocalDate(order.scheduled_date), "EEEE, MMMM d, yyyy")}
             </p>
           )}
           {order.fulfillment_locations && (

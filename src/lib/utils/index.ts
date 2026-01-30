@@ -71,6 +71,16 @@ export function formatOrderNumber(orderNumber: number): string {
   return `#${orderNumber.toString().padStart(6, "0")}`;
 }
 
+// Parse a date string as local time (avoids UTC midnight timezone shift)
+// "2026-02-16" → local Feb 16, NOT UTC Feb 16 which shows as Feb 15 in US timezones
+export function parseLocalDate(date: string | Date): Date {
+  if (date instanceof Date) return date;
+  if (date.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return new Date(date + "T00:00:00");
+  }
+  return new Date(date);
+}
+
 // Format date for display
 export function formatDate(
   date: string | Date,
@@ -81,7 +91,7 @@ export function formatDate(
     month: "long",
     day: "numeric",
   };
-  return new Date(date).toLocaleDateString("en-US", options || defaultOptions);
+  return parseLocalDate(date).toLocaleDateString("en-US", options || defaultOptions);
 }
 
 // Format date and time
@@ -96,7 +106,7 @@ export function formatDateTime(
     hour: "numeric",
     minute: "2-digit",
   };
-  return new Date(date).toLocaleString("en-US", options || defaultOptions);
+  return parseLocalDate(date).toLocaleString("en-US", options || defaultOptions);
 }
 
 // Format relative time (e.g., "2 hours ago")

@@ -1,6 +1,7 @@
 "use server";
 
 import { format, addDays } from "date-fns";
+import { parseLocalDate } from "@/lib/utils";
 import { sendEmail } from "./resend";
 
 interface SubscriptionEmailData {
@@ -89,7 +90,7 @@ export async function sendSubscriptionConfirmationEmail(subscription: Subscripti
           <div class="section">
             <h3>First Order</h3>
             <p style="font-size: 16px;">
-              ${format(new Date(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
+              ${format(parseLocalDate(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
             </p>
           </div>
 
@@ -120,7 +121,7 @@ ${subscription.items.map((item) => `- ${item.name} × ${item.quantity}`).join("\
 
 Total: ${formatCurrency(subscription.total)} per delivery
 
-First Order: ${format(new Date(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
+First Order: ${format(parseLocalDate(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
 
 Manage your subscription: ${baseUrl}/account/subscriptions
 
@@ -158,7 +159,7 @@ export async function sendSubscriptionReminderEmail(subscription: SubscriptionEm
         </div>
         <div class="content">
           <p>Hi ${firstName},</p>
-          <p>Just a heads up - your subscription order will be processed on <strong>${format(new Date(subscription.next_order_date), "EEEE, MMMM d")}</strong>.</p>
+          <p>Just a heads up - your subscription order will be processed on <strong>${format(parseLocalDate(subscription.next_order_date), "EEEE, MMMM d")}</strong>.</p>
 
           <div class="section">
             <h3 style="margin-bottom: 8px;">Order Summary</h3>
@@ -199,7 +200,7 @@ Your Order is Coming Up!
 
 Hi ${firstName},
 
-Just a heads up - your subscription order will be processed on ${format(new Date(subscription.next_order_date), "EEEE, MMMM d")}.
+Just a heads up - your subscription order will be processed on ${format(parseLocalDate(subscription.next_order_date), "EEEE, MMMM d")}.
 
 Order Summary:
 ${subscription.items.map((item) => `- ${item.name} × ${item.quantity}`).join("\n")}

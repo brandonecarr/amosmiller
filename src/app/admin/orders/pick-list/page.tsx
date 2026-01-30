@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { getOrders } from "@/lib/actions/orders";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 
 interface PickListPageProps {
   searchParams: Promise<{
@@ -188,7 +188,7 @@ export default async function PickListPage({ searchParams }: PickListPageProps) 
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-1">Pick List</h1>
           <p className="text-gray-600">
-            {format(new Date(scheduledDate), "EEEE, MMMM d, yyyy")}
+            {format(parseLocalDate(scheduledDate), "EEEE, MMMM d, yyyy")}
             {fulfillmentType && ` • ${fulfillmentLabels[fulfillmentType]}`}
           </p>
         </div>

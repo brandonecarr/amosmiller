@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { getOrders } from "@/lib/actions/orders";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { Phone, MapPin, Package, MessageSquare } from "lucide-react";
 
 interface DeliveryManifestPageProps {
@@ -170,7 +170,7 @@ export default async function DeliveryManifestPage({ searchParams }: DeliveryMan
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-1">Delivery Manifest</h1>
           <p className="text-gray-600">
-            {format(new Date(scheduledDate), "EEEE, MMMM d, yyyy")}
+            {format(parseLocalDate(scheduledDate), "EEEE, MMMM d, yyyy")}
             {params.zone && ` • ${params.zone}`}
           </p>
         </div>

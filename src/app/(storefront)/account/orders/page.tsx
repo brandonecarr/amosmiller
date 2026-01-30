@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getUserOrders } from "@/lib/actions/orders";
 import { Package, ChevronRight, Calendar, MapPin, Truck } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { format } from "date-fns";
 
 export const metadata: Metadata = {
@@ -121,7 +121,7 @@ export default async function OrdersPage() {
                   {order.scheduled_date && (
                     <>
                       <span className="text-slate-200">|</span>
-                      <span>{format(new Date(order.scheduled_date), "MMM d")}</span>
+                      <span>{format(parseLocalDate(order.scheduled_date), "MMM d")}</span>
                     </>
                   )}
                 </div>

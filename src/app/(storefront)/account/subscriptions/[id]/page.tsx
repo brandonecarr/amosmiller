@@ -14,7 +14,7 @@ import { Button } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getSubscription } from "@/lib/actions/subscriptions";
 import { calculateSubscriptionTotal } from "@/lib/utils";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, parseLocalDate } from "@/lib/utils";
 import { SubscriptionActions } from "./SubscriptionActions";
 import { SubscriptionItemsList } from "./SubscriptionItemsList";
 
@@ -112,7 +112,7 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
                 <div>
                   <p className="text-sm text-orange-700 mb-1">Next Order</p>
                   <p className="text-2xl font-bold text-slate-900">
-                    {format(new Date(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
+                    {format(parseLocalDate(subscription.next_order_date), "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
                 {isActive && (
@@ -221,7 +221,7 @@ export default async function SubscriptionDetailPage({ params }: SubscriptionDet
                 <div>
                   <p className="text-xs text-slate-500 uppercase">Next Order</p>
                   <p className="font-medium text-slate-900">
-                    {format(new Date(subscription.next_order_date), "MMM d, yyyy")}
+                    {format(parseLocalDate(subscription.next_order_date), "MMM d, yyyy")}
                   </p>
                 </div>
               )}
