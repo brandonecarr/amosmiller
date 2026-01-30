@@ -21,21 +21,23 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { label: "Shop", href: "/shop" },
+  { label: "Home", href: "/" },
   {
-    label: "Meat",
-    href: "/shop/meat",
+    label: "About Us",
+    href: "/about",
     children: [
-      { label: "Beef", href: "/shop/meat/beef" },
-      { label: "Pork", href: "/shop/meat/pork" },
-      { label: "Chicken", href: "/shop/meat/chicken" },
-      { label: "Lamb", href: "/shop/meat/lamb" },
+      { label: "Our Standards", href: "/our-standards" },
+      { label: "About our Farm", href: "/our-farm" },
+      { label: "Dr. Weston A. Price", href: "/dr-weston-a-price" },
+      { label: "Shipping FAQs", href: "/shipping-faqs" },
+      { label: "Order FAQs", href: "/order-faqs" },
+      { label: "Become a Member", href: "/become-a-member" },
+      { label: "Co-Op/Food Clubs", href: "/co-op-food-clubs" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
     ],
   },
-  { label: "Dairy", href: "/shop/dairy" },
-  { label: "Produce", href: "/shop/produce" },
-  { label: "Pantry", href: "/shop/pantry" },
-  { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Header({
@@ -114,7 +116,7 @@ export function Header({
                 {/* Dropdown Menu */}
                 {item.children && activeDropdown === item.label && (
                   <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3">
-                    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 py-2 min-w-[180px]">
+                    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 py-2 min-w-[220px]">
                       {item.children.map((child) => (
                         <Link
                           key={child.href}
