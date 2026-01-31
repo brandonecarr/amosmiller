@@ -62,7 +62,7 @@ export default async function AccountLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="lg:col-span-3">{children}</main>
+        <main className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6">{children}</main>
       </div>
     </div>
   );
