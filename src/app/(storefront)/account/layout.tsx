@@ -33,29 +33,31 @@ export default async function AccountLayout({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar Navigation */}
         <aside className="lg:col-span-1">
-          <nav className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <nav className="bg-white rounded-2xl border border-slate-200 p-2 space-y-0.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-orange-50 hover:text-orange-700 hover:border-l-2 hover:border-orange-500 transition-colors border-b border-slate-200 last:border-b-0"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors group"
                 >
-                  <Icon className="w-5 h-5 text-slate-400" />
-                  <span className="font-medium">{item.label}</span>
+                  <Icon className="w-4.5 h-4.5 text-slate-400 group-hover:text-orange-500 transition-colors" />
+                  <span className="text-sm font-medium">{item.label}</span>
                 </Link>
               );
             })}
-            <form action="/api/auth/signout" method="post">
-              <button
-                type="submit"
-                className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="font-medium">Sign Out</span>
-              </button>
-            </form>
+            <div className="border-t border-slate-100 mt-1 pt-1">
+              <form action="/api/auth/signout" method="post">
+                <button
+                  type="submit"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left group"
+                >
+                  <LogOut className="w-4.5 h-4.5 group-hover:text-red-500 transition-colors" />
+                  <span className="text-sm font-medium">Sign Out</span>
+                </button>
+              </form>
+            </div>
           </nav>
         </aside>
 
