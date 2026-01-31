@@ -30,9 +30,9 @@ export default async function AccountLayout({
     <div className="container mx-auto px-4 py-8 lg:py-12">
       <h1 className="text-3xl font-bold font-heading text-slate-900 mb-8">My Account</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Sidebar Navigation */}
-        <aside className="lg:col-span-1">
+        <aside className="lg:col-span-1 lg:sticky lg:top-28">
           <nav className="bg-white rounded-2xl border border-slate-200 p-2 space-y-0.5">
             {navItems.map((item) => {
               const Icon = item.icon;
