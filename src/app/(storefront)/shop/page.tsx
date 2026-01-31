@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Browse our selection of farm-fresh meats, dairy, produce, and pantry items. All sustainably raised and locally delivered.",
 };
 
-async function ShopData() {
+async function ShopData({ initialCategory }: { initialCategory?: string }) {
   const [productsResult, categoriesResult] = await Promise.all([
     getProducts(),
     getCategories(),
@@ -59,11 +59,18 @@ async function ShopData() {
     <ShopContent
       initialProducts={transformedProducts}
       categories={categories}
+      initialCategory={initialCategory}
     />
   );
 }
 
-export default function ShopPage() {
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const params = await searchParams;
+
   return (
     <Suspense
       fallback={
@@ -74,7 +81,7 @@ export default function ShopPage() {
         </div>
       }
     >
-      <ShopData />
+      <ShopData initialCategory={params.category} />
     </Suspense>
   );
 }

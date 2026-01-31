@@ -34,6 +34,7 @@ interface Category {
 interface ShopContentProps {
   initialProducts: Product[];
   categories: Category[];
+  initialCategory?: string;
 }
 
 const sortOptions = [
@@ -44,8 +45,8 @@ const sortOptions = [
   { id: "price-desc", name: "Price: High to Low" },
 ];
 
-export function ShopContent({ initialProducts, categories }: ShopContentProps) {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+export function ShopContent({ initialProducts, categories, initialCategory }: ShopContentProps) {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || "all");
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

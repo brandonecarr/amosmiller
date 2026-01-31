@@ -10,6 +10,7 @@ import {
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui";
+import { getCategories } from "@/lib/actions/categories";
 
 const featuredProducts = [
   {
@@ -46,15 +47,6 @@ const featuredProducts = [
   },
 ];
 
-const categories = [
-  { name: "Beef", href: "/shop/meat/beef", count: 24, emoji: "🥩" },
-  { name: "Pork", href: "/shop/meat/pork", count: 18, emoji: "🥓" },
-  { name: "Chicken", href: "/shop/meat/chicken", count: 12, emoji: "🍗" },
-  { name: "Dairy", href: "/shop/dairy", count: 15, emoji: "🥛" },
-  { name: "Produce", href: "/shop/produce", count: 32, emoji: "🥬" },
-  { name: "Pantry", href: "/shop/pantry", count: 28, emoji: "🫙" },
-];
-
 const features = [
   {
     icon: Truck,
@@ -78,7 +70,12 @@ const features = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { data: allCategories } = await getCategories();
+  const categories = (allCategories || [])
+    .filter((c: { is_active: boolean; productCount: number }) => c.is_active && c.productCount > 0)
+    .slice(0, 8);
+
   return (
     <div>
       {/* Hero Section */}
@@ -199,20 +196,37 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((category: { id: string; name: string; slug: string; image_url: string | null; productCount: number }) => (
               <Link
-                key={category.name}
-                href={category.href}
-                className="group relative bg-white rounded-2xl border border-slate-200 p-6 text-center hover:border-slate-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
+                key={category.id}
+                href={`/shop?category=${category.id}`}
+                className="group relative bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
               >
-                <div className="text-3xl mb-3">{category.emoji}</div>
-                <h3 className="font-semibold text-slate-900 text-sm mb-1 font-heading">
-                  {category.name}
-                </h3>
-                <p className="text-xs text-slate-400">
-                  {category.count} products
-                </p>
+                <div className="aspect-[3/2] relative bg-slate-100">
+                  {category.image_url ? (
+                    <Image
+                      src={category.image_url}
+                      alt={category.name}
+                      fill
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Leaf className="w-8 h-8 text-slate-300" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="font-semibold text-white text-sm mb-0.5 font-heading">
+                      {category.name}
+                    </h3>
+                    <p className="text-xs text-white/70">
+                      {category.productCount} {category.productCount === 1 ? "product" : "products"}
+                    </p>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
