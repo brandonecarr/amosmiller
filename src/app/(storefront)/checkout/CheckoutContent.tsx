@@ -161,7 +161,7 @@ export function CheckoutContent({
   const [shippingFee, setShippingFee] = useState(0);
 
   // Membership selection state (non-members only)
-  const [membershipOption, setMembershipOption] = useState<MembershipOption>("preserve-america");
+  const [membershipOption, setMembershipOption] = useState<MembershipOption>("standard");
   const [contractAccepted, setContractAccepted] = useState(false);
 
   // Membership fee derived from selection
