@@ -28,7 +28,6 @@ import { validateGiftCard } from "@/lib/actions/gift-cards";
 import { createOrder, validateInventory } from "@/lib/actions/orders";
 import { calculateTax } from "@/lib/actions/tax";
 import { MEMBERSHIP_FEE, PRESERVE_AMERICA_FEE } from "@/lib/constants";
-import { MembershipSelector, type MembershipOption } from "./MembershipSelector";
 import { trackBeginCheckout, trackPurchase } from "@/components/analytics/GoogleAnalytics";
 import { fbTrackInitiateCheckout, fbTrackPurchase } from "@/components/analytics/FacebookPixel";
 
@@ -93,7 +92,7 @@ export function CheckoutContent({
   isMember = false,
 }: CheckoutContentProps) {
   const router = useRouter();
-  const { items, subtotal, fulfillment, setFulfillment, clearCart, hasCoopItems } = useCart();
+  const { items, subtotal, fulfillment, setFulfillment, clearCart, hasCoopItems, membershipOption, contractAccepted } = useCart();
   const [currentStep, setCurrentStep] = useState<Step>("fulfillment");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -160,11 +159,7 @@ export function CheckoutContent({
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
 
-  // Membership selection state (non-members only)
-  const [membershipOption, setMembershipOption] = useState<MembershipOption>("standard");
-  const [contractAccepted, setContractAccepted] = useState(false);
-
-  // Membership fee derived from selection
+  // Membership fee derived from cart context selection
   const membershipFee = isMember
     ? 0
     : membershipOption === "preserve-america"
@@ -694,16 +689,6 @@ export function CheckoutContent({
                   rows={3}
                 />
               </div>
-
-              {/* Membership Enrollment (non-members only) */}
-              {!isMember && (
-                <MembershipSelector
-                  selectedOption={membershipOption}
-                  onOptionChange={setMembershipOption}
-                  contractAccepted={contractAccepted}
-                  onContractAcceptedChange={setContractAccepted}
-                />
-              )}
 
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setCurrentStep("fulfillment")} className="rounded-full border-slate-200 text-slate-900 hover:bg-slate-50">

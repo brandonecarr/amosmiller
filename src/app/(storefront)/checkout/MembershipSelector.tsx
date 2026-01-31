@@ -5,8 +5,7 @@ import { Shield } from "lucide-react";
 import { MEMBERSHIP_FEE, PRESERVE_AMERICA_FEE } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import { MembershipContractModal } from "./MembershipContractModal";
-
-export type MembershipOption = "preserve-america" | "standard";
+import type { MembershipOption } from "@/contexts/CartContext";
 
 interface MembershipSelectorProps {
   selectedOption: MembershipOption;

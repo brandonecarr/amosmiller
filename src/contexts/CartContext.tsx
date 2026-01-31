@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { saveCart, getSavedCart, mergeCartWithSaved, clearSavedCart, validateCartInventory } from "@/lib/actions/cart";
 
+export type MembershipOption = "preserve-america" | "standard";
+
 export interface CartItem {
   id: string;
   productId: string;
@@ -69,12 +71,19 @@ interface CartContextType {
   inventoryWarnings: InventoryWarning[];
   validateInventory: () => Promise<void>;
   clearInventoryWarnings: () => void;
+  // Membership selection (persisted for cart → checkout flow)
+  membershipOption: MembershipOption;
+  setMembershipOption: (option: MembershipOption) => void;
+  contractAccepted: boolean;
+  setContractAccepted: (accepted: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "amos-miller-farm-cart";
 const FULFILLMENT_STORAGE_KEY = "amos-miller-farm-fulfillment";
+const MEMBERSHIP_OPTION_KEY = "amos-miller-farm-membership-option";
+const CONTRACT_ACCEPTED_KEY = "amos-miller-farm-contract-accepted";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -90,6 +99,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [inventoryWarnings, setInventoryWarnings] = useState<InventoryWarning[]>([]);
+  const [membershipOption, setMembershipOptionState] = useState<MembershipOption>("standard");
+  const [contractAccepted, setContractAcceptedState] = useState(false);
 
   // Track if we need to sync to DB
   const pendingSync = useRef(false);
@@ -114,6 +125,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         console.error("Failed to parse fulfillment:", e);
       }
+    }
+
+    const storedMembershipOption = localStorage.getItem(MEMBERSHIP_OPTION_KEY);
+    if (storedMembershipOption === "preserve-america" || storedMembershipOption === "standard") {
+      setMembershipOptionState(storedMembershipOption);
+    }
+
+    const storedContractAccepted = localStorage.getItem(CONTRACT_ACCEPTED_KEY);
+    if (storedContractAccepted === "true") {
+      setContractAcceptedState(true);
     }
 
     setIsHydrated(true);
@@ -293,6 +314,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       address: null,
     });
     setInventoryWarnings([]);
+    setMembershipOptionState("standard");
+    setContractAcceptedState(false);
+    localStorage.removeItem(MEMBERSHIP_OPTION_KEY);
+    localStorage.removeItem(CONTRACT_ACCEPTED_KEY);
 
     // Clear from database if logged in
     if (userId) {
@@ -355,6 +380,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setInventoryWarnings([]);
   }, []);
 
+  const setMembershipOption = useCallback((option: MembershipOption) => {
+    setMembershipOptionState(option);
+    localStorage.setItem(MEMBERSHIP_OPTION_KEY, option);
+  }, []);
+
+  const setContractAccepted = useCallback((accepted: boolean) => {
+    setContractAcceptedState(accepted);
+    localStorage.setItem(CONTRACT_ACCEPTED_KEY, String(accepted));
+  }, []);
+
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const hasCoopItems = items.some((item) => item.isCoopItem === true);
@@ -387,6 +422,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         inventoryWarnings,
         validateInventory,
         clearInventoryWarnings,
+        membershipOption,
+        setMembershipOption,
+        contractAccepted,
+        setContractAccepted,
       }}
     >
       {children}
