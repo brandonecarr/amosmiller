@@ -27,7 +27,8 @@ import { validateCoupon } from "@/lib/actions/coupons";
 import { validateGiftCard } from "@/lib/actions/gift-cards";
 import { createOrder, validateInventory } from "@/lib/actions/orders";
 import { calculateTax } from "@/lib/actions/tax";
-import { MEMBERSHIP_FEE } from "@/lib/constants";
+import { MEMBERSHIP_FEE, PRESERVE_AMERICA_FEE } from "@/lib/constants";
+import { MembershipSelector, type MembershipOption } from "./MembershipSelector";
 import { trackBeginCheckout, trackPurchase } from "@/components/analytics/GoogleAnalytics";
 import { fbTrackInitiateCheckout, fbTrackPurchase } from "@/components/analytics/FacebookPixel";
 
@@ -159,8 +160,16 @@ export function CheckoutContent({
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
 
-  // Membership fee: $35 one-time fee for non-members
-  const membershipFee = isMember ? 0 : MEMBERSHIP_FEE;
+  // Membership selection state (non-members only)
+  const [membershipOption, setMembershipOption] = useState<MembershipOption>("preserve-america");
+  const [contractAccepted, setContractAccepted] = useState(false);
+
+  // Membership fee derived from selection
+  const membershipFee = isMember
+    ? 0
+    : membershipOption === "preserve-america"
+      ? PRESERVE_AMERICA_FEE
+      : MEMBERSHIP_FEE;
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -271,6 +280,8 @@ export function CheckoutContent({
       )
         return false;
     }
+    // Non-members must accept the membership contract
+    if (!isMember && !contractAccepted) return false;
     return true;
   };
 
@@ -684,6 +695,16 @@ export function CheckoutContent({
                 />
               </div>
 
+              {/* Membership Enrollment (non-members only) */}
+              {!isMember && (
+                <MembershipSelector
+                  selectedOption={membershipOption}
+                  onOptionChange={setMembershipOption}
+                  contractAccepted={contractAccepted}
+                  onContractAcceptedChange={setContractAccepted}
+                />
+              )}
+
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setCurrentStep("fulfillment")} className="rounded-full border-slate-200 text-slate-900 hover:bg-slate-50">
                   <ArrowLeft className="w-5 h-5 mr-2" />
@@ -734,12 +755,14 @@ export function CheckoutContent({
             {membershipFee > 0 && (
               <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
                 <p className="text-sm text-amber-800 font-medium">
-                  Private Membership Association
+                  {membershipOption === "preserve-america"
+                    ? "Preserve America Fundraiser + Membership"
+                    : "Lifetime Membership"}
                 </p>
                 <p className="text-xs text-amber-700 mt-1">
-                  A one-time ${MEMBERSHIP_FEE} lifetime membership fee is
-                  included with your first order. This grants you lifetime
-                  access to all farm products.
+                  {membershipOption === "preserve-america"
+                    ? `Includes $129 Preserve America fundraiser contribution plus $1 lifetime membership fee (${formatCurrency(PRESERVE_AMERICA_FEE)} total). You'll receive a 6" Pumpkin Pie.`
+                    : `A one-time $${MEMBERSHIP_FEE} non-refundable lifetime membership fee is included with your first order.`}
                 </p>
               </div>
             )}
@@ -935,7 +958,11 @@ export function CheckoutContent({
 
               {membershipFee > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Membership Fee (one-time)</span>
+                  <span className="text-slate-500">
+                    {membershipOption === "preserve-america"
+                      ? "Fundraiser + Membership"
+                      : "Membership Fee (one-time)"}
+                  </span>
                   <span className="font-medium text-slate-900">{formatCurrency(membershipFee)}</span>
                 </div>
               )}
