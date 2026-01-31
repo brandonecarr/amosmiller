@@ -141,7 +141,7 @@ export function ShopContent({ initialProducts, categories, initialCategory }: Sh
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Sidebar Filters - Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
           <div className="sticky top-28 space-y-6">
