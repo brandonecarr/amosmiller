@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Filter, X, Grid3X3, LayoutList } from "lucide-react";
 import { Button, Input, Badge } from "@/components/ui";
 import { ProductCard } from "@/components/storefront/ProductCard";
@@ -53,6 +53,30 @@ export function ShopContent({ initialProducts, categories, initialCategory }: Sh
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [showInStock, setShowInStock] = useState(false);
   const [showOnSale, setShowOnSale] = useState(false);
+
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [stickyTop, setStickyTop] = useState(112);
+
+  useEffect(() => {
+    const update = () => {
+      const el = sidebarRef.current;
+      if (!el) return;
+      const sidebarH = el.scrollHeight;
+      const viewH = window.innerHeight;
+      const headerOffset = 112; // 7rem
+      const bottomPad = 32; // 2rem
+
+      if (sidebarH > viewH - headerOffset - bottomPad) {
+        setStickyTop(viewH - sidebarH - bottomPad);
+      } else {
+        setStickyTop(headerOffset);
+      }
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const categoryOptions = useMemo(() => {
     const activeCategories = categories.filter((c) => c.is_active);
@@ -212,7 +236,7 @@ export function ShopContent({ initialProducts, categories, initialCategory }: Sh
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Sidebar Filters - Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="sticky top-28 space-y-6">
+          <div ref={sidebarRef} className="sticky space-y-6" style={{ top: stickyTop }}>
             {/* Categories */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5">
               <h3 className="font-semibold text-slate-900 mb-3 text-sm font-heading">
