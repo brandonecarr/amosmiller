@@ -132,13 +132,81 @@ export function ShopContent({ initialProducts, categories, initialCategory }: Sh
   return (
     <div className="container mx-auto px-4 py-8 lg:py-12">
       {/* Page Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2 font-heading">
           Shop All Products
         </h1>
         <p className="text-slate-500">
           Browse our selection of farm-fresh products
         </p>
+      </div>
+
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          {/* Mobile Filter Toggle */}
+          <Button
+            variant="secondary"
+            className="lg:hidden"
+            onClick={() => setShowFilters(true)}
+          >
+            <Filter className="w-4 h-4 mr-2" />
+            Filters
+            {activeFiltersCount > 0 && (
+              <Badge variant="accent" size="sm" className="ml-2">
+                {activeFiltersCount}
+              </Badge>
+            )}
+          </Button>
+
+          {/* Results Count */}
+          <p className="text-sm text-slate-500">
+            {filteredProducts.length} products
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Sort */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-slate-300 transition-colors"
+          >
+            {sortOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+
+          {/* View Toggle */}
+          <div className="hidden sm:flex items-center border border-slate-200 rounded-full overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "p-2 transition-colors",
+                viewMode === "grid"
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-400 hover:bg-slate-50"
+              )}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "p-2 transition-colors",
+                viewMode === "list"
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-400 hover:bg-slate-50"
+              )}
+            >
+              <LayoutList className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -233,75 +301,7 @@ export function ShopContent({ initialProducts, categories, initialCategory }: Sh
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1">
-          {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4">
-              {/* Mobile Filter Toggle */}
-              <Button
-                variant="secondary"
-                className="lg:hidden"
-                onClick={() => setShowFilters(true)}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-                {activeFiltersCount > 0 && (
-                  <Badge variant="accent" size="sm" className="ml-2">
-                    {activeFiltersCount}
-                  </Badge>
-                )}
-              </Button>
-
-              {/* Results Count */}
-              <p className="text-sm text-slate-500">
-                {filteredProducts.length} products
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-slate-300 transition-colors"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* View Toggle */}
-              <div className="hidden sm:flex items-center border border-slate-200 rounded-full overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "p-2 transition-colors",
-                    viewMode === "grid"
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-400 hover:bg-slate-50"
-                  )}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("list")}
-                  className={cn(
-                    "p-2 transition-colors",
-                    viewMode === "list"
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-400 hover:bg-slate-50"
-                  )}
-                >
-                  <LayoutList className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
+        <div className="flex-1 min-w-0">
           {/* Active Filters (Mobile) */}
           {activeFiltersCount > 0 && (
             <div className="flex flex-wrap gap-2 mb-6 lg:hidden">
