@@ -406,6 +406,7 @@ export function CheckoutContent({
       subtotal,
       shippingFee: deliveryFee + shippingFee,
       membershipFee,
+      membershipOption: membershipFee > 0 ? membershipOption : undefined,
       taxAmount,
       discountAmount,
       couponCode: appliedCoupon?.code,

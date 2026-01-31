@@ -250,7 +250,7 @@ export async function assignUserPricingTier(userId: string, tierId: string) {
     return { success: false, error: error.message };
   }
 
-  revalidatePath("/admin/customers");
+  revalidatePath("/admin/members");
 
   return { success: true, error: null };
 }

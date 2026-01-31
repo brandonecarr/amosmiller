@@ -63,7 +63,7 @@ export async function addStoreCredit({
     return { data: null, error: error.message };
   }
 
-  revalidatePath("/admin/customers");
+  revalidatePath("/admin/members");
   revalidatePath("/account");
 
   return { data, error: null };

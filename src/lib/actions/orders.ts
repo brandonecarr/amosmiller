@@ -63,6 +63,7 @@ const createOrderSchema = z.object({
   subtotal: z.number().min(0),
   shippingFee: z.number().min(0).default(0),
   membershipFee: z.number().min(0).default(0),
+  membershipOption: z.enum(["standard", "preserve-america"]).optional(),
   taxAmount: z.number().min(0).default(0),
   discountAmount: z.number().min(0).default(0),
 
@@ -342,7 +343,8 @@ export async function createOrder(input: CreateOrderInput) {
   // Activate membership if this order includes a membership fee
   if (user?.id && data.membershipFee > 0) {
     try {
-      await activateMembership(user.id);
+      const option = data.membershipOption || (data.membershipFee >= 130 ? "preserve-america" : "standard");
+      await activateMembership(user.id, option);
     } catch (membershipError) {
       console.error("Error activating membership:", membershipError);
       // Don't fail the order, just log the error

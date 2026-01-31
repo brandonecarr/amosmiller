@@ -24,6 +24,7 @@ export type Database = {
           stripe_customer_id: string | null;
           is_member: boolean;
           membership_paid_at: string | null;
+          membership_option: "standard" | "preserve-america" | null;
           avatar_url: string | null;
           notes: string | null;
           created_at: string;
@@ -40,6 +41,7 @@ export type Database = {
           stripe_customer_id?: string | null;
           is_member?: boolean;
           membership_paid_at?: string | null;
+          membership_option?: "standard" | "preserve-america" | null;
           avatar_url?: string | null;
           notes?: string | null;
           created_at?: string;
@@ -56,6 +58,7 @@ export type Database = {
           stripe_customer_id?: string | null;
           is_member?: boolean;
           membership_paid_at?: string | null;
+          membership_option?: "standard" | "preserve-america" | null;
           avatar_url?: string | null;
           notes?: string | null;
           created_at?: string;

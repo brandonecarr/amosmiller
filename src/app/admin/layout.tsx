@@ -31,7 +31,7 @@ const navigation = [
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Categories", href: "/admin/categories", icon: FolderTree },
-  { name: "Customers", href: "/admin/customers", icon: Users },
+  { name: "Members", href: "/admin/members", icon: Users },
   { name: "Fulfillment", href: "/admin/fulfillment", icon: Truck },
   { name: "Subscriptions", href: "/admin/subscriptions", icon: Repeat },
   { name: "Coupons", href: "/admin/coupons", icon: Tag },
