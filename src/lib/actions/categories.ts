@@ -13,6 +13,7 @@ const categorySchema = z.object({
   parent_id: z.string().uuid().optional().nullable(),
   sort_order: z.number().int().default(0),
   is_active: z.boolean().default(true),
+  is_featured: z.boolean().optional(),
   meta_title: z.string().max(255).optional().nullable(),
   meta_description: z.string().optional().nullable(),
 });
@@ -86,6 +87,7 @@ export async function createCategory(formData: CategoryFormData) {
 
   revalidatePath("/admin/categories");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { data, error: null };
 }
@@ -114,6 +116,7 @@ export async function updateCategory(id: string, formData: Partial<CategoryFormD
 
   revalidatePath("/admin/categories");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { data, error: null };
 }
@@ -134,6 +137,7 @@ export async function deleteCategory(id: string) {
 
   revalidatePath("/admin/categories");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { success: true, error: null };
 }
@@ -141,6 +145,11 @@ export async function deleteCategory(id: string) {
 // Toggle category active status
 export async function toggleCategoryActive(id: string, is_active: boolean) {
   return updateCategory(id, { is_active });
+}
+
+// Toggle category featured status
+export async function toggleCategoryFeatured(id: string, is_featured: boolean) {
+  return updateCategory(id, { is_featured });
 }
 
 // Reorder categories

@@ -134,6 +134,7 @@ export type Database = {
           parent_id: string | null;
           sort_order: number;
           is_active: boolean;
+          is_featured: boolean;
           meta_title: string | null;
           meta_description: string | null;
           created_at: string;
@@ -148,6 +149,7 @@ export type Database = {
           parent_id?: string | null;
           sort_order?: number;
           is_active?: boolean;
+          is_featured?: boolean;
           meta_title?: string | null;
           meta_description?: string | null;
           created_at?: string;
@@ -162,6 +164,7 @@ export type Database = {
           parent_id?: string | null;
           sort_order?: number;
           is_active?: boolean;
+          is_featured?: boolean;
           meta_title?: string | null;
           meta_description?: string | null;
           created_at?: string;

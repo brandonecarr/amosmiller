@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { Plus, Pencil, Trash2, GripVertical, FolderTree, Loader2 } from "lucide-react";
+import { useState, useEffect, useTransition, useRef } from "react";
+import Image from "next/image";
+import { Plus, Pencil, Trash2, GripVertical, FolderTree, Loader2, Star, Upload, X } from "lucide-react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Badge } from "@/components/ui";
 import {
   getCategories,
@@ -9,7 +10,9 @@ import {
   updateCategory,
   deleteCategory,
   toggleCategoryActive,
+  toggleCategoryFeatured,
 } from "@/lib/actions/categories";
+import { uploadCategoryImage } from "@/lib/actions/storage";
 
 interface Category {
   id: string;
@@ -20,6 +23,7 @@ interface Category {
   parent_id: string | null;
   sort_order: number;
   is_active: boolean;
+  is_featured: boolean;
   created_at: string;
   product_count?: number;
 }
@@ -29,9 +33,11 @@ export default function CategoriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formData, setFormData] = useState({ name: "", slug: "", description: "", parent_id: "" });
+  const [formData, setFormData] = useState({ name: "", slug: "", description: "", parent_id: "", image_url: "" });
   const [isPending, startTransition] = useTransition();
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load categories on mount
   useEffect(() => {
@@ -58,10 +64,11 @@ export default function CategoriesPage() {
         slug: category.slug,
         description: category.description || "",
         parent_id: category.parent_id || "",
+        image_url: category.image_url || "",
       });
     } else {
       setEditingCategory(null);
-      setFormData({ name: "", slug: "", description: "", parent_id: "" });
+      setFormData({ name: "", slug: "", description: "", parent_id: "", image_url: "" });
     }
     setIsModalOpen(true);
   };
@@ -69,7 +76,7 @@ export default function CategoriesPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: "", slug: "", description: "", parent_id: "" });
+    setFormData({ name: "", slug: "", description: "", parent_id: "", image_url: "" });
     setError(null);
   };
 
@@ -78,6 +85,32 @@ export default function CategoriesPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+
+    const categoryId = editingCategory?.id || "temp-" + Date.now();
+    const result = await uploadCategoryImage(file, categoryId);
+
+    if (result.error) {
+      setError(result.error);
+    } else if (result.url) {
+      setFormData((prev) => ({ ...prev, image_url: result.url! }));
+    }
+
+    setIsUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, image_url: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,6 +126,7 @@ export default function CategoriesPage() {
           slug,
           description: formData.description || null,
           parent_id: formData.parent_id || null,
+          image_url: formData.image_url || null,
         });
 
         if (result.error) {
@@ -105,6 +139,7 @@ export default function CategoriesPage() {
           slug,
           description: formData.description || null,
           parent_id: formData.parent_id || null,
+          image_url: formData.image_url || null,
           sort_order: 0,
           is_active: true,
         });
@@ -139,6 +174,20 @@ export default function CategoriesPage() {
 
     startTransition(async () => {
       const result = await toggleCategoryActive(id, !category.is_active);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      loadCategories();
+    });
+  };
+
+  const handleToggleFeatured = async (id: string) => {
+    const category = categories.find((c) => c.id === id);
+    if (!category) return;
+
+    startTransition(async () => {
+      const result = await toggleCategoryFeatured(id, !category.is_featured);
       if (result.error) {
         setError(result.error);
         return;
@@ -197,11 +246,29 @@ export default function CategoriesPage() {
               >
                 <div className="flex items-center gap-4">
                   <GripVertical className="w-5 h-5 text-[var(--color-muted)] cursor-grab" />
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                    {category.image_url ? (
+                      <Image
+                        src={category.image_url}
+                        alt={category.name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FolderTree className="w-4 h-4 text-slate-300" />
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-[var(--color-charcoal)]">
                         {category.name}
                       </p>
+                      {category.is_featured && (
+                        <Badge variant="info" size="sm">Featured</Badge>
+                      )}
                       {!category.is_active && (
                         <Badge variant="outline" size="sm">Inactive</Badge>
                       )}
@@ -213,6 +280,15 @@ export default function CategoriesPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleFeatured(category.id)}
+                    disabled={isPending}
+                    title={category.is_featured ? "Remove from featured" : "Mark as featured"}
+                  >
+                    <Star className={`w-4 h-4 ${category.is_featured ? "fill-amber-400 text-amber-400" : "text-slate-300"}`} />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -301,6 +377,49 @@ export default function CategoriesPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
+
+              {/* Category Image */}
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-1.5">
+                  Category Image
+                </label>
+                {formData.image_url ? (
+                  <div className="relative w-full aspect-[3/2] rounded-lg overflow-hidden bg-slate-100 border border-[var(--color-border)]">
+                    <Image
+                      src={formData.image_url}
+                      alt="Category image"
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[var(--color-border)] rounded-lg cursor-pointer hover:border-[var(--color-primary-500)] hover:bg-slate-50 transition-colors">
+                    {isUploading ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-[var(--color-muted)]" />
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-[var(--color-muted)] mb-2" />
+                        <span className="text-sm text-[var(--color-muted)]">Click to upload</span>
+                      </>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                  </label>
+                )}
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-[var(--color-charcoal)] mb-1.5">

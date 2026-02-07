@@ -44,6 +44,7 @@ export default async function HomePage() {
   ]);
   const categories = (allCategories || [])
     .filter((c: { is_active: boolean; productCount: number }) => c.is_active && c.productCount > 0)
+    .sort((a: { is_featured: boolean }, b: { is_featured: boolean }) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0))
     .slice(0, 8);
 
   const featuredProducts = (featuredData || []).map((product: {
