@@ -223,6 +223,7 @@ export async function createProduct(formInput: ProductFormInput) {
 
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { data, error: null };
 }
@@ -277,6 +278,7 @@ export async function updateProduct(id: string, formInput: Partial<ProductFormIn
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${id}`);
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { data, error: null };
 }
@@ -297,6 +299,7 @@ export async function deleteProduct(id: string) {
 
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   return { success: true, error: null };
 }

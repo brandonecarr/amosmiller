@@ -11,41 +11,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { getCategories } from "@/lib/actions/categories";
-
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Grass-Fed Ground Beef",
-    price: 8.99,
-    unit: "lb",
-    image: "/images/products/ground-beef.jpg",
-    category: "Beef",
-  },
-  {
-    id: 2,
-    name: "Free-Range Whole Chicken",
-    price: 5.49,
-    unit: "lb",
-    image: "/images/products/whole-chicken.jpg",
-    category: "Chicken",
-  },
-  {
-    id: 3,
-    name: "Farm Fresh Eggs",
-    price: 6.99,
-    unit: "dozen",
-    image: "/images/products/eggs.jpg",
-    category: "Dairy",
-  },
-  {
-    id: 4,
-    name: "Raw Milk",
-    price: 9.99,
-    unit: "gallon",
-    image: "/images/products/milk.jpg",
-    category: "Dairy",
-  },
-];
+import { getProducts } from "@/lib/actions/products";
+import { ProductCard } from "@/components/storefront/ProductCard";
 
 const features = [
   {
@@ -71,10 +38,48 @@ const features = [
 ];
 
 export default async function HomePage() {
-  const { data: allCategories } = await getCategories();
+  const [{ data: allCategories }, { data: featuredData }] = await Promise.all([
+    getCategories(),
+    getProducts({ is_featured: true, is_active: true, limit: 4 }),
+  ]);
   const categories = (allCategories || [])
     .filter((c: { is_active: boolean; productCount: number }) => c.is_active && c.productCount > 0)
     .slice(0, 8);
+
+  const featuredProducts = (featuredData || []).map((product: {
+    id: string;
+    name: string;
+    slug: string;
+    category_id: string | null;
+    pricing_type: string;
+    base_price: number;
+    sale_price: number | null;
+    weight_unit: string | null;
+    estimated_weight: number | null;
+    min_weight: number | null;
+    max_weight: number | null;
+    stock_quantity: number;
+    is_featured: boolean;
+    tags: string[] | null;
+    featured_image_url: string | null;
+    categories?: { name: string };
+  }) => ({
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    category: product.categories?.name || "",
+    pricing_type: product.pricing_type as "fixed" | "weight",
+    base_price: product.base_price || 0,
+    sale_price: product.sale_price,
+    weight_unit: (product.weight_unit as "lb" | "oz" | "kg" | "g") || "lb",
+    estimated_weight: product.estimated_weight,
+    min_weight: product.min_weight,
+    max_weight: product.max_weight,
+    stock_quantity: product.stock_quantity || 0,
+    is_featured: product.is_featured || false,
+    tags: product.tags || [],
+    featured_image_url: product.featured_image_url,
+  }));
 
   return (
     <div>
@@ -254,39 +259,17 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
-              >
-                <div className="aspect-[4/3] bg-slate-50 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center text-slate-300">
-                    <span className="text-sm">Product Image</span>
-                  </div>
-                  <span className="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-medium rounded-full">
-                    {product.category}
-                  </span>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium text-slate-900 text-sm mb-1.5 group-hover:text-orange-500 transition-colors font-heading">
-                    {product.name}
-                  </h3>
-                  <p className="text-slate-900 font-semibold">
-                    ${product.price.toFixed(2)}
-                    <span className="text-slate-400 font-normal text-sm">
-                      /{product.unit}
-                    </span>
-                  </p>
-                </div>
-                <div className="px-4 pb-4 pt-0">
-                  <Button variant="secondary" className="w-full" size="sm">
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product: { id: string; name: string; slug: string; category: string; pricing_type: "fixed" | "weight"; base_price: number; sale_price: number | null; weight_unit: "lb" | "oz" | "kg" | "g"; estimated_weight: number | null; min_weight: number | null; max_weight: number | null; stock_quantity: number; is_featured: boolean; tags: string[]; featured_image_url: string | null }) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-slate-500">Check back soon for featured products!</p>
+            </div>
+          )}
         </div>
       </section>
 
