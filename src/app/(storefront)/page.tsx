@@ -309,8 +309,9 @@ export default async function HomePage() {
             <div className="flex flex-wrap justify-center gap-3">
               <Link href="/shop">
                 <Button
+                  variant="secondary"
                   size="lg"
-                  className="bg-white text-slate-900 hover:bg-slate-100 shadow-none"
+                  className="bg-white text-slate-900 hover:bg-white/90 border-0"
                 >
                   Start Shopping
                   <ArrowRight className="ml-2 w-4 h-4" />
@@ -320,7 +321,7 @@ export default async function HomePage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40"
+                  className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
                 >
                   Check Delivery Areas
                 </Button>

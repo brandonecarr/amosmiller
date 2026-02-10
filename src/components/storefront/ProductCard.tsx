@@ -107,9 +107,6 @@ export function ProductCard({ product }: ProductCardProps) {
           {isOnSale && (
             <Badge variant="error" size="sm">Sale</Badge>
           )}
-          {product.is_featured && (
-            <Badge variant="info" size="sm">Featured</Badge>
-          )}
         </div>
 
         {/* Out of Stock Overlay */}
