@@ -318,9 +318,9 @@ export default async function HomePage() {
               </Link>
               <Link href="/delivery">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="lg"
-                  className="text-slate-300 hover:text-white hover:bg-white/10"
+                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40"
                 >
                   Check Delivery Areas
                 </Button>

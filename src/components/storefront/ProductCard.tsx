@@ -108,7 +108,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <Badge variant="error" size="sm">Sale</Badge>
           )}
           {product.is_featured && (
-            <Badge variant="accent" size="sm">Featured</Badge>
+            <Badge variant="info" size="sm">Featured</Badge>
           )}
         </div>
 
