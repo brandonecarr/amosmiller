@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { CheckCircle, Package, MapPin, Calendar, CreditCard, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
-import { getOrder } from "@/lib/actions/orders";
+import { getOrder, updatePaymentStatus } from "@/lib/actions/orders";
+import { getPaymentIntent } from "@/lib/stripe/server";
 import { format } from "date-fns";
 import { parseLocalDate } from "@/lib/utils";
 import { redirect } from "next/navigation";
@@ -36,6 +37,28 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
         </Link>
       </div>
     );
+  }
+
+  // Sync payment status with Stripe if needed
+  // This ensures the database reflects the actual payment authorization status
+  if (order.stripe_payment_intent_id && order.payment_status === "pending") {
+    try {
+      const paymentIntent = await getPaymentIntent(order.stripe_payment_intent_id);
+
+      // If Stripe shows the payment is authorized (requires_capture), update our database
+      if (paymentIntent.status === "requires_capture") {
+        await updatePaymentStatus(orderId, "authorized");
+        // Refresh the order data to show the updated status
+        const { data: updatedOrder } = await getOrder(orderId);
+        if (updatedOrder) {
+          // Use the updated order for the page
+          Object.assign(order, updatedOrder);
+        }
+      }
+    } catch (syncError) {
+      // Log error but don't break the page - the order is still valid
+      console.error("Error syncing payment status:", syncError);
+    }
   }
 
   const formatPrice = (price: number) => {
