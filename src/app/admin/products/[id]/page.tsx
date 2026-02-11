@@ -49,7 +49,7 @@ export default async function EditProductPage({
     is_subscribable: product.is_subscribable ?? false,
     subscription_frequencies: product.subscription_frequencies || [],
     min_subscription_quantity: product.min_subscription_quantity?.toString() || "1",
-    max_subscription_quantity: product.max_subscription_quantity?.toString() || "10",
+    max_subscription_quantity: product.max_subscription_quantity?.toString() || "",
   };
 
   return (
