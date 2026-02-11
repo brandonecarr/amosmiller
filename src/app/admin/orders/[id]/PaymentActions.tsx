@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2, DollarSign, AlertTriangle, Check, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui";
 import { formatCurrency } from "@/lib/utils";
@@ -28,6 +29,7 @@ export function PaymentActions({
   hasUnweighedItems,
   totalRefunded = 0,
 }: PaymentActionsProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [captureAmount, setCaptureAmount] = useState((currentTotal / 100).toFixed(2));
   const [showConfirm, setShowConfirm] = useState(false);
@@ -72,6 +74,9 @@ export function PaymentActions({
 
         setSuccess(true);
         setShowConfirm(false);
+
+        // Refresh the page to show updated payment status
+        router.refresh();
       } catch (e) {
         setError("An unexpected error occurred");
         setShowConfirm(false);
@@ -112,6 +117,9 @@ export function PaymentActions({
         setShowRefundConfirm(false);
         setRefundAmount("");
         setRefundReason("");
+
+        // Refresh the page to show updated payment status
+        router.refresh();
       } catch (e) {
         setRefundError("An unexpected error occurred");
         setShowRefundConfirm(false);
