@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   Package,
   MapPin,
-  CreditCard,
   Calendar,
   User,
   Truck,
@@ -289,6 +288,21 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </div>
           </div>
 
+          {/* Payment Actions */}
+          {paymentIntent && (
+            <PaymentActions
+              orderId={order.id}
+              paymentIntentId={order.stripe_payment_intent_id}
+              paymentStatus={order.payment_status}
+              stripeStatus={paymentIntent.status}
+              amountAuthorized={paymentIntent.amount}
+              currentTotal={Math.round(order.total * 100)}
+              canCapture={canCapture}
+              hasUnweighedItems={hasUnweighedItems}
+              totalRefunded={order.amount_refunded || 0}
+            />
+          )}
+
           {/* Tracking Information (for shipping/delivery) */}
           {(order.fulfillment_type === "shipping" || order.fulfillment_type === "delivery") && (
             <TrackingForm
@@ -311,21 +325,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Payment Actions */}
-          {paymentIntent && (
-            <PaymentActions
-              orderId={order.id}
-              paymentIntentId={order.stripe_payment_intent_id}
-              paymentStatus={order.payment_status}
-              stripeStatus={paymentIntent.status}
-              amountAuthorized={paymentIntent.amount}
-              currentTotal={Math.round(order.total * 100)}
-              canCapture={canCapture}
-              hasUnweighedItems={hasUnweighedItems}
-              totalRefunded={order.amount_refunded || 0}
-            />
-          )}
-
           {/* Customer Info */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
@@ -407,52 +406,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                       {order.shipping_address.postalCode}
                     </p>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Payment Info */}
-          <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h3 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Payment
-              </h3>
-            </div>
-            <div className="px-4 py-3 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[var(--color-muted)]">Status</span>
-                <span
-                  className={`text-sm font-medium ${
-                    order.payment_status === "paid"
-                      ? "text-green-600"
-                      : order.payment_status === "authorized"
-                        ? "text-blue-600"
-                        : "text-yellow-600"
-                  }`}
-                >
-                  {order.payment_status.charAt(0).toUpperCase() +
-                    order.payment_status.slice(1).replace("_", " ")}
-                </span>
-              </div>
-              {order.stripe_payment_intent_id && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-[var(--color-muted)]">Stripe PI</span>
-                  <a
-                    href={`https://dashboard.stripe.com/payments/${order.stripe_payment_intent_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-[var(--color-primary-500)] hover:underline font-mono"
-                  >
-                    {order.stripe_payment_intent_id.slice(0, 20)}...
-                  </a>
-                </div>
-              )}
-              {order.coupon_code && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-[var(--color-muted)]">Coupon</span>
-                  <span className="text-sm font-mono">{order.coupon_code}</span>
                 </div>
               )}
             </div>
