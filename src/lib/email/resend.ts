@@ -13,27 +13,45 @@ function getResend(): Resend {
   return _resend;
 }
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer | string;
+  contentType?: string;
+}
+
 export interface SendEmailParams {
   to: string | string[];
   subject: string;
   html: string;
   text?: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 }
 
-export async function sendEmail({ to, subject, html, text, replyTo }: SendEmailParams) {
+export async function sendEmail({ to, subject, html, text, replyTo, attachments }: SendEmailParams) {
   const fromEmail = process.env.EMAIL_FROM || "orders@amosmillerfarm.com";
   const fromName = process.env.EMAIL_FROM_NAME || "Amos Miller Farm";
 
   try {
-    const result = await getResend().emails.send({
+    const emailParams: any = {
       from: `${fromName} <${fromEmail}>`,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
       text,
       replyTo,
-    });
+    };
+
+    // Add attachments if provided
+    if (attachments && attachments.length > 0) {
+      emailParams.attachments = attachments.map(att => ({
+        filename: att.filename,
+        content: att.content instanceof Buffer ? att.content.toString('base64') : att.content,
+        ...(att.contentType && { type: att.contentType }),
+      }));
+    }
+
+    const result = await getResend().emails.send(emailParams);
 
     return { success: true, data: result };
   } catch (error) {

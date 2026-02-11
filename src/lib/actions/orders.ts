@@ -284,6 +284,7 @@ export async function createOrder(input: CreateOrderInput) {
       customer_first_name: data.firstName,
       customer_last_name: data.lastName,
       customer_email: data.email,
+      customer_phone: data.phone || null,
       status: "pending",
       fulfillment_type: data.fulfillmentType,
       scheduled_date: data.scheduledDate,
@@ -294,6 +295,7 @@ export async function createOrder(input: CreateOrderInput) {
       tax_amount: data.taxAmount,
       discount_amount: data.discountAmount,
       total,
+      created_at: order.created_at,
       order_items: data.items.map((item) => ({
         product_name: item.name,
         quantity: item.quantity,

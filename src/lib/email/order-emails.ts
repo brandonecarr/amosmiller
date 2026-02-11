@@ -7,12 +7,14 @@ import {
   trackingAddedEmail,
   paymentCapturedEmail,
 } from "./templates";
+import { generateInvoicePDF } from "../pdf/invoice";
 
 interface OrderEmailData {
   order_number: number;
   customer_first_name?: string | null;
   customer_last_name?: string | null;
   customer_email: string;
+  customer_phone?: string | null;
   status: string;
   fulfillment_type: string;
   scheduled_date?: string | null;
@@ -31,6 +33,7 @@ interface OrderEmailData {
   total: number;
   tracking_number?: string | null;
   tracking_url?: string | null;
+  created_at: string;
   order_items?: Array<{
     product_name: string;
     quantity: number;
@@ -75,11 +78,28 @@ export async function sendOrderStatusUpdateEmail(order: OrderEmailData, newStatu
   const baseUrl = getBaseUrl();
   const { subject, html, text } = orderStatusUpdateEmail(order, newStatus, baseUrl);
 
+  // Generate and attach PDF invoice when order is shipped
+  const attachments = [];
+  if (newStatus === "shipped") {
+    try {
+      const pdfBuffer = await generateInvoicePDF(order);
+      attachments.push({
+        filename: `invoice-${order.order_number}.pdf`,
+        content: pdfBuffer,
+        contentType: "application/pdf",
+      });
+    } catch (error) {
+      console.error("Error generating invoice PDF:", error);
+      // Continue sending email even if PDF generation fails
+    }
+  }
+
   return sendEmail({
     to: order.customer_email,
     subject,
     html,
     text,
+    attachments: attachments.length > 0 ? attachments : undefined,
   });
 }
 
