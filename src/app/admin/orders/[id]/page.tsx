@@ -289,21 +289,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </div>
           </div>
 
-          {/* Payment Actions */}
-          {paymentIntent && (
-            <PaymentActions
-              orderId={order.id}
-              paymentIntentId={order.stripe_payment_intent_id}
-              paymentStatus={order.payment_status}
-              stripeStatus={paymentIntent.status}
-              amountAuthorized={paymentIntent.amount}
-              currentTotal={Math.round(order.total * 100)}
-              canCapture={canCapture}
-              hasUnweighedItems={hasUnweighedItems}
-              totalRefunded={order.amount_refunded || 0}
-            />
-          )}
-
           {/* Tracking Information (for shipping/delivery) */}
           {(order.fulfillment_type === "shipping" || order.fulfillment_type === "delivery") && (
             <TrackingForm
@@ -457,6 +442,21 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               )}
             </div>
           </div>
+
+          {/* Payment Actions */}
+          {paymentIntent && (
+            <PaymentActions
+              orderId={order.id}
+              paymentIntentId={order.stripe_payment_intent_id}
+              paymentStatus={order.payment_status}
+              stripeStatus={paymentIntent.status}
+              amountAuthorized={paymentIntent.amount}
+              currentTotal={Math.round(order.total * 100)}
+              canCapture={canCapture}
+              hasUnweighedItems={hasUnweighedItems}
+              totalRefunded={order.amount_refunded || 0}
+            />
+          )}
 
           {/* Customer Notes */}
           {order.customer_notes && (
