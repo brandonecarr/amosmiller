@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { capturePaymentIntent } from "@/lib/stripe/server";
-import { updatePaymentStatus, getOrder } from "@/lib/actions/orders";
+import { getOrder } from "@/lib/actions/orders";
 import { sendPaymentCapturedEmail } from "@/lib/email/order-emails";
+import { createServiceClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,16 +26,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update order payment status
-    const result = await updatePaymentStatus(
-      orderId,
-      "paid",
-      capturedIntent.latest_charge as string | undefined
-    );
+    // Update order payment status using service client (admin permissions)
+    const supabase = await createServiceClient();
+    const { error: updateError } = await supabase
+      .from("orders")
+      .update({
+        payment_status: "paid",
+        stripe_charge_id: capturedIntent.latest_charge as string | undefined,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", orderId);
 
-    if (result.error) {
+    if (updateError) {
       return NextResponse.json(
-        { error: `Order update failed: ${result.error}` },
+        { error: `Order update failed: ${updateError.message}` },
         { status: 500 }
       );
     }

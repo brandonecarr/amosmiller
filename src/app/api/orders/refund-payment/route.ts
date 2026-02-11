@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { refundPayment } from "@/lib/stripe/server";
 import { getOrder } from "@/lib/actions/orders";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update order payment status in database
-    const supabase = await createClient();
+    // Update order payment status in database (using service client for admin permissions)
+    const supabase = await createServiceClient();
 
     // Calculate new refund total
     const currentRefunded = order.amount_refunded || 0;
@@ -58,8 +58,7 @@ export async function POST(request: NextRequest) {
       newPaymentStatus = "partially_refunded";
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("orders")
       .update({
         payment_status: newPaymentStatus,
