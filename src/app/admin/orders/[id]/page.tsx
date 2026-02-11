@@ -300,6 +300,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               currentTotal={Math.round(order.total * 100)}
               canCapture={canCapture}
               hasUnweighedItems={hasUnweighedItems}
+              totalRefunded={order.amount_refunded || 0}
             />
           )}
 

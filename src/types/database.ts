@@ -298,6 +298,7 @@ export type Database = {
           total: number;
           stripe_payment_intent_id: string | null;
           stripe_charge_id: string | null;
+          amount_refunded: number;
           customer_notes: string | null;
           private_notes: string | null;
           invoice_notes: string | null;
@@ -338,6 +339,7 @@ export type Database = {
           total?: number;
           stripe_payment_intent_id?: string | null;
           stripe_charge_id?: string | null;
+          amount_refunded?: number;
           customer_notes?: string | null;
           private_notes?: string | null;
           invoice_notes?: string | null;
@@ -378,6 +380,7 @@ export type Database = {
           total?: number;
           stripe_payment_intent_id?: string | null;
           stripe_charge_id?: string | null;
+          amount_refunded?: number;
           customer_notes?: string | null;
           private_notes?: string | null;
           invoice_notes?: string | null;
