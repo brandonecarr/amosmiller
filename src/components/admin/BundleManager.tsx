@@ -95,10 +95,8 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
     }
 
     if (productsResult.data) {
-      // Filter out the current product from the list
-      setAllProducts(
-        productsResult.data.filter((p: Product) => p.id !== productId)
-      );
+      // Include ALL products (including the current one)
+      setAllProducts(productsResult.data);
     }
 
     if (bundleResult.error) {
@@ -173,8 +171,12 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
     setSelectedItems([...selectedItems, { product_id: product.id, quantity: 1 }]);
   };
 
-  const handleRemoveProduct = (productId: string) => {
-    setSelectedItems(selectedItems.filter((item) => item.product_id !== productId));
+  const handleRemoveProduct = (itemProductId: string) => {
+    // Prevent removing the main bundle product
+    if (itemProductId === productId) {
+      return;
+    }
+    setSelectedItems(selectedItems.filter((item) => item.product_id !== itemProductId));
   };
 
   const handleQuantityChange = (productId: string, quantity: number) => {
@@ -230,12 +232,19 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    setSelectedItems(
-                      bundle.items.map((item) => ({
-                        product_id: item.product_id,
-                        quantity: item.quantity,
-                      }))
-                    );
+                    const items = bundle.items.map((item) => ({
+                      product_id: item.product_id,
+                      quantity: item.quantity,
+                    }));
+
+                    // Ensure the main product is always included
+                    const hasMainProduct = items.some((item) => item.product_id === productId);
+                    if (!hasMainProduct) {
+                      items.unshift({ product_id: productId, quantity: 1 });
+                    }
+
+                    setSelectedItems(items);
+
                     // Initialize bundle price from product's base_price
                     if (bundle.product?.base_price) {
                       setBundlePrice(bundle.product.base_price.toString());
@@ -259,7 +268,8 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
               <Button
                 size="sm"
                 onClick={() => {
-                  setSelectedItems([]);
+                  // Always start with the current product in the bundle
+                  setSelectedItems([{ product_id: productId, quantity: 1 }]);
                   setBundlePrice("");
                   setIsModalOpen(true);
                 }}
@@ -410,10 +420,15 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                   <div className="space-y-2">
                     {selectedItems.map((item) => {
                       const product = getSelectedProduct(item.product_id);
+                      const isMainProduct = item.product_id === productId;
                       return (
                         <div
                           key={item.product_id}
-                          className="flex items-center justify-between p-3 bg-[var(--color-slate-50)] rounded-lg"
+                          className={`flex items-center justify-between p-3 rounded-lg ${
+                            isMainProduct
+                              ? 'bg-[var(--color-primary-50)] border border-[var(--color-primary-200)]'
+                              : 'bg-[var(--color-slate-50)]'
+                          }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-white rounded flex items-center justify-center overflow-hidden">
@@ -430,6 +445,11 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                             <div>
                               <p className="font-medium text-sm text-[var(--color-charcoal)]">
                                 {product?.name}
+                                {isMainProduct && (
+                                  <span className="ml-2 text-xs text-[var(--color-primary-700)] font-semibold">
+                                    (Main Product)
+                                  </span>
+                                )}
                               </p>
                               <p className="text-xs text-[var(--color-muted)]">
                                 {formatCurrency(product?.base_price || 0)}
@@ -466,7 +486,13 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleRemoveProduct(item.product_id)}
-                              className="text-[var(--color-error)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-light)] ml-2"
+                              disabled={isMainProduct}
+                              className={`ml-2 ${
+                                isMainProduct
+                                  ? 'opacity-40 cursor-not-allowed'
+                                  : 'text-[var(--color-error)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-light)]'
+                              }`}
+                              title={isMainProduct ? "Cannot remove main product" : "Remove product"}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
