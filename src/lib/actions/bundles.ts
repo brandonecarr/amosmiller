@@ -35,7 +35,13 @@ export async function getBundle(productId: string) {
     .select(`
       id,
       product_id,
-      items,
+      bundle_items(
+        id,
+        product_id,
+        quantity,
+        sort_order,
+        product:products(id, name, slug, base_price, sale_price, images, is_active)
+      ),
       product:products!bundles_product_id_fkey(
         id, name, slug, base_price, sale_price, images, is_active
       )
@@ -51,7 +57,17 @@ export async function getBundle(productId: string) {
     return { data: null, error: error.message };
   }
 
-  return { data: data as BundleProduct, error: null };
+  // Transform bundle_items to items for compatibility
+  if (data) {
+    const transformedData = {
+      ...data,
+      items: data.bundle_items || [],
+    };
+    delete transformedData.bundle_items;
+    return { data: transformedData as BundleProduct, error: null };
+  }
+
+  return { data: null, error: null };
 }
 
 // Check if a product is a bundle
