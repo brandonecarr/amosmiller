@@ -32,6 +32,15 @@ interface Bundle {
   id: string;
   product_id: string;
   items: BundleItem[];
+  product?: {
+    id: string;
+    name: string;
+    slug: string;
+    base_price: number;
+    sale_price: number | null;
+    images: string[];
+    is_active: boolean;
+  };
 }
 
 interface Product {
