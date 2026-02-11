@@ -235,9 +235,14 @@ export async function getBundles() {
 }
 
 // Create a bundle
-export async function createBundle(productId: string, items: BundleItem[]) {
+export async function createBundle(
+  productId: string,
+  items: BundleItem[],
+  bundlePrice?: number
+) {
   const supabase = await createClient();
 
+  // Create the bundle
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from("bundles")
@@ -253,6 +258,20 @@ export async function createBundle(productId: string, items: BundleItem[]) {
     return { data: null, error: error.message };
   }
 
+  // Update the product's base_price if bundlePrice is provided
+  if (bundlePrice !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: priceError } = await (supabase as any)
+      .from("products")
+      .update({ base_price: bundlePrice })
+      .eq("id", productId);
+
+    if (priceError) {
+      console.error("Error updating bundle price:", priceError);
+      return { data: null, error: priceError.message };
+    }
+  }
+
   return { data, error: null };
 }
 
@@ -260,17 +279,32 @@ export async function createBundle(productId: string, items: BundleItem[]) {
 export async function updateBundleItems(
   bundleId: string,
   productIdOrItems: string | BundleItem[],
-  items?: BundleItem[]
+  items?: BundleItem[],
+  bundlePrice?: number
 ) {
   const supabase = await createClient();
 
-  // Handle both signatures: (bundleId, items) and (bundleId, productId, items)
+  // Handle both signatures: (bundleId, items) and (bundleId, productId, items, bundlePrice)
   const bundleItems = Array.isArray(productIdOrItems) ? productIdOrItems : items;
+  const productId = typeof productIdOrItems === 'string' ? productIdOrItems : undefined;
 
   if (!bundleItems) {
     return { data: null, error: "Items are required" };
   }
 
+  // Get the product_id from the bundle if not provided
+  let finalProductId = productId;
+  if (!finalProductId) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: bundleData } = await (supabase as any)
+      .from("bundles")
+      .select("product_id")
+      .eq("id", bundleId)
+      .single();
+    finalProductId = bundleData?.product_id;
+  }
+
+  // Update the bundle items
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from("bundles")
@@ -282,6 +316,20 @@ export async function updateBundleItems(
   if (error) {
     console.error("Error updating bundle:", error);
     return { data: null, error: error.message };
+  }
+
+  // Update the product's base_price if bundlePrice is provided
+  if (bundlePrice !== undefined && finalProductId) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: priceError } = await (supabase as any)
+      .from("products")
+      .update({ base_price: bundlePrice })
+      .eq("id", finalProductId);
+
+    if (priceError) {
+      console.error("Error updating bundle price:", priceError);
+      return { data: null, error: priceError.message };
+    }
   }
 
   return { data, error: null };

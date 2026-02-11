@@ -57,6 +57,7 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<{ product_id: string; quantity: number }[]>([]);
+  const [bundlePrice, setBundlePrice] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -78,6 +79,10 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
           quantity: item.quantity,
         }))
       );
+      // Initialize bundle price from product's base_price
+      if (bundleResult.data.product?.base_price) {
+        setBundlePrice(bundleResult.data.product.base_price.toString());
+      }
     }
 
     if (productsResult.data) {
@@ -100,8 +105,14 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
       return;
     }
 
+    const price = bundlePrice ? parseFloat(bundlePrice) : undefined;
+    if (bundlePrice && (isNaN(price!) || price! < 0)) {
+      setError("Please enter a valid bundle price");
+      return;
+    }
+
     startTransition(async () => {
-      const result = await createBundle(productId, selectedItems);
+      const result = await createBundle(productId, selectedItems, price);
       if (result.error) {
         setError(result.error);
         return;
@@ -114,8 +125,14 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
   const handleUpdateBundle = async () => {
     if (!bundle) return;
 
+    const price = bundlePrice ? parseFloat(bundlePrice) : undefined;
+    if (bundlePrice && (isNaN(price!) || price! < 0)) {
+      setError("Please enter a valid bundle price");
+      return;
+    }
+
     startTransition(async () => {
-      const result = await updateBundleItems(bundle.id, productId, selectedItems);
+      const result = await updateBundleItems(bundle.id, productId, selectedItems, price);
       if (result.error) {
         setError(result.error);
         return;
@@ -210,6 +227,10 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                         quantity: item.quantity,
                       }))
                     );
+                    // Initialize bundle price from product's base_price
+                    if (bundle.product?.base_price) {
+                      setBundlePrice(bundle.product.base_price.toString());
+                    }
                     setIsModalOpen(true);
                   }}
                 >
@@ -230,6 +251,7 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                 size="sm"
                 onClick={() => {
                   setSelectedItems([]);
+                  setBundlePrice("");
                   setIsModalOpen(true);
                 }}
               >
@@ -278,10 +300,10 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                   <Badge variant="default">x{item.quantity}</Badge>
                 </div>
               ))}
-              <div className="px-6 py-4 bg-[var(--color-slate-50)]">
+              <div className="px-6 py-4 bg-[var(--color-slate-50)] space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-[var(--color-muted)]">Bundle Total (at retail):</span>
-                  <span className="font-bold text-[var(--color-charcoal)]">
+                  <span className="text-[var(--color-muted)]">Retail Total:</span>
+                  <span className="font-medium text-[var(--color-charcoal)]">
                     {formatCurrency(
                       bundle.items.reduce(
                         (total, item) =>
@@ -291,6 +313,47 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                     )}
                   </span>
                 </div>
+                {bundle.product?.base_price && (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[var(--color-muted)]">Bundle Price:</span>
+                      <span className="font-bold text-[var(--color-primary-700)]">
+                        {formatCurrency(bundle.product.base_price)}
+                      </span>
+                    </div>
+                    {bundle.product.base_price < bundle.items.reduce(
+                      (total, item) =>
+                        total + (item.products?.base_price || 0) * item.quantity,
+                      0
+                    ) && (
+                      <div className="flex justify-between items-center text-sm text-green-700">
+                        <span className="font-medium">Customer Saves:</span>
+                        <span className="font-bold">
+                          {formatCurrency(
+                            bundle.items.reduce(
+                              (total, item) =>
+                                total + (item.products?.base_price || 0) * item.quantity,
+                              0
+                            ) - bundle.product.base_price
+                          )}
+                          {" "}
+                          ({Math.round(
+                            ((bundle.items.reduce(
+                              (total, item) =>
+                                total + (item.products?.base_price || 0) * item.quantity,
+                              0
+                            ) - bundle.product.base_price) /
+                            bundle.items.reduce(
+                              (total, item) =>
+                                total + (item.products?.base_price || 0) * item.quantity,
+                              0
+                            )) * 100
+                          )}% off)
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           ) : (
@@ -404,11 +467,41 @@ export function BundleManager({ productId, productName }: BundleManagerProps) {
                     })}
                     <div className="flex justify-between items-center p-3 bg-[var(--color-primary-50)] rounded-lg">
                       <span className="font-medium text-[var(--color-primary-700)]">
-                        Bundle Total:
+                        Retail Total:
                       </span>
                       <span className="font-bold text-[var(--color-primary-700)]">
                         {formatCurrency(calculateBundleTotal())}
                       </span>
+                    </div>
+
+                    {/* Custom Bundle Price */}
+                    <div className="space-y-2 mt-3">
+                      <label className="text-sm font-medium text-[var(--color-charcoal)]">
+                        Bundle Price (optional)
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter custom bundle price"
+                        value={bundlePrice}
+                        onChange={(e) => setBundlePrice(e.target.value)}
+                      />
+                      <p className="text-xs text-[var(--color-muted)]">
+                        Leave empty to use the retail total. Set a lower price to offer a bundle discount.
+                      </p>
+                      {bundlePrice && parseFloat(bundlePrice) > 0 && (
+                        <div className="flex justify-between items-center p-2 bg-green-50 rounded text-sm">
+                          <span className="text-green-700 font-medium">
+                            Customer Saves:
+                          </span>
+                          <span className="text-green-700 font-bold">
+                            {formatCurrency(Math.max(0, calculateBundleTotal() - parseFloat(bundlePrice)))}
+                            {" "}
+                            ({Math.round(Math.max(0, (calculateBundleTotal() - parseFloat(bundlePrice)) / calculateBundleTotal() * 100))}% off)
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
