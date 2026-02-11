@@ -1,8 +1,16 @@
 import EasyPost from '@easypost/api';
 import crypto from 'crypto';
 
-// Initialize EasyPost client
-const client = new EasyPost(process.env.EASYPOST_API_KEY || '');
+/**
+ * Get EasyPost client instance
+ * Lazy-loaded to avoid build-time errors when API key is not set
+ */
+function getClient() {
+  if (!process.env.EASYPOST_API_KEY) {
+    throw new Error('EASYPOST_API_KEY environment variable is not configured');
+  }
+  return new EasyPost(process.env.EASYPOST_API_KEY);
+}
 
 /**
  * Create a tracker for a tracking number
@@ -10,6 +18,7 @@ const client = new EasyPost(process.env.EASYPOST_API_KEY || '');
  */
 export async function createTracker(carrier: string, trackingCode: string) {
   try {
+    const client = getClient();
     const tracker = await client.Tracker.create({
       tracking_code: trackingCode,
       carrier: carrier.toLowerCase(),
@@ -73,6 +82,7 @@ export function mapEventType(easyPostStatus: string): string {
  */
 export async function getTrackingDetails(trackingCode: string, carrier?: string) {
   try {
+    const client = getClient();
     const tracker = await client.Tracker.retrieve(trackingCode);
     return { tracker, error: null };
   } catch (error: any) {
@@ -86,6 +96,7 @@ export async function getTrackingDetails(trackingCode: string, carrier?: string)
  */
 export async function listTrackers(pageSize: number = 20) {
   try {
+    const client = getClient();
     const trackers = await client.Tracker.all({ page_size: pageSize });
     return { trackers: trackers.trackers, error: null };
   } catch (error: any) {

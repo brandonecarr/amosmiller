@@ -40,7 +40,7 @@ const navigation = [
   { name: "Blog", href: "/admin/blog", icon: BookOpen },
   { name: "Reviews", href: "/admin/reviews", icon: MessageSquare },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
+  { name: "Settings", href: "/admin/settings/notifications", icon: Settings },
 ];
 
 export default function AdminLayout({

@@ -23,6 +23,7 @@ import { OrderNotesForm } from "./OrderNotesForm";
 import { WeightEntryForm } from "./WeightEntryForm";
 import { PaymentActions } from "./PaymentActions";
 import { TrackingForm } from "./TrackingForm";
+import { ShipmentTimeline } from "./ShipmentTimeline";
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>;
@@ -312,6 +313,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               trackingUrl={order.tracking_url}
             />
           )}
+
+          {/* Shipment Timeline */}
+          <ShipmentTimeline orderId={order.id} />
 
           {/* Order Notes */}
           <OrderNotesForm

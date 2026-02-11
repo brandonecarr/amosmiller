@@ -90,8 +90,8 @@ export async function dispatchNotification(eventType: string, orderId: string): 
       recipient_email: customerEmail,
       notification_type: eventType,
       status: emailResult.success ? 'sent' : 'failed',
-      provider_message_id: emailResult.data?.id,
-      error_message: emailResult.error,
+      provider_message_id: emailResult.success ? (emailResult.data as any)?.id : null,
+      error_message: emailResult.success ? null : emailResult.error,
       sent_at: emailResult.success ? new Date().toISOString() : null,
     });
 
@@ -149,10 +149,11 @@ export async function sendTestNotification(
       html: html,
     });
 
-    return {
-      success: result.success,
-      error: result.error,
-    };
+    if (result.success) {
+      return { success: true, error: null };
+    } else {
+      return { success: false, error: result.error || 'Unknown error' };
+    }
   } catch (error: any) {
     return {
       success: false,
