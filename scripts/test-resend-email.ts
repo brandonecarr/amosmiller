@@ -34,12 +34,12 @@ if (!recipientEmail) {
 async function testEmail() {
   console.log('🧪 Testing Resend Email Configuration...\n');
   console.log('Configuration:');
-  console.log(`  API Key: ${RESEND_API_KEY.substring(0, 10)}...`);
+  console.log(`  API Key: ${RESEND_API_KEY!.substring(0, 10)}...`);
   console.log(`  From: ${EMAIL_FROM_NAME} <${EMAIL_FROM}>`);
   console.log(`  To: ${recipientEmail}\n`);
 
   try {
-    const resend = new Resend(RESEND_API_KEY);
+    const resend = new Resend(RESEND_API_KEY!);
 
     const result = await resend.emails.send({
       from: `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
@@ -53,7 +53,7 @@ async function testEmail() {
           <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <strong>Configuration Details:</strong><br>
             <code>From: ${EMAIL_FROM_NAME} &lt;${EMAIL_FROM}&gt;</code><br>
-            <code>API Key: ${RESEND_API_KEY.substring(0, 10)}...</code>
+            <code>API Key: ${RESEND_API_KEY!.substring(0, 10)}...</code>
           </div>
 
           <p>You can now send emails from your Amos Miller Farm application!</p>
@@ -64,7 +64,7 @@ async function testEmail() {
           </p>
         </div>
       `,
-      text: `✅ Email Configuration Working!\n\nCongratulations! Your Resend email integration is configured correctly.\n\nFrom: ${EMAIL_FROM_NAME} <${EMAIL_FROM}>\nAPI Key: ${RESEND_API_KEY.substring(0, 10)}...\n\nYou can now send emails from your Amos Miller Farm application!`,
+      text: `✅ Email Configuration Working!\n\nCongratulations! Your Resend email integration is configured correctly.\n\nFrom: ${EMAIL_FROM_NAME} <${EMAIL_FROM}>\nAPI Key: ${RESEND_API_KEY!.substring(0, 10)}...\n\nYou can now send emails from your Amos Miller Farm application!`,
     });
 
     console.log('✅ Email sent successfully!');
