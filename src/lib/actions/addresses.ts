@@ -322,3 +322,85 @@ export async function getDefaultAddress() {
 
   return { data: data || null, error: null };
 }
+
+// Save address from checkout (internal helper)
+export async function saveAddressFromCheckout({
+  userId,
+  firstName,
+  lastName,
+  addressLine1,
+  addressLine2,
+  city,
+  state,
+  postalCode,
+  country = "US",
+  phone,
+  label,
+}: {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  addressLine1: string;
+  addressLine2?: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  country?: string;
+  phone?: string | null;
+  label: "Shipping" | "Billing";
+}) {
+  const supabase = await createClient();
+
+  // Check if this exact address already exists for this user
+  const { data: existing } = await supabase
+    .from("addresses")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("address_line1", addressLine1)
+    .eq("city", city)
+    .eq("state", state)
+    .eq("postal_code", postalCode)
+    .maybeSingle();
+
+  // If address already exists, don't create a duplicate
+  if (existing) {
+    return { data: existing, error: null };
+  }
+
+  // Check if this is the first address - make it default
+  const { count } = await supabase
+    .from("addresses")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  const isFirstAddress = count === 0;
+
+  // Create the new address
+  const { data, error } = await supabase
+    .from("addresses")
+    .insert({
+      user_id: userId,
+      label,
+      is_default: isFirstAddress,
+      first_name: firstName,
+      last_name: lastName,
+      company: null,
+      address_line1: addressLine1,
+      address_line2: addressLine2 || null,
+      city,
+      state,
+      postal_code: postalCode,
+      country,
+      phone: phone || null,
+      delivery_instructions: null,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error saving address from checkout:", error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}

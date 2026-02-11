@@ -14,6 +14,7 @@ import {
 } from "@/lib/email/order-emails";
 import { syncCustomerAfterOrder } from "@/lib/integrations/mailchimp";
 import { activateMembership } from "@/lib/actions/membership";
+import { saveAddressFromCheckout } from "@/lib/actions/addresses";
 
 // Address schema
 const addressSchema = z.object({
@@ -353,8 +354,59 @@ export async function createOrder(input: CreateOrderInput) {
     }
   }
 
+  // Save shipping and billing addresses to user's address book (if logged in)
+  if (user?.id) {
+    // Save shipping address
+    if (data.shippingAddress) {
+      try {
+        await saveAddressFromCheckout({
+          userId: user.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          addressLine1: data.shippingAddress.line1,
+          addressLine2: data.shippingAddress.line2,
+          city: data.shippingAddress.city,
+          state: data.shippingAddress.state,
+          postalCode: data.shippingAddress.postalCode,
+          country: data.shippingAddress.country,
+          phone: data.phone,
+          label: "Shipping",
+        });
+      } catch (addressError) {
+        console.error("Error saving shipping address:", addressError);
+        // Don't fail the order, just log the error
+      }
+    }
+
+    // Save billing address if different from shipping
+    if (
+      data.billingAddress &&
+      JSON.stringify(data.billingAddress) !== JSON.stringify(data.shippingAddress)
+    ) {
+      try {
+        await saveAddressFromCheckout({
+          userId: user.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          addressLine1: data.billingAddress.line1,
+          addressLine2: data.billingAddress.line2,
+          city: data.billingAddress.city,
+          state: data.billingAddress.state,
+          postalCode: data.billingAddress.postalCode,
+          country: data.billingAddress.country,
+          phone: data.phone,
+          label: "Billing",
+        });
+      } catch (addressError) {
+        console.error("Error saving billing address:", addressError);
+        // Don't fail the order, just log the error
+      }
+    }
+  }
+
   revalidatePath("/admin/orders");
   revalidatePath("/account/orders");
+  revalidatePath("/account/addresses");
 
   return {
     data: {
