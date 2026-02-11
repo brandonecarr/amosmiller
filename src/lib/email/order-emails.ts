@@ -88,8 +88,12 @@ export async function sendOrderStatusUpdateEmail(order: OrderEmailData, newStatu
         content: pdfBuffer,
         contentType: "application/pdf",
       });
-    } catch (error) {
-      console.error("Error generating invoice PDF:", error);
+    } catch (error: any) {
+      console.error("❌ PDF Generation Error:", {
+        message: error.message,
+        stack: error.stack,
+        order_number: order.order_number,
+      });
       // Continue sending email even if PDF generation fails
     }
   }
