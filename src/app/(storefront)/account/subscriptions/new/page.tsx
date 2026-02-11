@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition, Suspense } from "react";
+import { useState, useEffect, useTransition, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -90,9 +90,35 @@ function NewSubscriptionContent() {
     postalCode: "",
   });
 
+  // Calculate allowed frequencies based on all items in cart
+  const allowedFrequencies = useMemo(() => {
+    if (items.length === 0) return ["weekly", "biweekly", "monthly"] as const;
+
+    // Get the intersection of allowed frequencies from all products
+    const firstProduct = items[0].product;
+    let allowed = firstProduct.subscription_frequencies || ["weekly", "biweekly", "monthly"];
+
+    for (let i = 1; i < items.length; i++) {
+      const productFreqs = items[i].product.subscription_frequencies || ["weekly", "biweekly", "monthly"];
+      allowed = allowed.filter((freq) => productFreqs.includes(freq));
+    }
+
+    return allowed as ("weekly" | "biweekly" | "monthly")[];
+  }, [items]);
+
   useEffect(() => {
     loadData();
   }, []);
+
+  // Auto-select frequency if there's only one allowed option
+  useEffect(() => {
+    if (allowedFrequencies.length === 1 && frequency !== allowedFrequencies[0]) {
+      setFrequency(allowedFrequencies[0]);
+    } else if (allowedFrequencies.length > 0 && !allowedFrequencies.includes(frequency)) {
+      // Current frequency is not allowed, switch to first allowed
+      setFrequency(allowedFrequencies[0]);
+    }
+  }, [allowedFrequencies, frequency]);
 
   const loadData = async () => {
     setLoading(true);
@@ -592,28 +618,57 @@ function NewSubscriptionContent() {
                     <label className="block text-sm font-medium text-slate-900 mb-3">
                       How often would you like delivery?
                     </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {(["weekly", "biweekly", "monthly"] as const).map((freq) => (
-                        <button
-                          key={freq}
-                          onClick={() => setFrequency(freq)}
-                          className={`p-4 rounded-2xl border-2 transition-colors text-center ${
-                            frequency === freq
-                              ? "border-orange-500 bg-orange-50"
-                              : "border-slate-200 hover:border-orange-300"
-                          }`}
-                        >
-                          <RefreshCw
-                            className={`w-6 h-6 mx-auto mb-2 ${
-                              frequency === freq
-                                ? "text-orange-500"
-                                : "text-slate-500"
-                            }`}
-                          />
-                          <p className="font-medium">{frequencyLabels[freq]}</p>
-                        </button>
-                      ))}
-                    </div>
+
+                    {allowedFrequencies.length === 0 ? (
+                      <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
+                        <p className="text-red-800 font-medium">Incompatible Products</p>
+                        <p className="text-sm text-red-600 mt-1">
+                          The products in your cart have incompatible subscription frequencies.
+                          Please remove some items or create separate subscriptions.
+                        </p>
+                      </div>
+                    ) : allowedFrequencies.length === 1 ? (
+                      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+                        <RefreshCw className="w-6 h-6 mx-auto mb-2 text-blue-500" />
+                        <p className="font-medium text-blue-900">
+                          {frequencyLabels[allowedFrequencies[0]]}
+                        </p>
+                        <p className="text-sm text-blue-600 mt-1">
+                          Based on your selected products
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-3">
+                        {(["weekly", "biweekly", "monthly"] as const).map((freq) => {
+                          const isAllowed = allowedFrequencies.includes(freq);
+                          return (
+                            <button
+                              key={freq}
+                              onClick={() => isAllowed && setFrequency(freq)}
+                              disabled={!isAllowed}
+                              className={`p-4 rounded-2xl border-2 transition-colors text-center ${
+                                !isAllowed
+                                  ? "border-slate-100 bg-slate-50 opacity-40 cursor-not-allowed"
+                                  : frequency === freq
+                                  ? "border-orange-500 bg-orange-50"
+                                  : "border-slate-200 hover:border-orange-300"
+                              }`}
+                            >
+                              <RefreshCw
+                                className={`w-6 h-6 mx-auto mb-2 ${
+                                  !isAllowed
+                                    ? "text-slate-300"
+                                    : frequency === freq
+                                    ? "text-orange-500"
+                                    : "text-slate-500"
+                                }`}
+                              />
+                              <p className="font-medium">{frequencyLabels[freq]}</p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -622,7 +677,9 @@ function NewSubscriptionContent() {
                 <Button variant="outline" onClick={() => setStep(1)}>
                   Back
                 </Button>
-                <Button onClick={() => setStep(3)}>Continue to Delivery</Button>
+                <Button onClick={() => setStep(3)} disabled={allowedFrequencies.length === 0}>
+                  Continue to Delivery
+                </Button>
               </div>
             </>
           )}
