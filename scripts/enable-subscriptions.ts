@@ -45,6 +45,7 @@ async function enableSubscriptions() {
     const { error: updateError } = await supabase
       .from('products')
       .update({
+        is_subscribable: true,
         subscription_frequencies: ['biweekly'],
         max_subscription_quantity: null,
       })
@@ -57,6 +58,7 @@ async function enableSubscriptions() {
 
     console.log('✅ Successfully updated all products!\n');
     console.log('Changes made:');
+    console.log('  ✓ Allow Subscriptions: Enabled (is_subscribable = true)');
     console.log('  ✓ Subscription Frequency: Every 2 Weeks (biweekly)');
     console.log('  ✓ Max Subscription Quantity: Unlimited (null)');
     console.log(`\n📦 Updated ${products.length} products:\n`);
