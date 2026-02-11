@@ -40,7 +40,7 @@ export async function getBundle(productId: string) {
         product_id,
         quantity,
         sort_order,
-        product:products(id, name, slug, base_price, sale_price, images, is_active)
+        products:products(id, name, slug, base_price, sale_price, pricing_type, images, featured_image_url, is_active)
       ),
       product:products!bundles_product_id_fkey(
         id, name, slug, base_price, sale_price, images, is_active
