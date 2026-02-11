@@ -156,8 +156,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           {/* Order Items */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-                <Package className="w-5 h-5" />
+              <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+                <Package className="w-4 h-4" />
                 Order Items
               </h2>
             </div>
@@ -311,10 +311,25 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Payment Actions */}
+          {paymentIntent && (
+            <PaymentActions
+              orderId={order.id}
+              paymentIntentId={order.stripe_payment_intent_id}
+              paymentStatus={order.payment_status}
+              stripeStatus={paymentIntent.status}
+              amountAuthorized={paymentIntent.amount}
+              currentTotal={Math.round(order.total * 100)}
+              canCapture={canCapture}
+              hasUnweighedItems={hasUnweighedItems}
+              totalRefunded={order.amount_refunded || 0}
+            />
+          )}
+
           {/* Customer Info */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h3 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Customer
               </h3>
@@ -339,7 +354,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           {/* Fulfillment Info */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h3 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Fulfillment
               </h3>
@@ -400,7 +415,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           {/* Payment Info */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h3 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
                 <CreditCard className="w-4 h-4" />
                 Payment
               </h3>
@@ -442,21 +457,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               )}
             </div>
           </div>
-
-          {/* Payment Actions */}
-          {paymentIntent && (
-            <PaymentActions
-              orderId={order.id}
-              paymentIntentId={order.stripe_payment_intent_id}
-              paymentStatus={order.payment_status}
-              stripeStatus={paymentIntent.status}
-              amountAuthorized={paymentIntent.amount}
-              currentTotal={Math.round(order.total * 100)}
-              canCapture={canCapture}
-              hasUnweighedItems={hasUnweighedItems}
-              totalRefunded={order.amount_refunded || 0}
-            />
-          )}
 
           {/* Customer Notes */}
           {order.customer_notes && (
