@@ -242,13 +242,12 @@ export async function createBundle(
 ) {
   const supabase = await createClient();
 
-  // Create the bundle
+  // Create the bundle record (without items)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data: bundle, error } = await (supabase as any)
     .from("bundles")
     .insert({
       product_id: productId,
-      items,
     })
     .select()
     .single();
@@ -256,6 +255,29 @@ export async function createBundle(
   if (error) {
     console.error("Error creating bundle:", error);
     return { data: null, error: error.message };
+  }
+
+  // Insert bundle items into bundle_items table
+  if (items.length > 0) {
+    const bundleItems = items.map((item, index) => ({
+      bundle_id: bundle.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      sort_order: item.sort_order ?? index,
+    }));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: itemsError } = await (supabase as any)
+      .from("bundle_items")
+      .insert(bundleItems);
+
+    if (itemsError) {
+      console.error("Error creating bundle items:", itemsError);
+      // Clean up the bundle if items insertion fails
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from("bundles").delete().eq("id", bundle.id);
+      return { data: null, error: itemsError.message };
+    }
   }
 
   // Update the product's base_price if bundlePrice is provided
@@ -272,7 +294,7 @@ export async function createBundle(
     }
   }
 
-  return { data, error: null };
+  return { data: bundle, error: null };
 }
 
 // Update a bundle's items
@@ -304,17 +326,48 @@ export async function updateBundleItems(
     finalProductId = bundleData?.product_id;
   }
 
-  // Update the bundle items
+  // Delete existing bundle items
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: deleteError } = await (supabase as any)
+    .from("bundle_items")
+    .delete()
+    .eq("bundle_id", bundleId);
+
+  if (deleteError) {
+    console.error("Error deleting bundle items:", deleteError);
+    return { data: null, error: deleteError.message };
+  }
+
+  // Insert new bundle items
+  if (bundleItems.length > 0) {
+    const newBundleItems = bundleItems.map((item, index) => ({
+      bundle_id: bundleId,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      sort_order: item.sort_order ?? index,
+    }));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: insertError } = await (supabase as any)
+      .from("bundle_items")
+      .insert(newBundleItems);
+
+    if (insertError) {
+      console.error("Error inserting bundle items:", insertError);
+      return { data: null, error: insertError.message };
+    }
+  }
+
+  // Get the updated bundle
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from("bundles")
-    .update({ items: bundleItems })
-    .eq("id", bundleId)
     .select()
+    .eq("id", bundleId)
     .single();
 
   if (error) {
-    console.error("Error updating bundle:", error);
+    console.error("Error fetching updated bundle:", error);
     return { data: null, error: error.message };
   }
 
