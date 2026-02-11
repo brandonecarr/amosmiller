@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { getOrder } from "@/lib/actions/orders";
 import { formatCurrency, parseLocalDate } from "@/lib/utils";
+import { PrintButton } from "./PrintButton";
 
 interface PackingListPageProps {
   params: Promise<{ id: string }>;
@@ -42,20 +43,7 @@ export default async function PackingListPage({ params }: PackingListPageProps) 
       />
 
       {/* Header with Print Button */}
-      <div className="no-print flex justify-between items-center mb-6 pb-6 border-b">
-        <a
-          href={`/admin/orders/${order.id}`}
-          className="text-[var(--color-primary-500)] hover:underline"
-        >
-          ← Back to Order
-        </a>
-        <button
-          onClick={() => window.print()}
-          className="px-4 py-2 bg-[var(--color-primary-500)] text-white rounded-lg hover:bg-[var(--color-primary-600)]"
-        >
-          Print Packing List
-        </button>
-      </div>
+      <PrintButton orderId={order.id} />
 
       {/* Packing List Header */}
       <div className="flex justify-between items-start mb-8">

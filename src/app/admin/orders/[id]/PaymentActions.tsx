@@ -128,10 +128,36 @@ export function PaymentActions({
         <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
           <DollarSign className="w-5 h-5" />
           Payment Capture
+          {!canCapture && (
+            <span className="ml-auto text-xs font-normal text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
+              Capture Disabled
+            </span>
+          )}
         </h2>
       </div>
 
       <div className="p-6 space-y-4">
+        {/* Diagnostic information when capture is disabled */}
+        {!canCapture && (
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="font-medium text-blue-900 mb-2">Capture Requirements:</p>
+            <ul className="text-sm space-y-1">
+              <li className={paymentStatus === "authorized" ? "text-green-700" : "text-red-700"}>
+                {paymentStatus === "authorized" ? "✓" : "✗"} Payment Status: {paymentStatus}
+                {paymentStatus !== "authorized" && " (must be 'authorized')"}
+              </li>
+              <li className={!hasUnweighedItems ? "text-green-700" : "text-red-700"}>
+                {!hasUnweighedItems ? "✓" : "✗"} All weight-based items weighed
+                {hasUnweighedItems && " (weight entry required)"}
+              </li>
+              <li className={stripeStatus === "requires_capture" ? "text-green-700" : "text-red-700"}>
+                {stripeStatus === "requires_capture" ? "✓" : "✗"} Stripe Status: {stripeStatus}
+                {stripeStatus !== "requires_capture" && " (must be 'requires_capture')"}
+              </li>
+            </ul>
+          </div>
+        )}
+
         {hasUnweighedItems && (
           <div className="flex items-start gap-2 p-3 bg-yellow-50 rounded-lg text-yellow-800">
             <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />

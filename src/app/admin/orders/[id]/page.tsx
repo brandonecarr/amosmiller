@@ -24,6 +24,7 @@ import { WeightEntryForm } from "./WeightEntryForm";
 import { PaymentActions } from "./PaymentActions";
 import { TrackingForm } from "./TrackingForm";
 import { ShipmentTimeline } from "./ShipmentTimeline";
+import { SendEmailButton } from "./SendEmailButton";
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>;
@@ -119,10 +120,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               Packing List
             </Button>
           </Link>
-          <Button variant="outline">
-            <Mail className="w-4 h-4 mr-2" />
-            Send Email
-          </Button>
+          <SendEmailButton order={order} />
         </div>
       </div>
 
