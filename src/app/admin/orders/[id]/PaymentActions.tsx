@@ -188,8 +188,8 @@ export function PaymentActions({
         {amountRefundable > 0 && (
           <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
             <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-              <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-                <RotateCcw className="w-5 h-5" />
+              <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+                <RotateCcw className="w-4 h-4" />
                 Process Refund
               </h2>
             </div>
@@ -358,8 +358,8 @@ export function PaymentActions({
   return (
     <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
       <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
-        <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-          <DollarSign className="w-5 h-5" />
+        <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+          <DollarSign className="w-4 h-4" />
           Payment Capture
           {!canCapture && (
             <span className="ml-auto text-xs font-normal text-yellow-600 bg-yellow-50 px-2 py-1 rounded">

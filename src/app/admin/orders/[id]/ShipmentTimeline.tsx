@@ -74,8 +74,8 @@ export async function ShipmentTimeline({ orderId }: ShipmentTimelineProps) {
   return (
     <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
       <div className="p-4 border-b border-[var(--color-border)]">
-        <h2 className="text-lg font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-          <Package className="w-5 h-5" />
+        <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+          <Package className="w-4 h-4" />
           Shipment Tracking History
         </h2>
       </div>

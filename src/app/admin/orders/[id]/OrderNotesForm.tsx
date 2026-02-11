@@ -39,8 +39,8 @@ export function OrderNotesForm({ orderId, privateNotes, invoiceNotes }: OrderNot
     return (
       <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-            <StickyNote className="w-5 h-5" />
+          <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+            <StickyNote className="w-4 h-4" />
             Order Notes
           </h2>
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
@@ -56,8 +56,8 @@ export function OrderNotesForm({ orderId, privateNotes, invoiceNotes }: OrderNot
     <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
       <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-slate-50)]">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-            <StickyNote className="w-5 h-5" />
+          <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+            <StickyNote className="w-4 h-4" />
             Order Notes
           </h2>
           {!isEditing && (

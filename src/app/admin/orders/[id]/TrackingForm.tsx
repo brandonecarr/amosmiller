@@ -73,8 +73,8 @@ export function TrackingForm({ orderId, trackingNumber, trackingUrl }: TrackingF
     return (
       <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-            <Truck className="w-5 h-5" />
+          <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+            <Truck className="w-4 h-4" />
             Tracking Information
           </h2>
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
@@ -90,8 +90,8 @@ export function TrackingForm({ orderId, trackingNumber, trackingUrl }: TrackingF
     return (
       <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
-            <Truck className="w-5 h-5" />
+          <h2 className="text-sm font-semibold text-[var(--color-charcoal)] flex items-center gap-2">
+            <Truck className="w-4 h-4" />
             Tracking Information
           </h2>
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
