@@ -13,6 +13,10 @@ import {
   Plus,
   Minus,
   Trash2,
+  Search,
+  ShoppingBag,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from "@/components/ui";
 import { getSubscribableProducts } from "@/lib/actions/products";
@@ -31,6 +35,7 @@ interface Product {
   subscription_frequencies: ("weekly" | "biweekly" | "monthly")[] | null;
   min_subscription_quantity: number | null;
   max_subscription_quantity: number | null;
+  category_id: string | null;
 }
 
 interface FulfillmentLocation {
@@ -47,6 +52,9 @@ interface SubscriptionItem {
   quantity: number;
 }
 
+// Subscription cart storage key
+const SUBSCRIPTION_CART_KEY = "subscription_cart_items";
+
 const frequencyLabels: Record<string, string> = {
   weekly: "Weekly",
   biweekly: "Every 2 Weeks",
@@ -62,6 +70,11 @@ function NewSubscriptionContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [locations, setLocations] = useState<FulfillmentLocation[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Product browsing state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showAllProducts, setShowAllProducts] = useState(false);
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
 
   // Form state
   const [subscriptionName, setSubscriptionName] = useState("");
@@ -89,21 +102,57 @@ function NewSubscriptionContent() {
     ]);
 
     if (productsResult.data) {
-      setProducts(productsResult.data as Product[]);
+      const allProducts = productsResult.data as Product[];
+      setProducts(allProducts);
 
-      // If product is passed via URL params, add it
+      // Load existing cart from localStorage
+      const savedCartItems = loadSubscriptionCart(allProducts);
+
+      // Check if product is passed via URL params (user clicked "Subscribe" on a product page)
       const productId = searchParams.get("product");
       const qty = parseInt(searchParams.get("quantity") || "1");
       const freq = searchParams.get("frequency") as "weekly" | "biweekly" | "monthly" | null;
 
+      let mergedItems = [...savedCartItems];
+
       if (productId) {
-        const product = (productsResult.data as Product[]).find((p) => p.id === productId);
+        const product = allProducts.find((p) => p.id === productId);
         if (product) {
-          setItems([{ productId, product, quantity: qty }]);
+          // Check if product already exists in cart
+          const existingIndex = mergedItems.findIndex((item) => item.productId === productId);
+          if (existingIndex >= 0) {
+            // Update quantity
+            mergedItems[existingIndex].quantity += qty;
+          } else {
+            // Add new item
+            mergedItems.push({ productId, product, quantity: qty });
+          }
+
           if (freq && ["weekly", "biweekly", "monthly"].includes(freq)) {
             setFrequency(freq);
           }
         }
+      }
+
+      setItems(mergedItems);
+      saveSubscriptionCart(mergedItems);
+
+      // Set recommendations based on cart items' categories
+      if (mergedItems.length > 0) {
+        const cartCategories = mergedItems.map((item) => item.product.category_id).filter(Boolean);
+        const categoryProducts = allProducts.filter(
+          (p) =>
+            cartCategories.includes(p.category_id) &&
+            !mergedItems.some((item) => item.productId === p.id)
+        );
+        const recommendedProducts =
+          categoryProducts.length > 0
+            ? categoryProducts.slice(0, 6)
+            : allProducts.filter((p) => !mergedItems.some((item) => item.productId === p.id)).slice(0, 6);
+        setRecommendations(recommendedProducts);
+      } else {
+        // No items in cart, show random recommendations
+        setRecommendations(allProducts.slice(0, 8));
       }
     }
 
@@ -119,24 +168,28 @@ function NewSubscriptionContent() {
     if (existing) {
       updateQuantity(product.id, existing.quantity + 1);
     } else {
-      setItems([...items, { productId: product.id, product, quantity: 1 }]);
+      const newItems = [...items, { productId: product.id, product, quantity: 1 }];
+      setItems(newItems);
+      saveSubscriptionCart(newItems);
     }
   };
 
   const removeProduct = (productId: string) => {
-    setItems(items.filter((i) => i.productId !== productId));
+    const newItems = items.filter((i) => i.productId !== productId);
+    setItems(newItems);
+    saveSubscriptionCart(newItems);
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    setItems(
-      items.map((item) => {
-        if (item.productId !== productId) return item;
-        const min = item.product.min_subscription_quantity || 1;
-        const max = item.product.max_subscription_quantity || 10;
-        const newQty = Math.max(min, Math.min(max, quantity));
-        return { ...item, quantity: newQty };
-      })
-    );
+    const newItems = items.map((item) => {
+      if (item.productId !== productId) return item;
+      const min = item.product.min_subscription_quantity || 1;
+      const max = item.product.max_subscription_quantity || 10;
+      const newQty = Math.max(min, Math.min(max, quantity));
+      return { ...item, quantity: newQty };
+    });
+    setItems(newItems);
+    saveSubscriptionCart(newItems);
   };
 
   const calculateItemPrice = (item: SubscriptionItem) => {
@@ -150,6 +203,47 @@ function NewSubscriptionContent() {
   const subtotal = items.reduce((sum, item) => sum + calculateItemPrice(item), 0);
   const discount = subtotal * 0.1; // 10% subscription discount
   const total = subtotal - discount;
+
+  // Save subscription cart to localStorage
+  const saveSubscriptionCart = (cartItems: SubscriptionItem[]) => {
+    try {
+      localStorage.setItem(
+        SUBSCRIPTION_CART_KEY,
+        JSON.stringify(
+          cartItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          }))
+        )
+      );
+    } catch (error) {
+      console.error("Failed to save subscription cart:", error);
+    }
+  };
+
+  // Load subscription cart from localStorage
+  const loadSubscriptionCart = (allProducts: Product[]): SubscriptionItem[] => {
+    try {
+      const saved = localStorage.getItem(SUBSCRIPTION_CART_KEY);
+      if (!saved) return [];
+
+      const savedItems = JSON.parse(saved) as { productId: string; quantity: number }[];
+      return savedItems
+        .map((savedItem) => {
+          const product = allProducts.find((p) => p.id === savedItem.productId);
+          if (!product) return null;
+          return {
+            productId: savedItem.productId,
+            product,
+            quantity: savedItem.quantity,
+          };
+        })
+        .filter((item): item is SubscriptionItem => item !== null);
+    } catch (error) {
+      console.error("Failed to load subscription cart:", error);
+      return [];
+    }
+  };
 
   const handleSubmit = async () => {
     if (items.length === 0) return;
@@ -172,6 +266,8 @@ function NewSubscriptionContent() {
         return;
       }
 
+      // Clear subscription cart after successful creation
+      localStorage.removeItem(SUBSCRIPTION_CART_KEY);
       router.push(`/account/subscriptions/${result.data?.id}`);
     });
   };
@@ -239,85 +335,230 @@ function NewSubscriptionContent() {
           {/* Step 1: Products */}
           {step === 1 && (
             <>
-              <Card variant="default">
-                <CardHeader className="border-b border-slate-200">
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="w-5 h-5" />
-                    Select Products
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    {products.map((product) => {
-                      const inCart = items.find((i) => i.productId === product.id);
-                      return (
-                        <div
-                          key={product.id}
-                          className={`flex items-center gap-4 p-3 rounded-2xl border transition-colors ${
-                            inCart
-                              ? "border-orange-500 bg-orange-50"
-                              : "border-slate-200 hover:border-orange-300"
-                          }`}
-                        >
-                          <div className="w-16 h-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 relative">
-                            {product.featured_image_url ? (
-                              <Image
-                                src={product.featured_image_url}
-                                alt={product.name}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
-                                No Image
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-900 truncate">
-                              {product.name}
-                            </p>
-                            <p className="text-sm text-orange-500">
-                              {formatCurrency(product.sale_price ?? product.base_price)}
-                              {product.pricing_type === "weight" && "/lb"}
-                            </p>
-                          </div>
-                          {inCart ? (
+              {/* Your Subscription Items */}
+              {items.length > 0 && (
+                <Card variant="default">
+                  <CardHeader className="border-b border-slate-200">
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingBag className="w-5 h-5" />
+                      Your Subscription Items
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      {items.map((item) => {
+                        const product = item.product;
+                        return (
+                          <div
+                            key={item.productId}
+                            className="flex items-center gap-4 p-3 rounded-2xl border border-orange-500 bg-orange-50"
+                          >
+                            <div className="w-16 h-16 rounded-xl bg-white overflow-hidden flex-shrink-0 relative">
+                              {product.featured_image_url ? (
+                                <Image
+                                  src={product.featured_image_url}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                                  No Image
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-slate-900 truncate">
+                                {product.name}
+                              </p>
+                              <p className="text-sm text-orange-500">
+                                {formatCurrency(product.sale_price ?? product.base_price)}
+                                {product.pricing_type === "weight" && "/lb"}
+                              </p>
+                            </div>
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => updateQuantity(product.id, inCart.quantity - 1)}
-                                className="p-1 hover:bg-slate-100 rounded"
+                                onClick={() => updateQuantity(product.id, item.quantity - 1)}
+                                className="p-1 hover:bg-white rounded"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
-                              <span className="w-8 text-center">{inCart.quantity}</span>
+                              <span className="w-8 text-center font-medium">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(product.id, inCart.quantity + 1)}
-                                className="p-1 hover:bg-slate-100 rounded"
+                                onClick={() => updateQuantity(product.id, item.quantity + 1)}
+                                className="p-1 hover:bg-white rounded"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => removeProduct(product.id)}
-                                className="p-1 hover:bg-red-50 text-red-500 rounded ml-2"
+                                className="p-1 hover:bg-red-100 text-red-500 rounded ml-2"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                          ) : (
-                            <Button variant="outline" size="sm" onClick={() => addProduct(product)}>
-                              <Plus className="w-4 h-4 mr-1" />
-                              Add
-                            </Button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Recommended Products */}
+              {recommendations.length > 0 && (
+                <Card variant="default">
+                  <CardHeader className="border-b border-slate-200">
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="w-5 h-5" />
+                      {items.length > 0 ? "Add More Products" : "Recommended for You"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {recommendations.map((product) => {
+                        const inCart = items.find((i) => i.productId === product.id);
+                        return (
+                          <div
+                            key={product.id}
+                            className={`flex items-center gap-3 p-3 rounded-2xl border transition-colors ${
+                              inCart
+                                ? "border-orange-500 bg-orange-50"
+                                : "border-slate-200 hover:border-orange-300"
+                            }`}
+                          >
+                            <div className="w-12 h-12 rounded-lg bg-slate-50 overflow-hidden flex-shrink-0 relative">
+                              {product.featured_image_url ? (
+                                <Image
+                                  src={product.featured_image_url}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                                  No Image
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-slate-900 text-sm truncate">
+                                {product.name}
+                              </p>
+                              <p className="text-sm text-orange-500">
+                                {formatCurrency(product.sale_price ?? product.base_price)}
+                                {product.pricing_type === "weight" && "/lb"}
+                              </p>
+                            </div>
+                            {!inCart && (
+                              <Button variant="outline" size="sm" onClick={() => addProduct(product)}>
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Browse All Products (Collapsible) */}
+              <Card variant="default">
+                <button
+                  onClick={() => setShowAllProducts(!showAllProducts)}
+                  className="w-full text-left"
+                >
+                  <CardHeader className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <Search className="w-5 h-5" />
+                        Browse All Products
+                      </span>
+                      {showAllProducts ? (
+                        <ChevronUp className="w-5 h-5 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                </button>
+                {showAllProducts && (
+                  <CardContent className="p-4">
+                    {/* Search Bar */}
+                    <div className="mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Input
+                          type="text"
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    {/* All Products List */}
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {products
+                        .filter((product) =>
+                          product.name.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .map((product) => {
+                          const inCart = items.find((i) => i.productId === product.id);
+                          return (
+                            <div
+                              key={product.id}
+                              className={`flex items-center gap-3 p-2 rounded-xl border transition-colors ${
+                                inCart
+                                  ? "border-orange-500 bg-orange-50"
+                                  : "border-slate-200 hover:border-orange-300"
+                              }`}
+                            >
+                              <div className="w-10 h-10 rounded-lg bg-slate-50 overflow-hidden flex-shrink-0 relative">
+                                {product.featured_image_url ? (
+                                  <Image
+                                    src={product.featured_image_url}
+                                    alt={product.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                                    No Image
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-slate-900 text-sm truncate">
+                                  {product.name}
+                                </p>
+                                <p className="text-xs text-orange-500">
+                                  {formatCurrency(product.sale_price ?? product.base_price)}
+                                  {product.pricing_type === "weight" && "/lb"}
+                                </p>
+                              </div>
+                              {!inCart && (
+                                <Button variant="outline" size="sm" onClick={() => addProduct(product)}>
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </CardContent>
+                )}
               </Card>
 
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <Link href="/shop">
+                  <Button variant="outline">
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Continue Shopping
+                  </Button>
+                </Link>
                 <Button onClick={() => setStep(2)} disabled={items.length === 0}>
                   Continue to Schedule
                 </Button>
