@@ -303,15 +303,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             />
           )}
 
-          {/* Tracking Information (for shipping/delivery) */}
-          {(order.fulfillment_type === "shipping" || order.fulfillment_type === "delivery") && (
-            <TrackingForm
-              orderId={order.id}
-              trackingNumber={order.tracking_number}
-              trackingUrl={order.tracking_url}
-            />
-          )}
-
           {/* Shipment Timeline */}
           <ShipmentTimeline orderId={order.id} />
 
@@ -410,6 +401,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               )}
             </div>
           </div>
+
+          {/* Tracking Information (for shipping/delivery) */}
+          {(order.fulfillment_type === "shipping" || order.fulfillment_type === "delivery") && (
+            <TrackingForm
+              orderId={order.id}
+              trackingNumber={order.tracking_number}
+              trackingUrl={order.tracking_url}
+            />
+          )}
 
           {/* Customer Notes */}
           {order.customer_notes && (
