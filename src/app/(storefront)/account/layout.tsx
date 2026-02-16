@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { signOut } from "@/lib/actions/auth";
 import { User, Package, CreditCard, MapPin, Wallet, Gift, RefreshCw, Settings, LogOut } from "lucide-react";
 
 const navItems = [
@@ -48,7 +49,7 @@ export default async function AccountLayout({
               );
             })}
             <div className="border-t border-slate-100 mt-1 pt-1">
-              <form action="/api/auth/signout" method="post">
+              <form action={signOut}>
                 <button
                   type="submit"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors w-full text-left group"
